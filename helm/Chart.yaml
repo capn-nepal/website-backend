@@ -1,0 +1,13 @@
+apiVersion: v2
+name: capn-website-backend-helm
+description: "Helm Chart to deploy the CAPN Website Backend (Alpha instances)"
+type: application
+version: 0.0.1-SET-BY-CICD
+sources:
+  - https://github.com/capn-nepal/website-backend/
+
+dependencies:
+  - name: django-app
+    alias: app
+    version: 0.0.1
+    repository: oci://ghcr.io/toggle-corp/charts
