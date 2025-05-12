@@ -1,8 +1,9 @@
 import strawberry
 import strawberry_django
 from strawberry.file_uploads import Upload
-from apps.blog.models import Blog,BlogAsset
-from typing import Optional
+
+from apps.blog.models import Blog, BlogAsset
+
 
 @strawberry_django.input(Blog)
 class CreateBlogInput:
@@ -22,9 +23,9 @@ class UpdateBlogInput:
     description: strawberry.auto
     featured: strawberry.auto
     content: strawberry.auto
-    cover_image: Optional[strawberry.ID] = strawberry.UNSET 
-    
-    
+    cover_image: strawberry.ID | None = strawberry.UNSET
+
+
 @strawberry_django.input(BlogAsset)
 class CreateBlogAssetsInput:
     blog: strawberry.ID

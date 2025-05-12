@@ -10,6 +10,7 @@ class UserType:
     first_name: strawberry.auto
     last_name: strawberry.auto
     display_name: strawberry.auto
+    email: strawberry.auto
 
 
 @strawberry_django.type(User)
