@@ -1,23 +1,22 @@
 from enum import Enum
 
-from django.conf import settings
 from django.db import models
 from django.test import TestCase as BaseTestCase
 from django.test import override_settings
 
-TEST_CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": settings.TEST_CACHE_REDIS_URL,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-        "KEY_PREFIX": "test_dj_cache-",
-    },
-    "local-memory": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-    },
-}
+# TEST_CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": settings.TEST_CACHE_REDIS_URL,
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         },
+#         "KEY_PREFIX": "test_dj_cache-",
+#     },
+#     "local-memory": {
+#         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+#     },
+# }
 
 FILE_SYSTEM_TEST_STORAGES_CONFIGS = dict(
     AWS_S3_ENABLED=False,
@@ -34,10 +33,10 @@ FILE_SYSTEM_TEST_STORAGES_CONFIGS = dict(
 
 @override_settings(
     DEBUG=True,
-    EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend",
-    MEDIA_ROOT="rest-media-temp",
+    # EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend",
+    # MEDIA_ROOT="rest-media-temp",
     STORAGES=FILE_SYSTEM_TEST_STORAGES_CONFIGS["STORAGES"],
-    CACHES=TEST_CACHES,
+    # CACHES=TEST_CACHES,
     CELERY_TASK_ALWAYS_EAGER=True,
     CELERY_TASK_EAGER_PROPAGATES=True,
 )

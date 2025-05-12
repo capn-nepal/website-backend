@@ -4,9 +4,10 @@ from strawberry.django.views import AsyncGraphQLView
 from strawberry.file_uploads import Upload
 from strawberry_django.optimizer import DjangoOptimizerExtension
 
+from apps.blog.graphql import mutations as blog_mutations
+from apps.blog.graphql import queries as blog_queries
 from apps.user.graphql import mutations as user_mutations
 from apps.user.graphql import queries as user_queries
-from apps.blog.graphql import queries as blog_queries
 
 from .context import GraphQLContext
 from .dataloaders import GlobalDataLoader
@@ -35,6 +36,7 @@ class Query(
 @strawberry.type
 class Mutation(
     user_mutations.Mutation,
+    blog_mutations.Mutation,
 ): ...
 
 
