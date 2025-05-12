@@ -20,6 +20,46 @@ type AppEnumCollectionDummyEnum {
 }
 
 """
+BlogAsset(id, created_at, modified_at, created_by, modified_by, file, blog)
+"""
+input BlogAssetsFilter {
+  id: IDBaseFilterLookup
+  AND: BlogAssetsFilter
+  OR: BlogAssetsFilter
+  NOT: BlogAssetsFilter
+  DISTINCT: Boolean
+}
+
+input BlogAssetsOrder {
+  id: Ordering
+}
+
+"""
+BlogAsset(id, created_at, modified_at, created_by, modified_by, file, blog)
+"""
+type BlogAssetsType {
+  id: ID!
+  blog: DjangoModelType!
+  file: DjangoFileType!
+}
+
+type BlogAssetsTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: BlogAssetsType
+}
+
+type BlogAssetsTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [BlogAssetsType!]!
+}
+
+"""
 Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured)
 """
 input BlogFilter {
@@ -40,13 +80,20 @@ input BlogOrder {
 Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured)
 """
 type BlogType {
-  id: Int!
+  id: ID!
   title: String!
   publishedDate: Date!
-  author: String!
+  author: DjangoModelType!
   description: String!
-  coverImage: String!
+  coverImage: DjangoImageType!
   featured: Boolean!
+  content: String!
+}
+
+type BlogTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: BlogType
 }
 
 type BlogTypeOffsetPaginated {
@@ -59,8 +106,59 @@ type BlogTypeOffsetPaginated {
   results: [BlogType!]!
 }
 
+"""
+BlogAsset(id, created_at, modified_at, created_by, modified_by, file, blog)
+"""
+input CreateBlogAssetsInput {
+  blog: ID!
+  file: Upload!
+}
+
+union CreateBlogAssetsPayload = BlogAssetsTypeMutationResponseType | OperationInfo
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured)
+"""
+input CreateBlogInput {
+  title: String!
+  publishedDate: Date!
+  description: String!
+  coverImage: Upload!
+  featured: Boolean
+  content: String!
+}
+
+union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+"""A generic type to return error messages"""
+scalar CustomErrorType
+
 """Date (isoformat)"""
 scalar Date
+
+union DeleteBlogAssetsPayload = BlogAssetsType | OperationInfo
+
+union DeleteBlogPayload = BlogType | OperationInfo
+
+type DjangoFileType {
+  name: String!
+  path: String!
+  size: Int!
+  url: String!
+}
+
+type DjangoImageType {
+  name: String!
+  path: String!
+  size: Int!
+  url: String!
+  width: Int!
+  height: Int!
+}
+
+type DjangoModelType {
+  pk: ID!
+}
 
 enum DummyEnum {
   VALUE_1
@@ -80,9 +178,22 @@ input IDBaseFilterLookup {
   inList: [ID!]
 }
 
+"""
+User(id, password, last_login, is_superuser, first_name, last_name, is_staff, is_active, date_joined, email, display_name)
+"""
+input LoginInput {
+  email: String!
+  password: String!
+}
+
 type Mutation {
-  login(username: String!, password: String!): UserMeType!
+  login(data: LoginInput!): UserMeTypeMutationResponseType!
   logout: Boolean!
+  deleteBlog: DeleteBlogPayload! @isAuthenticated
+  deleteBlogAssets: DeleteBlogAssetsPayload! @isAuthenticated
+  createBlog(data: CreateBlogInput!): CreateBlogPayload! @isAuthenticated
+  createBlogAssets(data: CreateBlogAssetsInput!): CreateBlogAssetsPayload! @isAuthenticated
+  updateBlog(data: UpdateBlogInput!, pk: ID!): UpdateBlogPayload! @isAuthenticated
 }
 
 type OffsetPaginationInfo {
@@ -93,6 +204,39 @@ type OffsetPaginationInfo {
 input OffsetPaginationInput {
   offset: Int! = 0
   limit: Int
+}
+
+input OneToManyInput {
+  set: ID
+}
+
+type OperationInfo {
+  """List of messages returned by the operation."""
+  messages: [OperationMessage!]!
+}
+
+type OperationMessage {
+  """The kind of this message."""
+  kind: OperationMessageKind!
+
+  """The error message."""
+  message: String!
+
+  """
+  The field that caused the error, or `null` if it isn't associated with any particular field.
+  """
+  field: String
+
+  """The error code, or `null` if no error code was set."""
+  code: String
+}
+
+enum OperationMessageKind {
+  INFO
+  WARNING
+  ERROR
+  PERMISSION
+  VALIDATION
 }
 
 enum Ordering {
@@ -108,6 +252,9 @@ type Query {
   users(pagination: OffsetPaginationInput, filters: UserFilter, order: UserOrder): UserTypeOffsetPaginated! @isAuthenticated
   me: UserMeType
   blogs(pagination: OffsetPaginationInput, filters: BlogFilter, order: BlogOrder): BlogTypeOffsetPaginated!
+  blog(id: ID!): BlogType!
+  blogAssets(pagination: OffsetPaginationInput, filters: BlogAssetsFilter, order: BlogAssetsOrder): BlogAssetsTypeOffsetPaginated!
+  blogAsset(id: ID!): BlogAssetsType!
   enums: AppEnumCollection!
 }
 
@@ -160,6 +307,23 @@ input StrFilterLookup {
 }
 
 """
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured)
+"""
+input UpdateBlogInput {
+  title: String
+  publishedDate: Date
+  author: OneToManyInput
+  description: String
+  featured: Boolean
+  content: String
+  coverImage: ID
+}
+
+union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+scalar Upload
+
+"""
 User(id, password, last_login, is_superuser, first_name, last_name, is_staff, is_active, date_joined, email, display_name)
 """
 input UserFilter {
@@ -176,10 +340,16 @@ User(id, password, last_login, is_superuser, first_name, last_name, is_staff, is
 """
 type UserMeType {
   id: ID!
+  email: String!
   firstName: String!
   lastName: String!
   displayName: String!
-  email: String!
+}
+
+type UserMeTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: UserMeType
 }
 
 input UserOrder {
