@@ -20,7 +20,7 @@ def create_blog_query(
     blog_data: dict,
     **kwargs,
 ) -> dict:
-    with NamedTemporaryFile(suffix=".jpg", dir=settings.TEMP_DIR) as image_file:
+    with NamedTemporaryFile(suffix=".jpg", dir=settings.TEMP_DIR) as image_file:  # type: ignore[reportIncompatibleVariableOverride]
         image = Image.new("RGB", (100, 100), color="blue")
         image.save(image_file, "JPEG")
         image_file.seek(0)
@@ -60,7 +60,7 @@ def create_blog_asset_query(
     **kwargs,
 ) -> dict:
     with (
-        NamedTemporaryFile(dir=settings.TEMP_DIR, suffix=".jpeg") as test_file,
+        NamedTemporaryFile(dir=settings.TEMP_DIR, suffix=".jpeg") as test_file,  # type: ignore[reportIncompatibleVariableOverride]
     ):
         # Mock image
         test_file.write(b"l")
