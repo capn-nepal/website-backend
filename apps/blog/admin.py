@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Blog, BlogAsset
+from .models import Author, Blog, BlogAsset
 
 
 @admin.register(Blog)
@@ -13,3 +13,9 @@ class BlogAdmin(admin.ModelAdmin):
 @admin.register(BlogAsset)
 class BlogAssetsAdmin(admin.ModelAdmin):
     list_display = ("id", "blog")
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    list_filter = ("id", "name")

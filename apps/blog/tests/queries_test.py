@@ -1,4 +1,4 @@
-from apps.blog.factories import BlogFactory
+from apps.blog.factories import AuthorFactory, BlogFactory
 from apps.user.factories import UserFactory
 from main.tests.base_test import TestCase
 
@@ -21,7 +21,7 @@ class TestBlogQuery(TestCase):
                         title
                         publishedDate
                         author {
-                            pk
+                            id
                         }
                     }
                 }
@@ -36,11 +36,12 @@ class TestBlogQuery(TestCase):
             created_by=cls.user,
             modified_by=cls.user,
         )
+        cls.author = AuthorFactory.create(name="hero")
         cls.blogs = [
             BlogFactory.create(
                 created_by=cls.user,
                 title="Test Blog 1",
-                author=cls.user,
+                author=cls.author,
                 content="Content 1",
                 description="Description 1",
                 featured=True,
@@ -49,7 +50,7 @@ class TestBlogQuery(TestCase):
             BlogFactory.create(
                 created_by=cls.user,
                 title="Test Blog 2",
-                author=cls.user,
+                author=cls.author,
                 content="Content 2",
                 description="Description 2",
                 featured=True,
@@ -77,7 +78,7 @@ class TestBlogQuery(TestCase):
                 description=blog.description,
                 featured=blog.featured,
                 publishedDate=str(blog.published_date),
-                author={"pk": str(blog.author.pk)},
+                author={"id": str(blog.author.id)},
             )
             for blog in sorted(self.blogs, key=lambda b: b.pk)  # Match ASC order
         ]

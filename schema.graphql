@@ -20,6 +20,25 @@ type AppEnumCollectionDummyEnum {
 }
 
 """
+Author(id, created_at, modified_at, created_by, modified_by, name, image)
+"""
+type AuthorType {
+  id: ID!
+  name: String!
+  image: DjangoImageType
+}
+
+type AuthorTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [AuthorType!]!
+}
+
+"""
 BlogAsset(id, created_at, modified_at, created_by, modified_by, file, blog)
 """
 input BlogAssetsFilter {
@@ -83,7 +102,7 @@ type BlogType {
   id: ID!
   title: String!
   publishedDate: Date!
-  author: DjangoModelType!
+  author: AuthorType!
   description: String!
   coverImage: DjangoImageType!
   featured: Boolean!
@@ -126,6 +145,7 @@ input CreateBlogInput {
   coverImage: Upload!
   featured: Boolean
   content: String!
+  author: ID!
 }
 
 union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
@@ -135,6 +155,9 @@ scalar CustomErrorType
 
 """Date (isoformat)"""
 scalar Date
+
+"""Date with time (isoformat)"""
+scalar DateTime
 
 union DeleteBlogAssetsPayload = BlogAssetsType | OperationInfo
 
@@ -163,6 +186,28 @@ type DjangoModelType {
 enum DummyEnum {
   VALUE_1
   VALUE_2
+}
+
+"""
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, event_image)
+"""
+type EventType {
+  id: ID!
+  name: String!
+  description: String!
+  startDate: DateTime!
+  endDate: DateTime!
+  eventImage: DjangoImageType!
+}
+
+type EventTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [EventType!]!
 }
 
 input IDBaseFilterLookup {
@@ -255,7 +300,40 @@ type Query {
   blog(id: ID!): BlogType!
   blogAssets(pagination: OffsetPaginationInput, filters: BlogAssetsFilter, order: BlogAssetsOrder): BlogAssetsTypeOffsetPaginated!
   blogAsset(id: ID!): BlogAssetsType!
+  authors(pagination: OffsetPaginationInput): AuthorTypeOffsetPaginated!
+  author(id: ID!): AuthorType!
+  events(pagination: OffsetPaginationInput): EventTypeOffsetPaginated! @isAuthenticated
+  event(id: ID!): EventType! @isAuthenticated
+  reports(pagination: OffsetPaginationInput): ReportTypeOffsetPaginated! @isAuthenticated
+  report(id: ID!): ReportType! @isAuthenticated
   enums: AppEnumCollection!
+}
+
+"""
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, document, is_deleted, status)
+"""
+type ReportType {
+  id: ID!
+  title: String!
+  description: String!
+  document: DjangoFileType!
+  isDeleted: Boolean!
+  status: StatusEnum!
+}
+
+type ReportTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [ReportType!]!
+}
+
+enum StatusEnum {
+  PUBLISHED
+  DRAFT
 }
 
 input StrFilterLookup {

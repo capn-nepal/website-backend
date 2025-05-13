@@ -4,7 +4,7 @@ from pathlib import Path
 from django.core.files.temp import NamedTemporaryFile
 from PIL import Image
 
-from apps.blog.factories import BlogFactory
+from apps.blog.factories import AuthorFactory, BlogFactory
 from apps.blog.models import Blog, BlogAsset
 from apps.user.factories import UserFactory
 from main import settings
@@ -144,6 +144,7 @@ class TestBlogMutation(TestCase):
             created_by=cls.user,
             modified_by=cls.user,
         )
+        cls.author = AuthorFactory.create(name="john")
 
     def _create_blog_mutation(self, blog_data: dict, **kwargs):
         return create_blog_query(
@@ -168,6 +169,7 @@ class TestBlogMutation(TestCase):
             "content": "Sample blog content",
             "featured": True,
             "publishedDate": "2025-01-01",
+            "author": self.author.pk,
         }
 
         # Without authentication
@@ -209,7 +211,7 @@ class TestBlogMutation(TestCase):
             content="new content",
             published_date="2025-02-01",
             featured=False,
-            author=self.user,
+            author=self.author,
         )
         blog_data = {
             "title": "Updated Blog",
@@ -281,8 +283,9 @@ class TestBlogAssetsMutation(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = UserFactory.create(email="blog-assets@test.com")
+        cls.author = AuthorFactory.create(name="name")
         cls.blog = BlogFactory.create(
-            author=cls.user,
+            author=cls.author,
             created_by=cls.user,
             modified_by=cls.user,
             published_date="2025-02-01",

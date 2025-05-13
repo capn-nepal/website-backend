@@ -4,7 +4,7 @@ from strawberry_django.pagination import OffsetPaginated
 
 from .filters import BlogAssetsFilter, BlogFilter
 from .orders import BlogAssetsOrder, BlogOrder
-from .types import BlogAssetsType, BlogType
+from .types import AuthorType, BlogAssetsType, BlogType
 
 
 @strawberry.type
@@ -24,3 +24,6 @@ class Query:
     )
 
     blog_asset: BlogAssetsType = strawberry_django.field(extensions=[])
+
+    authors: OffsetPaginated[AuthorType] = strawberry_django.offset_paginated(extensions=[])
+    author: AuthorType = strawberry_django.field(extensions=[])

@@ -2,14 +2,21 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.models import UserResource
-from apps.user.models import User
+
+
+class Author(UserResource):
+    name = models.CharField(max_length=200, verbose_name=("Name"))
+    image = models.ImageField(verbose_name=_("Author Image"), upload_to="author/", null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Blog(UserResource):
     title = models.CharField(max_length=232, verbose_name=_("Title"))
     published_date = models.DateField(verbose_name=_("Published Date"))
     author = models.ForeignKey(
-        User,
+        Author,
         related_name="blogs",
         on_delete=models.PROTECT,
         verbose_name=_("Author"),

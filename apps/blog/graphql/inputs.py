@@ -13,6 +13,7 @@ class CreateBlogInput:
     cover_image: strawberry.auto
     featured: strawberry.auto
     content: strawberry.auto
+    author: strawberry.ID
 
 
 @strawberry_django.partial(Blog)
