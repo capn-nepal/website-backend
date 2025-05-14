@@ -4,8 +4,8 @@ from asgiref.sync import sync_to_async
 from django.utils.functional import cached_property
 from strawberry.dataloader import DataLoader
 
-from apps.common.graphql.dataloaders import load_model_objects
 from apps.blog.models import Blog
+from apps.common.graphql.dataloaders import load_model_objects
 
 if typing.TYPE_CHECKING:
     from .types import BlogType

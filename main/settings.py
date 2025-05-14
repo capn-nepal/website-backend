@@ -445,10 +445,9 @@ if DEBUG:
 
 # Django toolbar
 ENABLE_DEBUG_TOOLBAR = env("ENABLE_DEBUG_TOOLBAR")
-
-if ENABLE_DEBUG_TOOLBAR and not IS_TESTING:
+if DEBUG and ENABLE_DEBUG_TOOLBAR:
     INSTALLED_APPS.append("debug_toolbar")
-    MIDDLEWARE.append("strawberry_django.middlewares.debug_toolbar.DebugToolbarMiddleware")
+    MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
     INTERNAL_IPS = [
         "127.0.0.1",
         ".".join(socket.gethostbyname(socket.gethostname()).rsplit(".")[:-1]) + ".1",

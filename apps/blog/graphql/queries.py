@@ -2,9 +2,9 @@ import strawberry
 import strawberry_django
 from strawberry_django.pagination import OffsetPaginated
 
-from .filters import BlogFilter
-from .orders import BlogOrder
-from .types import BlogType
+from .filters import BlogAssetsFilter, BlogFilter
+from .orders import BlogAssetsOrder, BlogOrder
+from .types import AuthorType, BlogAssetsType, BlogType
 
 
 @strawberry.type
@@ -14,5 +14,16 @@ class Query:
     blogs: OffsetPaginated[BlogType] = strawberry_django.offset_paginated(
         order=BlogOrder,
         filters=BlogFilter,
-        extensions=[],
     )
+    blog: BlogType = strawberry_django.field(extensions=[])
+
+    # blog assets
+    blog_assets: OffsetPaginated[BlogAssetsType] = strawberry_django.offset_paginated(
+        order=BlogAssetsOrder,
+        filters=BlogAssetsFilter,
+    )
+
+    blog_asset: BlogAssetsType = strawberry_django.field(extensions=[])
+
+    authors: OffsetPaginated[AuthorType] = strawberry_django.offset_paginated(extensions=[])
+    author: AuthorType = strawberry_django.field(extensions=[])

@@ -10,8 +10,13 @@ class UserType:
     first_name: strawberry.auto
     last_name: strawberry.auto
     display_name: strawberry.auto
+    email: strawberry.auto
 
 
 @strawberry_django.type(User)
-class UserMeType(UserType):
+class UserMeType:
+    id: strawberry.ID
     email: strawberry.auto
+    first_name: strawberry.auto
+    last_name: strawberry.auto
+    display_name: strawberry.auto

@@ -4,10 +4,8 @@ import json
 import sentry_sdk
 from asgiref.sync import sync_to_async
 from sentry_sdk import Scope, set_user
-from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
-from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.strawberry import StrawberryIntegration
 
 IGNORED_ERRORS: list[type | str] = []
@@ -48,9 +46,7 @@ class SentryConfig:
     def init_sentry(self):
         integrations = [
             DjangoIntegration(),
-            RedisIntegration(),
             StrawberryIntegration(async_execution=True),
-            CeleryIntegration(monitor_beat_tasks=self.monitor_celery_beat_tasks),
         ]
         sentry_sdk.init(
             ignore_errors=IGNORED_ERRORS,

@@ -16,20 +16,18 @@ dependencies = [
     "django-environ",
     "django-premailer",
     "django-storages",
-    "djangoql",  # Admin panel query search
+    "djangoql", # Admin panel query search
     "djangorestframework",
     "factory-boy~=3.2.1",
     "gunicorn~=20.1.0",
     "psycopg2-binary",
     "sentry-sdk",
     "strawberry-graphql-django~=0.57.0",
-    "django-choices-field",  # Required by strawberry-graphql-django
+    "django-choices-field", # Required by strawberry-graphql-django
     "django-health-check",
-    "pillow",  # Required by django ImageField
+    "pillow", # Required by django ImageField
     "pydantic==2.10.6",
-    # Geo (Used by utils/geo)
-    "gdal==3.6.2",  # NOTE: version depends on the available libgdal-dev version in debian
-    "ogr",
+    "redis>=6.0.0",
 ]
 
 [dependency-groups]
