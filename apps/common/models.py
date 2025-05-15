@@ -61,7 +61,7 @@ class Report(UserResource):
     title = models.CharField(max_length=200, verbose_name=_("Title"))
     description = models.TextField(verbose_name=_("Description"))
     published_date = models.DateField(verbose_name=_("Published Date"))
-    report_file = models.ImageField(upload_to="reports/", verbose_name=_("Report File"))
+    report_file = models.FileField(upload_to="reports/", verbose_name=_("Report File"))
     is_deleted = models.BooleanField(default=False)
     status: int = IntegerChoicesField(choices_enum=StatusEnum, null=True, blank=True)  # type: ignore[reportAssignmentType]
 
