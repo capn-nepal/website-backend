@@ -4,8 +4,8 @@ from strawberry_django.pagination import OffsetPaginated
 from strawberry_django.permissions import IsAuthenticated
 
 from .filters import EventFilter, ReportFilter
-from .orders import EventOrder, ReportOrder
-from .types import EventAssetType, EventType, ReportType
+from .orders import EventOrder, ImageOrder, ReportOrder
+from .types import EventAssetType, EventType, ImageType, ReportType
 
 
 @strawberry.type
@@ -29,3 +29,8 @@ class Query:
         extensions=[IsAuthenticated()],
     )
     report: ReportType = strawberry_django.field(extensions=[IsAuthenticated()])
+
+    # images ----------------------------
+    images: OffsetPaginated[ImageType] = strawberry_django.offset_paginated(
+        order=ImageOrder,
+    )

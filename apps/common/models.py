@@ -63,7 +63,14 @@ class Report(UserResource):
     published_date = models.DateField(verbose_name=_("Published Date"))
     report_file = models.FileField(upload_to="reports/", verbose_name=_("Report File"))
     is_deleted = models.BooleanField(default=False)
-    status: int = IntegerChoicesField(choices_enum=StatusEnum, null=True, blank=True)  # type: ignore[reportAssignmentType]
+    status: int = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)  # type: ignore[reportAssignmentType]
 
     def __str__(self):
         return self.title
+
+
+class GalleryImage(UserResource):
+    image = models.ImageField(upload_to="gallery/")
+
+    def __str__(self):
+        return f"Image {self.pk}"

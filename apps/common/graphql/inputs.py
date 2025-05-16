@@ -2,7 +2,7 @@ import strawberry
 import strawberry_django
 from strawberry.file_uploads import Upload
 
-from apps.common.models import Event, EventAsset, Report
+from apps.common.models import Event, EventAsset, GalleryImage, Report
 
 
 @strawberry_django.input(Event)
@@ -45,3 +45,13 @@ class UpdateReportInput:
     published_date: strawberry.auto
     status: strawberry.auto
     report_file: strawberry.auto
+
+
+@strawberry_django.input(GalleryImage)
+class ImageInput:
+    image: Upload
+
+
+@strawberry_django.partial(GalleryImage)
+class DeleteImageInput:
+    id: strawberry.auto

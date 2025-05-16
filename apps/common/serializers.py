@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.common.models import Event, EventAsset, Report
+from apps.common.models import Event, EventAsset, GalleryImage, Report
 
 
 class UserResourceSerializer(serializers.ModelSerializer):
@@ -52,6 +52,11 @@ class UpdateEventSerializer(serializers.ModelSerializer):
             "end_date",
         )
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
+
 
 class EventAssetsSerializer(serializers.ModelSerializer):
     event = serializers.PrimaryKeyRelatedField(queryset=Event.objects.all(), write_only=True)
@@ -85,3 +90,20 @@ class UpdateReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
         fields = ("title", "description", "published_date", "report_file", "status")
+
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
+
+
+class ImageUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GalleryImage
+        fields = ("image",)
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        validated_data["created_by"] = user
+        validated_data["modified_by"] = user
+        return super().create(validated_data)

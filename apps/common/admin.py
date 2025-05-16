@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Event, EventAsset, Report
+from .models import Event, EventAsset, GalleryImage, Report
 
 
 @admin.register(Event)
@@ -20,3 +20,8 @@ class ReportAdmin(admin.ModelAdmin):
     list_display = ("title", "published_date", "status", "is_deleted")
     list_filter = ("id", "title")
     search_fields = ("title", "status")
+
+
+@admin.register(GalleryImage)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ("id", "image")

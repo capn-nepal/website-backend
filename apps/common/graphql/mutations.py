@@ -1,21 +1,25 @@
 import strawberry
 import strawberry_django
 from asgiref.sync import sync_to_async
+from strawberry_django.mutations import delete
 from strawberry_django.permissions import IsAuthenticated
 
 from apps.common.graphql.inputs import (
     CreateEventAssetsInput,
     CreateEventInput,
     CreateReportInput,
+    DeleteImageInput,
+    ImageInput,
     UpdateEventInput,
     UpdateReportInput,
 )
-from apps.common.graphql.types import EventAssetType, EventType, ReportType
+from apps.common.graphql.types import EventAssetType, EventType, ImageType, ReportType
 from apps.common.models import Event, Report
 from apps.common.serializers import (
     CreateEventSerializer,
     CreateReportSerializer,
     EventAssetsSerializer,
+    ImageUploadSerializer,
     UpdateEventSerializer,
     UpdateReportSerializer,
 )
@@ -85,3 +89,14 @@ class Mutation:
         report.is_deleted = True
         await sync_to_async(report.save)(update_fields=["is_deleted"])
         return MutationResponseType(ok=True, errors=None)  # type: ignore[reportReturnType]
+
+    # Images -----------------------------------
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def add_image(self, info: Info, data: ImageInput) -> MutationResponseType[ImageType]:
+        return await ModelMutation(ImageUploadSerializer).handle_create_mutation(data, info, None)
+
+    delete_image: ImageType = delete(
+        DeleteImageInput,
+        key_attr="id",
+        extensions=[IsAuthenticated()],
+    )
