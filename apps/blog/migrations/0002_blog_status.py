@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blog',
             name='status',
-            field=django_choices_field.fields.IntegerChoicesField(choices=[(50, 'Daft'), (60, 'Published'), (70, 'Archived')], choices_enum=apps.blog.models.BlogStatusEnum, default=50),
+            field=django_choices_field.fields.IntegerChoicesField(choices=[(50, 'Draft'), (60, 'Published'), (70, 'Archived')], choices_enum=apps.blog.models.BlogStatusEnum, default=50),
         ),
     ]

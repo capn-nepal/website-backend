@@ -6,7 +6,7 @@ from apps.common.models import UserResource
 
 
 class BlogStatusEnum(models.IntegerChoices):
-    DRAFT = 50, "Daft"
+    DRAFT = 50, "Draft"
     PUBLISHED = 60, "Published"
     ARCHIVED = 70, "Archived"
 
