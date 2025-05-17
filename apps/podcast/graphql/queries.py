@@ -16,7 +16,7 @@ class Query:
         filters=PodcastSeasonFilter,
         extensions=[IsAuthenticated()],
     )
-    podcast_season: PodcastSeasonType = strawberry_django.field(extensions=[])
+    podcast_season: PodcastSeasonType = strawberry_django.field(extensions=[IsAuthenticated()])
     # podcast Episode --------------------------
     podcast_episodes: OffsetPaginated[PodcastEpisodeType] = strawberry_django.offset_paginated(
         order=PodcastEpisodeOrder,
@@ -24,7 +24,7 @@ class Query:
         extensions=[IsAuthenticated()],
     )
 
-    podcast_episode: PodcastEpisodeType = strawberry_django.field(extensions=[])
+    podcast_episode: PodcastEpisodeType = strawberry_django.field(extensions=[IsAuthenticated()])
 
     # VoxPop ---------------------------------
     voxpop_seasons: OffsetPaginated[VoxPopSeasonType] = strawberry_django.offset_paginated(
@@ -32,7 +32,7 @@ class Query:
         filters=VoxPopFilter,
         extensions=[IsAuthenticated()],
     )
-    voxpop_season: VoxPopSeasonType = strawberry_django.field(extensions=[])
+    voxpop_season: VoxPopSeasonType = strawberry_django.field(extensions=[IsAuthenticated()])
 
     # VoxPop Episode --------------------------------
     voxpop_episodes: OffsetPaginated[VoxPopEpisodeType] = strawberry_django.offset_paginated(
@@ -41,4 +41,4 @@ class Query:
         extensions=[IsAuthenticated()],
     )
 
-    voxpop_episode: VoxPopEpisodeType = strawberry_django.field(extensions=[])
+    voxpop_episode: VoxPopEpisodeType = strawberry_django.field(extensions=[IsAuthenticated()])

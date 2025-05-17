@@ -1,7 +1,12 @@
 import strawberry
 import strawberry_django
 
-from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPop, VoxPopEpisode
+from apps.podcast.models import (
+    PodcastEpisode,
+    PodcastSeason,
+    VoxPop,
+    VoxPopEpisode,
+)
 
 
 @strawberry_django.type(PodcastSeason)

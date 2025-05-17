@@ -20,8 +20,10 @@ class UpdatePodcastSeasonSerializer(serializers.ModelSerializer):
         model = PodcastSeason
         fields = ("title", "description", "season_number")
 
-    def validate(self, attrs):
-        return super().validate(attrs)
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
 
 
 class CreatePodcastEpisodeSerializers(serializers.ModelSerializer):
@@ -46,9 +48,6 @@ class CreatePodcastEpisodeSerializers(serializers.ModelSerializer):
 
 
 class UpdatePodcastEpisodeSerializers(serializers.ModelSerializer):
-    def validate(self, attrs):
-        return super().validate(attrs)
-
     class Meta:
         model = PodcastEpisode
         fields = (
@@ -60,16 +59,21 @@ class UpdatePodcastEpisodeSerializers(serializers.ModelSerializer):
             "podcast_season",
         )
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
+
 
 class CreateVoxPopSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = VoxPop
+        fields = ("title", "description", "season_number")
+
     def create(self, validated_data):
         validated_data["created_by"] = self.context["request"].user
         validated_data["modified_by"] = self.context["request"].user
         return super().create(validated_data)
-
-    class Meta:
-        model = VoxPop
-        fields = ("title", "description", "season_number")
 
 
 class UpdateVoxPopSerializers(serializers.ModelSerializer):
@@ -77,8 +81,10 @@ class UpdateVoxPopSerializers(serializers.ModelSerializer):
         model = VoxPop
         fields = ("title", "description", "season_number")
 
-    def validate(self, attrs):
-        return super().validate(attrs)
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
 
 
 class CreateVoxPopEpisodeSerializers(serializers.ModelSerializer):
@@ -114,5 +120,7 @@ class UpdateVoxPopEpisodeSerializer(serializers.ModelSerializer):
             "release_date",
         )
 
-    def validate(self, attrs):
-        return super().validate(attrs)
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
