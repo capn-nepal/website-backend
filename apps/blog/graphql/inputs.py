@@ -24,6 +24,7 @@ class UpdateBlogInput:
     description: strawberry.auto
     featured: strawberry.auto
     content: strawberry.auto
+    status: strawberry.auto
     cover_image: strawberry.ID | None = strawberry.UNSET
 
 

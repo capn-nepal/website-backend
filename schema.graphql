@@ -79,11 +79,12 @@ type BlogAssetsTypeOffsetPaginated {
 }
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status)
 """
 input BlogFilter {
   id: IDBaseFilterLookup
   title: StrFilterLookup
+  status: BlogStatusEnum!
   AND: BlogFilter
   OR: BlogFilter
   NOT: BlogFilter
@@ -95,8 +96,14 @@ input BlogOrder {
   title: Ordering
 }
 
+enum BlogStatusEnum {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status)
 """
 type BlogType {
   id: ID!
@@ -107,6 +114,7 @@ type BlogType {
   coverImage: DjangoImageType!
   featured: Boolean!
   content: String!
+  status: BlogStatusEnum!
 }
 
 type BlogTypeMutationResponseType {
@@ -143,7 +151,7 @@ input CreateBlogAssetsInput {
 union CreateBlogAssetsPayload = BlogAssetsTypeMutationResponseType | OperationInfo
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status)
 """
 input CreateBlogInput {
   title: String!
@@ -162,10 +170,6 @@ scalar CustomErrorType
 
 """Date (isoformat)"""
 scalar Date
-
-union DeleteBlogAssetsPayload = BlogAssetsType | OperationInfo
-
-union DeleteBlogPayload = BlogType | OperationInfo
 
 type DjangoFileType {
   name: String!
@@ -217,11 +221,9 @@ type Mutation {
   login(data: LoginInput!): UserMeTypeMutationResponseType!
   logout: Boolean!
   changePassword(data: ChangePasswordInput!): ChangePasswordPayload! @isAuthenticated
-  deleteBlog: DeleteBlogPayload! @isAuthenticated
-  deleteBlogAssets: DeleteBlogAssetsPayload! @isAuthenticated
   createBlog(data: CreateBlogInput!): CreateBlogPayload! @isAuthenticated
-  createBlogAssets(data: CreateBlogAssetsInput!): CreateBlogAssetsPayload! @isAuthenticated
   updateBlog(data: UpdateBlogInput!, pk: ID!): UpdateBlogPayload! @isAuthenticated
+  createBlogAssets(data: CreateBlogAssetsInput!): CreateBlogAssetsPayload! @isAuthenticated
 }
 
 type OffsetPaginationInfo {
@@ -337,7 +339,7 @@ input StrFilterLookup {
 }
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status)
 """
 input UpdateBlogInput {
   title: String
@@ -346,6 +348,7 @@ input UpdateBlogInput {
   description: String
   featured: Boolean
   content: String
+  status: BlogStatusEnum
   coverImage: ID
 }
 

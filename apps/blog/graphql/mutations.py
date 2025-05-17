@@ -13,17 +13,9 @@ from utils.graphql.types import MutationResponseType
 
 @strawberry.type
 class Mutation:
-    delete_blog: BlogType = strawberry_django.mutations.delete(extensions=[IsAuthenticated()])
-
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_blog(self, info: Info, data: CreateBlogInput) -> MutationResponseType[BlogType]:
         return await ModelMutation(CreateBlogSerializers).handle_create_mutation(data, info, None)
-
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
-    async def create_blog_assets(self, info: Info, data: CreateBlogAssetsInput) -> MutationResponseType[BlogAssetsType]:
-        return await ModelMutation(CreateBlogAssetSerializers).handle_create_mutation(data, info, None)
-
-    delete_blog_assets: BlogAssetsType = strawberry_django.mutations.delete(extensions=[IsAuthenticated()])
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def update_blog(
@@ -34,3 +26,7 @@ class Mutation:
     ) -> MutationResponseType[BlogType]:
         blog = await Blog.objects.aget(pk=pk)
         return await ModelMutation(UpdateBlogSerializers).handle_update_mutation(data, info, blog)
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def create_blog_assets(self, info: Info, data: CreateBlogAssetsInput) -> MutationResponseType[BlogAssetsType]:
+        return await ModelMutation(CreateBlogAssetSerializers).handle_create_mutation(data, info, None)

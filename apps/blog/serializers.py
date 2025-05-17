@@ -44,6 +44,7 @@ class UpdateBlogSerializers(serializers.ModelSerializer):
             "cover_image",
             "featured",
             "content",
+            "status",
         )
 
 
