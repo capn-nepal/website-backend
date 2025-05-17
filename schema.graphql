@@ -125,6 +125,13 @@ type BlogTypeOffsetPaginated {
   results: [BlogType!]!
 }
 
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
+union ChangePasswordPayload = UserMeTypeMutationResponseType | OperationInfo
+
 """
 BlogAsset(id, created_at, modified_at, created_by, modified_by, file, blog)
 """
@@ -209,6 +216,7 @@ input LoginInput {
 type Mutation {
   login(data: LoginInput!): UserMeTypeMutationResponseType!
   logout: Boolean!
+  changePassword(data: ChangePasswordInput!): ChangePasswordPayload! @isAuthenticated
   deleteBlog: DeleteBlogPayload! @isAuthenticated
   deleteBlogAssets: DeleteBlogAssetsPayload! @isAuthenticated
   createBlog(data: CreateBlogInput!): CreateBlogPayload! @isAuthenticated
