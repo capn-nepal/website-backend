@@ -21,6 +21,7 @@ class BlogType:
     cover_image: strawberry.auto
     featured: strawberry.auto
     content: strawberry.auto
+    status: strawberry.auto
 
 
 @strawberry_django.type(BlogAsset)

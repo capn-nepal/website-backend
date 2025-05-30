@@ -8,8 +8,25 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ("name", "image")
 
+    def create(self, validated_data):
+        user = self.context["request"].user
+        validated_data["created_by"] = user
+        validated_data["modified_by"] = user
+        return super().create(validated_data)
 
-class CreateBlogSerializers(serializers.ModelSerializer):
+
+class UpdateAuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ("name", "image")
+
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
+
+
+class CreateBlogSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all(), write_only=True)
 
     class Meta:
@@ -31,7 +48,7 @@ class CreateBlogSerializers(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class UpdateBlogSerializers(serializers.ModelSerializer):
+class UpdateBlogSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         return super().validate(attrs)
 
@@ -44,10 +61,11 @@ class UpdateBlogSerializers(serializers.ModelSerializer):
             "cover_image",
             "featured",
             "content",
+            "status",
         )
 
 
-class CreateBlogAssetSerializers(serializers.ModelSerializer):
+class CreateBlogAssetSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["created_by"] = self.context["request"].user
         validated_data["modified_by"] = self.context["request"].user

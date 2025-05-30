@@ -5,7 +5,7 @@ from django.core.files.temp import NamedTemporaryFile
 from PIL import Image
 
 from apps.blog.factories import AuthorFactory, BlogFactory
-from apps.blog.models import Blog, BlogAsset
+from apps.blog.models import Author, Blog, BlogAsset
 from apps.user.factories import UserFactory
 from main import settings
 from main.tests.base_test import TestCase
@@ -79,6 +79,45 @@ def create_blog_asset_query(
             },
             **kwargs,
         )
+
+
+def add_author_query(
+    *,
+    query_check_func: typing.Callable,
+    query: str,
+    author_data: dict,
+    **kwargs,
+) -> dict:
+    with NamedTemporaryFile(suffix=".jpg", dir=settings.TEMP_DIR) as image_file:  # type: ignore[reportIncompatibleVariableOverride]
+        image = Image.new("RGB", (100, 100), color="blue")
+        image.save(image_file, "JPEG")
+        image_file.seek(0)
+
+        return query_check_func(
+            query,
+            variables={"data": author_data},
+            files={"image": image_file},
+            map={"image": ["variables.data.image"]},
+            **kwargs,
+        )
+
+
+def update_author_query(
+    *,
+    query_check_func: typing.Callable,
+    query: str,
+    pk: str,
+    author_data: dict,
+    **kwargs,
+) -> dict:
+    return query_check_func(
+        query,
+        variables={
+            "pk": pk,
+            "data": author_data,
+        },
+        **kwargs,
+    )
 
 
 class TestBlogMutation(TestCase):
@@ -321,3 +360,134 @@ class TestBlogAssetsMutation(TestCase):
 
         blog_asset = BlogAsset.objects.get(pk=response_data["result"]["id"])
         assert blog_asset.blog == self.blog
+
+
+class TestAuthorMutations(TestCase):
+    class Mutation:
+        ADD_AUTHOR = """
+                mutation addAuthor($data: AddAuthorInput!) {
+                    addAuthor(data: $data) {
+                        ... on AuthorTypeMutationResponseType {
+                            ok
+                            errors
+                            result {
+                                id
+                                name
+                                image {
+                                    url
+                                }
+                            }
+                        }
+                        ... on OperationInfo {
+                            __typename
+                            messages {
+                                message
+                            }
+                        }
+                    }
+                }
+            """
+        UPDATE_AUTHOR = """
+            mutation updateAuthor($pk: ID!, $data: UpdateAuthorInput!) {
+                updateAuthor(pk: $pk, data: $data) {
+                    ... on AuthorTypeMutationResponseType {
+                        ok
+                        errors
+                        result {
+                            id
+                            name
+                            image {
+                                url
+                            }
+                        }
+                    }
+                    ... on OperationInfo {
+                        __typename
+                        messages {
+                            message
+                        }
+                    }
+                }
+            }
+        """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = UserFactory.create(email="user221@gmail.com")
+        cls.author = AuthorFactory.create(name="hero")
+
+    def _add_author_mutation(self, author_data: dict, **kwargs):
+        return add_author_query(
+            query_check_func=self.query_check,
+            query=self.Mutation.ADD_AUTHOR,
+            author_data=author_data,
+            **kwargs,
+        )
+
+    def _update_author_mutation(self, pk: str, author_data: dict, **kwargs):
+        return update_author_query(
+            query_check_func=self.query_check,
+            query=self.Mutation.UPDATE_AUTHOR,
+            pk=pk,
+            author_data=author_data,
+            **kwargs,
+        )
+
+    def test_add_author_mutation(self):
+        author_data = {
+            "name": "Test Author",
+        }
+        # Without authentication
+        content = self._add_author_mutation(author_data)
+        assert content["data"]["addAuthor"]["messages"] == [
+            {
+                "message": "User is not authenticated.",
+            },
+        ], content
+        # With authentication
+        self.force_login(self.user)
+        content = self._add_author_mutation(author_data)
+        response_data = content["data"]["addAuthor"]
+        assert response_data["errors"] is None, content
+        author = Author.objects.get(pk=response_data["result"]["id"])
+        assert response_data == self.g_mutation_response(
+            ok=True,
+            result=dict(
+                id=self.gID(author.pk),
+                name=author.name,
+                image=dict(url=author.image.url if author.image else None),
+            ),
+        ), content
+
+    def test_update_author(self):
+        author = AuthorFactory.create(
+            name="Test Author2",
+        )
+        author_data = {
+            "name": "Updated Author",
+        }
+        #  Without authentication
+        content = self._update_author_mutation(str(author.pk), author_data)
+        assert content["data"]["updateAuthor"]["messages"] == [
+            {
+                "message": "User is not authenticated.",
+            },
+        ], content
+
+        #  With authentication
+        self.force_login(self.user)
+        content = self._update_author_mutation(str(author.pk), author_data)
+        resp_data = content["data"]["updateAuthor"]
+        assert resp_data["ok"] is True, content
+        assert resp_data["errors"] is None, content
+
+        author.refresh_from_db()
+        assert resp_data == self.g_mutation_response(
+            ok=True,
+            result=dict(
+                id=self.gID(author.pk),
+                name=author.name,
+                image=None,
+            ),
+        ), content
