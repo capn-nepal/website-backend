@@ -21,14 +21,14 @@ from apps.podcast.graphql.types import (
 )
 from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPop, VoxPopEpisode
 from apps.podcast.serializers import (
-    CreatePodcastEpisodeSerializers,
+    CreatePodcastEpisodeSerializer,
     CreatePodcastSeasonSerializer,
-    CreateVoxPopEpisodeSerializers,
-    CreateVoxPopSerializers,
-    UpdatePodcastEpisodeSerializers,
+    CreateVoxPopEpisodeSerializer,
+    CreateVoxPopSerializer,
+    UpdatePodcastEpisodeSerializer,
     UpdatePodcastSeasonSerializer,
     UpdateVoxPopEpisodeSerializer,
-    UpdateVoxPopSerializers,
+    UpdateVoxPopSerializer,
 )
 from main.graphql.context import Info
 from utils.graphql.mutations import ModelMutation
@@ -64,7 +64,7 @@ class Mutation:
         info: Info,
         data: CreatePodcastEpisodeInput,
     ) -> MutationResponseType[PodcastEpisodeType]:
-        return await ModelMutation(CreatePodcastEpisodeSerializers).handle_create_mutation(data, info, None)
+        return await ModelMutation(CreatePodcastEpisodeSerializer).handle_create_mutation(data, info, None)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def update_podcast_episode(
@@ -74,7 +74,7 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[PodcastEpisodeType]:
         podcast_episode = await PodcastEpisode.objects.aget(pk=pk)
-        return await ModelMutation(UpdatePodcastEpisodeSerializers).handle_update_mutation(data, info, podcast_episode)
+        return await ModelMutation(UpdatePodcastEpisodeSerializer).handle_update_mutation(data, info, podcast_episode)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def archive_podcast_episode(
@@ -93,7 +93,7 @@ class Mutation:
     # voxPop Season ----------------
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_voxpop_season(self, info: Info, data: CreateVoxPopInput) -> MutationResponseType[VoxPopSeasonType]:
-        return await ModelMutation(CreateVoxPopSerializers).handle_create_mutation(data, info, None)
+        return await ModelMutation(CreateVoxPopSerializer).handle_create_mutation(data, info, None)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def update_voxpop_season(
@@ -103,7 +103,7 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[VoxPopSeasonType]:
         vox_pop_season = await VoxPop.objects.aget(pk=pk)
-        return await ModelMutation(UpdateVoxPopSerializers).handle_update_mutation(data, info, vox_pop_season)
+        return await ModelMutation(UpdateVoxPopSerializer).handle_update_mutation(data, info, vox_pop_season)
 
     # Podcast Episode ----------------
 
@@ -113,7 +113,7 @@ class Mutation:
         info: Info,
         data: CreateVoxPopEpisodeInput,
     ) -> MutationResponseType[VoxPopEpisodeType]:
-        return await ModelMutation(CreateVoxPopEpisodeSerializers).handle_create_mutation(data, info, None)
+        return await ModelMutation(CreateVoxPopEpisodeSerializer).handle_create_mutation(data, info, None)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def update_voxpop_episode(

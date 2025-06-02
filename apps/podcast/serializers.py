@@ -26,7 +26,7 @@ class UpdatePodcastSeasonSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class CreatePodcastEpisodeSerializers(serializers.ModelSerializer):
+class CreatePodcastEpisodeSerializer(serializers.ModelSerializer):
     podcast_season = serializers.PrimaryKeyRelatedField(queryset=PodcastSeason.objects.all(), write_only=True)
 
     class Meta:
@@ -47,7 +47,7 @@ class CreatePodcastEpisodeSerializers(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class UpdatePodcastEpisodeSerializers(serializers.ModelSerializer):
+class UpdatePodcastEpisodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PodcastEpisode
         fields = (
@@ -65,7 +65,7 @@ class UpdatePodcastEpisodeSerializers(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class CreateVoxPopSerializers(serializers.ModelSerializer):
+class CreateVoxPopSerializer(serializers.ModelSerializer):
     class Meta:
         model = VoxPop
         fields = ("title", "description", "season_number")
@@ -76,7 +76,7 @@ class CreateVoxPopSerializers(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class UpdateVoxPopSerializers(serializers.ModelSerializer):
+class UpdateVoxPopSerializer(serializers.ModelSerializer):
     class Meta:
         model = VoxPop
         fields = ("title", "description", "season_number")
@@ -87,7 +87,7 @@ class UpdateVoxPopSerializers(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class CreateVoxPopEpisodeSerializers(serializers.ModelSerializer):
+class CreateVoxPopEpisodeSerializer(serializers.ModelSerializer):
     voxpop_season = serializers.PrimaryKeyRelatedField(queryset=VoxPop.objects.all(), write_only=True)
 
     class Meta:
