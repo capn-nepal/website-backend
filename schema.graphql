@@ -20,6 +20,8 @@ input AddAuthorInput {
 
 union AddAuthorPayload = AuthorTypeMutationResponseType | OperationInfo
 
+union AddImagePayload = ImageTypeMutationResponseType | OperationInfo
+
 type AppEnumCollection {
   DummyEnum: [AppEnumCollectionDummyEnum!]!
 }
@@ -28,6 +30,10 @@ type AppEnumCollectionDummyEnum {
   key: DummyEnum!
   label: String!
 }
+
+union ArchiveEventPayload = EventTypeMutationResponseType | OperationInfo
+
+union ArchiveReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
 Author(id, created_at, modified_at, created_by, modified_by, name, image)
@@ -181,11 +187,56 @@ input CreateBlogInput {
 
 union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 
+union CreateEventAssetPayload = EventAssetTypeMutationResponseType | OperationInfo
+
+"""
+EventAsset(id, created_at, modified_at, created_by, modified_by, event, image)
+"""
+input CreateEventAssetsInput {
+  event: ID!
+  image: Upload!
+}
+
+"""
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted)
+"""
+input CreateEventInput {
+  name: String!
+  description: String!
+  location: String
+  startDate: Date!
+  endDate: Date!
+}
+
+union CreateEventPayload = EventTypeMutationResponseType | OperationInfo
+
+"""
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
+"""
+input CreateReportInput {
+  title: String!
+  description: String!
+  publishedDate: Date!
+  reportFile: Upload!
+  status: StatusEnum
+}
+
+union CreateReportPayload = ReportTypeMutationResponseType | OperationInfo
+
 """A generic type to return error messages"""
 scalar CustomErrorType
 
 """Date (isoformat)"""
 scalar Date
+
+"""
+GalleryImage(id, created_at, modified_at, created_by, modified_by, image)
+"""
+input DeleteImageInput {
+  id: ID
+}
+
+union DeleteImagePayload = ImageType | OperationInfo
 
 type DjangoFileType {
   name: String!
@@ -212,6 +263,75 @@ enum DummyEnum {
   VALUE_2
 }
 
+"""
+EventAsset(id, created_at, modified_at, created_by, modified_by, event, image)
+"""
+type EventAssetType {
+  id: ID!
+  event: DjangoModelType!
+  image: DjangoImageType!
+}
+
+type EventAssetTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: EventAssetType
+}
+
+type EventAssetTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [EventAssetType!]!
+}
+
+"""
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted)
+"""
+input EventFilter {
+  id: IDBaseFilterLookup
+  isDeleted: Boolean!
+  AND: EventFilter
+  OR: EventFilter
+  NOT: EventFilter
+  DISTINCT: Boolean
+}
+
+input EventOrder {
+  id: Ordering
+}
+
+"""
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted)
+"""
+type EventType {
+  id: ID!
+  name: String!
+  location: String
+  startDate: Date!
+  endDate: Date!
+  description: String!
+}
+
+type EventTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: EventType
+}
+
+type EventTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [EventType!]!
+}
+
 input IDBaseFilterLookup {
   """Exact match. Filter will be skipped on `null` value"""
   exact: ID
@@ -223,6 +343,42 @@ input IDBaseFilterLookup {
   Exact match of items in a given list. Filter will be skipped on `null` value
   """
   inList: [ID!]
+}
+
+"""
+GalleryImage(id, created_at, modified_at, created_by, modified_by, image)
+"""
+input ImageInput {
+  image: Upload!
+}
+
+input ImageOrder {
+  id: Ordering
+  createdAt: Ordering
+}
+
+"""
+GalleryImage(id, created_at, modified_at, created_by, modified_by, image)
+"""
+type ImageType {
+  id: ID!
+  image: DjangoImageType!
+}
+
+type ImageTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ImageType
+}
+
+type ImageTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [ImageType!]!
 }
 
 """
@@ -242,6 +398,15 @@ type Mutation {
   createBlogAssets(data: CreateBlogAssetsInput!): CreateBlogAssetsPayload! @isAuthenticated
   addAuthor(data: AddAuthorInput!): AddAuthorPayload! @isAuthenticated
   updateAuthor(data: UpdateAuthorInput!, pk: ID!): UpdateAuthorPayload! @isAuthenticated
+  deleteImage(data: DeleteImageInput!): DeleteImagePayload! @isAuthenticated
+  createEvent(data: CreateEventInput!): CreateEventPayload! @isAuthenticated
+  createEventAsset(data: CreateEventAssetsInput!): CreateEventAssetPayload! @isAuthenticated
+  updateEvent(data: UpdateEventInput!, pk: ID!): UpdateEventPayload! @isAuthenticated
+  archiveEvent(pk: ID!): ArchiveEventPayload! @isAuthenticated
+  createReport(data: CreateReportInput!): CreateReportPayload! @isAuthenticated
+  updateReport(data: UpdateReportInput!, pk: ID!): UpdateReportPayload! @isAuthenticated
+  archiveReport(pk: ID!): ArchiveReportPayload! @isAuthenticated
+  addImage(data: ImageInput!): AddImagePayload! @isAuthenticated
 }
 
 type OffsetPaginationInfo {
@@ -305,7 +470,65 @@ type Query {
   blogAsset(id: ID!): BlogAssetsType!
   authors(pagination: OffsetPaginationInput): AuthorTypeOffsetPaginated!
   author(id: ID!): AuthorType!
+  events(pagination: OffsetPaginationInput, filters: EventFilter, order: EventOrder): EventTypeOffsetPaginated! @isAuthenticated
+  event(id: ID!): EventType! @isAuthenticated
+  eventAssets(pagination: OffsetPaginationInput): EventAssetTypeOffsetPaginated! @isAuthenticated
+  eventAsset(id: ID!): EventAssetType! @isAuthenticated
+  reports(pagination: OffsetPaginationInput, filters: ReportFilter, order: ReportOrder): ReportTypeOffsetPaginated! @isAuthenticated
+  report(id: ID!): ReportType! @isAuthenticated
+  images(pagination: OffsetPaginationInput, order: ImageOrder): ImageTypeOffsetPaginated!
   enums: AppEnumCollection!
+}
+
+"""
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
+"""
+input ReportFilter {
+  id: IDBaseFilterLookup
+  status: StatusEnum!
+  isDeleted: Boolean!
+  AND: ReportFilter
+  OR: ReportFilter
+  NOT: ReportFilter
+  DISTINCT: Boolean
+}
+
+input ReportOrder {
+  id: Ordering
+}
+
+"""
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
+"""
+type ReportType {
+  id: ID!
+  title: String!
+  description: String!
+  publishedDate: Date!
+  reportFile: DjangoFileType!
+  isDeleted: Boolean!
+  status: StatusEnum!
+}
+
+type ReportTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ReportType
+}
+
+type ReportTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [ReportType!]!
+}
+
+enum StatusEnum {
+  DRAFT
+  PUBLISHED
 }
 
 input StrFilterLookup {
@@ -381,6 +604,32 @@ input UpdateBlogInput {
 }
 
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+"""
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted)
+"""
+input UpdateEventInput {
+  name: String
+  description: String
+  location: String
+  startDate: Date
+  endDate: Date
+}
+
+union UpdateEventPayload = EventTypeMutationResponseType | OperationInfo
+
+"""
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
+"""
+input UpdateReportInput {
+  title: String
+  description: String
+  publishedDate: Date
+  status: StatusEnum
+  reportFile: Upload
+}
+
+union UpdateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 scalar Upload
 
