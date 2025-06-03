@@ -69,8 +69,25 @@ class Report(UserResource):
         return self.title
 
 
-class GalleryImage(UserResource):
+class ImageTypeEnum(models.IntegerChoices):
+    IMAGE = 10, "Image"
+    ARTWORK = 20, "Artwork"
+
+
+class GalleryItem(UserResource):  # type: ignore[reportAssignmentType]
     image = models.ImageField(upload_to="gallery/")
+    image_type = models.IntegerField(choices=ImageTypeEnum.choices, default=ImageTypeEnum.IMAGE)  # type: ignore[reportAssignmentType]
 
     def __str__(self):
-        return f"Image {self.pk}"
+        return str(self.id)
+
+
+class YouTubeVideo(UserResource):
+    title = models.CharField(max_length=255, verbose_name=_("Video Title"))
+    video_url = models.URLField(verbose_name=_("Youtube Video Url"))
+    thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True)
+    release_date = models.DateTimeField(verbose_name=_(" Video Release Date"))
+    is_archived = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title

@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import Event, EventAsset, GalleryImage, Report
+from .models import (
+    Event,
+    EventAsset,
+    GalleryItem,
+    Report,
+    YouTubeVideo,
+)
 
 
 @admin.register(Event)
@@ -22,6 +28,13 @@ class ReportAdmin(admin.ModelAdmin):
     search_fields = ("title", "status")
 
 
-@admin.register(GalleryImage)
+@admin.register(GalleryItem)
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ("id", "image")
+    list_display = ("id", "image", "image_type")
+
+
+@admin.register(YouTubeVideo)
+class YouTubeVideoAdmin(admin.ModelAdmin):
+    list_display = ("title", "release_date", "video_url", "is_archived")
+    list_filter = ("id", "title")
+    search_fields = ("title", "is_archived")
