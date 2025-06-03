@@ -3,9 +3,25 @@ import strawberry_django
 from strawberry_django.pagination import OffsetPaginated
 from strawberry_django.permissions import IsAuthenticated
 
-from .filters import EventFilter, ReportFilter
-from .orders import EventOrder, ImageOrder, ReportOrder
-from .types import EventAssetType, EventType, ImageType, ReportType
+from .filters import (
+    EventFilter,
+    GalleryItemFilter,
+    ReportFilter,
+    YouTubeVideoFilter,
+)
+from .orders import (
+    EventOrder,
+    GalleryItemOrder,
+    ReportOrder,
+    YouTubeVideoOrder,
+)
+from .types import (
+    EventAssetType,
+    EventType,
+    GalleryItemType,
+    ReportType,
+    YouTubeVideoType,
+)
 
 
 @strawberry.type
@@ -31,6 +47,17 @@ class Query:
     report: ReportType = strawberry_django.field(extensions=[IsAuthenticated()])
 
     # images ----------------------------
-    images: OffsetPaginated[ImageType] = strawberry_django.offset_paginated(
-        order=ImageOrder,
+    gallery_items: OffsetPaginated[GalleryItemType] = strawberry_django.offset_paginated(
+        filters=GalleryItemFilter,
+        order=GalleryItemOrder,
+        extensions=[IsAuthenticated()],
     )
+    gallery_item: GalleryItemType = strawberry_django.field(extensions=[IsAuthenticated()])
+
+    # youtube videos -------------------------------------------
+    youtube_videos: OffsetPaginated[YouTubeVideoType] = strawberry_django.offset_paginated(
+        filters=YouTubeVideoFilter,
+        order=YouTubeVideoOrder,
+        extensions=[IsAuthenticated()],
+    )
+    youtube_video: YouTubeVideoType = strawberry_django.field(extensions=[IsAuthenticated()])
