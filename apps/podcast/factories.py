@@ -2,7 +2,7 @@ import factory
 from django.core.files.base import ContentFile
 from factory.django import DjangoModelFactory
 
-from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPop, VoxPopEpisode
+from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPopEpisode, VoxPopSeason
 from apps.user.factories import UserFactory
 
 
@@ -29,7 +29,7 @@ class VoxPopFactory(DjangoModelFactory):
     modified_by = factory.SubFactory(UserFactory)
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
-        model = VoxPop
+        model = VoxPopSeason
 
 
 class VoxPopEpisodeFactory(DjangoModelFactory):

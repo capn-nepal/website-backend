@@ -29,8 +29,8 @@ class PodcastEpisode(UserResource):
         return self.title
 
 
-class VoxPop(UserResource):
-    title = models.CharField(max_length=100, verbose_name=_(" Title"))
+class VoxPopSeason(UserResource):
+    title = models.CharField(max_length=100, verbose_name=_("Title"))
     description = models.TextField(blank=True)
     season_number = models.PositiveIntegerField(unique=True)
 
@@ -39,7 +39,7 @@ class VoxPop(UserResource):
 
 
 class VoxPopEpisode(UserResource):
-    voxpop_season = models.ForeignKey(VoxPop, on_delete=models.PROTECT)
+    voxpop_season = models.ForeignKey(VoxPopSeason, on_delete=models.PROTECT)
     episode_number = models.PositiveIntegerField()
     title = models.CharField(max_length=255, verbose_name=_("Episode Title"))
     video_url = models.URLField()

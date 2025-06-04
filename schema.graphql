@@ -265,9 +265,9 @@ input CreateVoxPopEpisodeInput {
 }
 
 """
-VoxPop(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
 """
-input CreateVoxPopInput {
+input CreateVoxPopSeasonInput {
   title: String!
   description: String
   seasonNumber: Int!
@@ -469,8 +469,8 @@ type Mutation {
   createPodcastEpisode(data: CreatePodcastEpisodeInput!): CreatePodcastEpisodePayload! @isAuthenticated
   updatePodcastEpisode(data: UpdatePodcastEpisodeInput!, pk: ID!): UpdatePodcastEpisodePayload! @isAuthenticated
   archivePodcastEpisode(pk: ID!): ArchivePodcastEpisodePayload! @isAuthenticated
-  createVoxpopSeason(data: CreateVoxPopInput!): CreateVoxpopSeasonPayload! @isAuthenticated
-  updateVoxpopSeason(data: UpdateVoxPopInput!, pk: ID!): UpdateVoxpopSeasonPayload! @isAuthenticated
+  createVoxpopSeason(data: CreateVoxPopSeasonInput!): CreateVoxpopSeasonPayload! @isAuthenticated
+  updateVoxpopSeason(data: UpdateVoxPopSeasonInput!, pk: ID!): UpdateVoxpopSeasonPayload! @isAuthenticated
   createVoxpopEpisode(data: CreateVoxPopEpisodeInput!): CreateVoxpopEpisodePayload! @isAuthenticated
   updateVoxpopEpisode(data: UpdateVoxPopEpisodeInput!, pk: ID!): UpdateVoxpopEpisodePayload! @isAuthenticated
   archiveVoxpopEpisode(pk: ID!): ArchiveVoxpopEpisodePayload! @isAuthenticated
@@ -636,7 +636,7 @@ type Query {
   podcastSeason(id: ID!): PodcastSeasonType! @isAuthenticated
   podcastEpisodes(pagination: OffsetPaginationInput, filters: PodcastEpisodeFilter, order: PodcastEpisodeOrder): PodcastEpisodeTypeOffsetPaginated! @isAuthenticated
   podcastEpisode(id: ID!): PodcastEpisodeType! @isAuthenticated
-  voxpopSeasons(pagination: OffsetPaginationInput, filters: VoxPopFilter, order: VoxPopOrder): VoxPopSeasonTypeOffsetPaginated! @isAuthenticated
+  voxpopSeasons(pagination: OffsetPaginationInput, filters: VoxPopSeasonFilter, order: VoxPopOrder): VoxPopSeasonTypeOffsetPaginated! @isAuthenticated
   voxpopSeason(id: ID!): VoxPopSeasonType! @isAuthenticated
   voxpopEpisodes(pagination: OffsetPaginationInput, filters: VoxPopEpisodeFilter, order: VoxPopEpisodeOrder): VoxPopEpisodeTypeOffsetPaginated! @isAuthenticated
   voxpopEpisode(id: ID!): VoxPopEpisodeType! @isAuthenticated
@@ -832,9 +832,9 @@ input UpdateVoxPopEpisodeInput {
 }
 
 """
-VoxPop(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
 """
-input UpdateVoxPopInput {
+input UpdateVoxPopSeasonInput {
   title: String
   description: String
   seasonNumber: Int
@@ -947,24 +947,24 @@ type VoxPopEpisodeTypeOffsetPaginated {
   results: [VoxPopEpisodeType!]!
 }
 
-"""
-VoxPop(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
-"""
-input VoxPopFilter {
-  id: IDBaseFilterLookup
-  title: StrFilterLookup
-  AND: VoxPopFilter
-  OR: VoxPopFilter
-  NOT: VoxPopFilter
-  DISTINCT: Boolean
-}
-
 input VoxPopOrder {
   id: Ordering
 }
 
 """
-VoxPop(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+"""
+input VoxPopSeasonFilter {
+  id: IDBaseFilterLookup
+  title: StrFilterLookup
+  AND: VoxPopSeasonFilter
+  OR: VoxPopSeasonFilter
+  NOT: VoxPopSeasonFilter
+  DISTINCT: Boolean
+}
+
+"""
+VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
 """
 type VoxPopSeasonType {
   id: ID!

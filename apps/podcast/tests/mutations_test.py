@@ -144,7 +144,7 @@ class TestPodcastSeasonMutation(TestCase):
 class TestVoxPopSeasonMutation(TestCase):
     class Mutation:
         CREATE_VOXPOP_SEASON = """
-          mutation CreateVoxpopSeason($data: CreateVoxPopInput!) {
+          mutation CreateVoxpopSeason($data: CreateVoxPopSeasonInput!) {
             createVoxpopSeason(data: $data) {
               ... on VoxPopSeasonTypeMutationResponseType {
                 errors
@@ -166,7 +166,7 @@ class TestVoxPopSeasonMutation(TestCase):
         """
 
         UPDATE_VOXPOP_SEASON = """
-          mutation UpdateVoxpopSeason($pk: ID!, $data: UpdateVoxPopInput!) {
+          mutation UpdateVoxpopSeason($pk: ID!, $data: UpdateVoxPopSeasonInput!) {
             updateVoxpopSeason(pk: $pk, data: $data) {
               ... on VoxPopSeasonTypeMutationResponseType {
                 errors

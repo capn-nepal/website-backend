@@ -1,7 +1,7 @@
 import strawberry
 import strawberry_django
 
-from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPop, VoxPopEpisode
+from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPopEpisode, VoxPopSeason
 
 
 @strawberry_django.filters.filter(PodcastSeason, lookups=True)
@@ -16,8 +16,8 @@ class PodcastEpisodeFilter:
     is_archived: bool
 
 
-@strawberry_django.filters.filter(VoxPop, lookups=True)
-class VoxPopFilter:
+@strawberry_django.filters.filter(VoxPopSeason, lookups=True)
+class VoxPopSeasonFilter:
     id: strawberry.auto
     title: strawberry.auto
 

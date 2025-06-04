@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import PodcastEpisode, PodcastSeason, VoxPop, VoxPopEpisode
+from .models import PodcastEpisode, PodcastSeason, VoxPopEpisode, VoxPopSeason
 
 
 @admin.register(PodcastSeason)
@@ -17,8 +17,8 @@ class PodcastEpisodeAdmin(admin.ModelAdmin):
     search_fields = ("title", "podcast_season")
 
 
-@admin.register(VoxPop)
-class VoxPopAdmin(admin.ModelAdmin):
+@admin.register(VoxPopSeason)
+class VoxPopSeasonAdmin(admin.ModelAdmin):
     list_display = ("title", "season_number")
     list_filter = ("season_number",)
     search_fields = ("title", "season_number")

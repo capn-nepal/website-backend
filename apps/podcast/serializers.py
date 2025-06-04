@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPop, VoxPopEpisode
+from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPopEpisode, VoxPopSeason
 
 
 class CreatePodcastSeasonSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class UpdatePodcastEpisodeSerializer(serializers.ModelSerializer):
 
 class CreateVoxPopSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VoxPop
+        model = VoxPopSeason
         fields = ("title", "description", "season_number")
 
     def create(self, validated_data):
@@ -78,7 +78,7 @@ class CreateVoxPopSerializer(serializers.ModelSerializer):
 
 class UpdateVoxPopSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VoxPop
+        model = VoxPopSeason
         fields = ("title", "description", "season_number")
 
     def update(self, instance, validated_data):
@@ -88,7 +88,7 @@ class UpdateVoxPopSerializer(serializers.ModelSerializer):
 
 
 class CreateVoxPopEpisodeSerializer(serializers.ModelSerializer):
-    voxpop_season = serializers.PrimaryKeyRelatedField(queryset=VoxPop.objects.all(), write_only=True)
+    voxpop_season = serializers.PrimaryKeyRelatedField(queryset=VoxPopSeason.objects.all(), write_only=True)
 
     class Meta:
         model = VoxPopEpisode

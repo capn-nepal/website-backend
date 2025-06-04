@@ -1,7 +1,12 @@
 import strawberry
 import strawberry_django
 
-from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPop, VoxPopEpisode
+from apps.podcast.models import (
+    PodcastEpisode,
+    PodcastSeason,
+    VoxPopEpisode,
+    VoxPopSeason,
+)
 
 
 @strawberry_django.input(PodcastSeason)
@@ -38,15 +43,15 @@ class UpdatePodcastEpisodeInput:
     thumbnail: strawberry.auto
 
 
-@strawberry_django.input(VoxPop)
-class CreateVoxPopInput:
+@strawberry_django.input(VoxPopSeason)
+class CreateVoxPopSeasonInput:
     title: strawberry.auto
     description: strawberry.auto
     season_number: strawberry.auto
 
 
-@strawberry_django.partial(VoxPop)
-class UpdateVoxPopInput:
+@strawberry_django.partial(VoxPopSeason)
+class UpdateVoxPopSeasonInput:
     title: strawberry.auto
     description: strawberry.auto
     season_number: strawberry.auto

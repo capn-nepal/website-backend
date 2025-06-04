@@ -3,7 +3,7 @@ import strawberry_django
 from strawberry_django.pagination import OffsetPaginated
 from strawberry_django.permissions import IsAuthenticated
 
-from .filters import PodcastEpisodeFilter, PodcastSeasonFilter, VoxPopEpisodeFilter, VoxPopFilter
+from .filters import PodcastEpisodeFilter, PodcastSeasonFilter, VoxPopEpisodeFilter, VoxPopSeasonFilter
 from .orders import PodcastEpisodeOrder, PodcastSeasonOrder, VoxPopEpisodeOrder, VoxPopOrder
 from .types import PodcastEpisodeType, PodcastSeasonType, VoxPopEpisodeType, VoxPopSeasonType
 
@@ -29,7 +29,7 @@ class Query:
     # VoxPop ---------------------------------
     voxpop_seasons: OffsetPaginated[VoxPopSeasonType] = strawberry_django.offset_paginated(
         order=VoxPopOrder,
-        filters=VoxPopFilter,
+        filters=VoxPopSeasonFilter,
         extensions=[IsAuthenticated()],
     )
     voxpop_season: VoxPopSeasonType = strawberry_django.field(extensions=[IsAuthenticated()])

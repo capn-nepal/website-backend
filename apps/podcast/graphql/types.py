@@ -4,8 +4,8 @@ import strawberry_django
 from apps.podcast.models import (
     PodcastEpisode,
     PodcastSeason,
-    VoxPop,
     VoxPopEpisode,
+    VoxPopSeason,
 )
 
 
@@ -29,7 +29,7 @@ class PodcastEpisodeType:
     is_archived: strawberry.auto
 
 
-@strawberry_django.type(VoxPop)
+@strawberry_django.type(VoxPopSeason)
 class VoxPopSeasonType:
     id: strawberry.ID
     title: strawberry.auto

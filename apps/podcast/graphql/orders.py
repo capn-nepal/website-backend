@@ -1,7 +1,7 @@
 import strawberry
 import strawberry_django
 
-from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPop, VoxPopEpisode
+from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPopEpisode, VoxPopSeason
 
 
 @strawberry_django.ordering.order(PodcastSeason)
@@ -14,7 +14,7 @@ class PodcastEpisodeOrder:
     id: strawberry.auto
 
 
-@strawberry_django.ordering.order(VoxPop)
+@strawberry_django.ordering.order(VoxPopSeason)
 class VoxPopOrder:
     id: strawberry.auto
 
