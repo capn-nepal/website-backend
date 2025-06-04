@@ -1,4 +1,8 @@
-from apps.common.factories import EventFactory, ReportFactory
+from apps.common.factories import (
+    EventFactory,
+    ReportFactory,
+    YouTubeVideoFactory,
+)
 from apps.user.factories import UserFactory
 from main.tests.base_test import TestCase
 
@@ -156,6 +160,79 @@ class TestEventQuery(TestCase):
                         location=event.location,
                     )
                     for event in self.events
+                ],
+            ),
+        }, content
+
+
+class TestYouTubeVideoQuery(TestCase):
+    class Query:
+        YOUTUBE_VIDEOS = """
+          query youtubeVideos($pagination: OffsetPaginationInput,$order: YouTubeVideoOrder) {
+            youtubeVideos(pagination: $pagination,order:$order) {
+              totalCount
+              results {
+                id
+                videoUrl
+                title
+              }
+              pageInfo {
+                limit
+                offset
+              }
+            }
+          }
+        """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = UserFactory.create(email="user22@gmail.com")
+
+    def test_youtube_videos_query(self):
+        def _query():
+            return self.query_check(
+                self.Query.YOUTUBE_VIDEOS,
+                variables={
+                    "pagination": {"limit": 10, "offset": 0},
+                    "order": {"id": "ASC"},
+                },
+            )
+
+        # Without authentication
+        content = _query()
+        assert content["data"]["youtubeVideos"]["totalCount"] == 0
+
+        # With authentication
+        self.force_login(self.user)
+
+        # Create videos after login
+        videos = [
+            YouTubeVideoFactory.create(
+                title="Video One",
+                video_url="https://video1.com",
+                release_date="2025-06-01",
+            ),
+            YouTubeVideoFactory.create(
+                title="Video Two",
+                video_url="https://video2.com",
+                release_date="2025-06-01",
+            ),
+        ]
+
+        content = _query()
+        assert content["data"]["youtubeVideos"] == {
+            **self.g_pagination(
+                offset=0,
+                limit=10,
+                total_count=2,
+                results=[
+                    dict(
+                        id=self.gID(video.id),
+                        title=video.title,
+                        videoUrl=video.video_url,
+                    )
+                    for video in videos
                 ],
             ),
         }, content
