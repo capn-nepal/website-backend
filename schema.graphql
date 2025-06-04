@@ -24,6 +24,8 @@ union AddGalleryItemPayload = GalleryItemTypeMutationResponseType | OperationInf
 
 union AddYoutubeVideoPayload = YouTubeVideoTypeMutationResponseType | OperationInfo
 
+union AddTeamMemberPayload = TeamMemberTypeMutationResponseType | OperationInfo
+
 type AppEnumCollection {
   DummyEnum: [AppEnumCollectionDummyEnum!]!
 }
@@ -293,6 +295,18 @@ union CreateVoxpopEpisodePayload = VoxPopEpisodeTypeMutationResponseType | Opera
 
 union CreateVoxpopSeasonPayload = VoxPopSeasonTypeMutationResponseType | OperationInfo
 
+"""
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+"""
+input CreateTeamMemberInput {
+  firstName: String!
+  middleName: String
+  lastName: String!
+  designation: String!
+  memberPhoto: Upload!
+  memberType: TeamMemberTypeEnum
+}
+
 """A generic type to return error messages"""
 scalar CustomErrorType
 
@@ -310,6 +324,15 @@ input DeleteGalleryItemInput {
 }
 
 union DeleteGalleryItemPayload = GalleryItemType | OperationInfo
+
+"""
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+"""
+input DeleteTeamMemberInput {
+  id: ID
+}
+
+union DeleteTeamMemberPayload = TeamMemberType | OperationInfo
 
 type DjangoFileType {
   name: String!
@@ -564,6 +587,10 @@ type NewsTypeOffsetPaginated {
 
   """List of paginated results."""
   results: [NewsType!]!
+  addImage(data: ImageInput!): AddImagePayload! @isAuthenticated
+  deleteTeamMember(data: DeleteTeamMemberInput!): DeleteTeamMemberPayload! @isAuthenticated
+  addTeamMember(data: CreateTeamMemberInput!): AddTeamMemberPayload! @isAuthenticated
+  updateTeamMember(data: UpdateTeamMemberInput!, pk: ID!): UpdateTeamMemberPayload! @isAuthenticated
 }
 
 type OffsetPaginationInfo {
@@ -734,6 +761,9 @@ type Query {
   voxpopEpisodes(pagination: OffsetPaginationInput, filters: VoxPopEpisodeFilter, order: VoxPopEpisodeOrder): VoxPopEpisodeTypeOffsetPaginated! @isAuthenticated
   voxpopEpisode(id: ID!): VoxPopEpisodeType! @isAuthenticated
   news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated! @isAuthenticated
+  images(pagination: OffsetPaginationInput, order: ImageOrder): ImageTypeOffsetPaginated!
+  teamMembers(pagination: OffsetPaginationInput, filters: TeamMemberFilter, order: TeamMemberOrder): TeamMemberTypeOffsetPaginated! @isAuthenticated
+  teamMember(id: ID!): TeamMemberType! @isAuthenticated
   enums: AppEnumCollection!
 }
 
@@ -834,6 +864,56 @@ input StrFilterLookup {
   Case-insensitive regular expression match. Filter will be skipped on `null` value
   """
   iRegex: String
+}
+
+"""
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+"""
+input TeamMemberFilter {
+  id: IDBaseFilterLookup
+  memberType: TeamMemberTypeEnum
+  AND: TeamMemberFilter
+  OR: TeamMemberFilter
+  NOT: TeamMemberFilter
+  DISTINCT: Boolean
+}
+
+input TeamMemberOrder {
+  id: Ordering
+}
+
+"""
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+"""
+type TeamMemberType {
+  id: ID!
+  firstName: String!
+  middleName: String
+  lastName: String!
+  designation: String!
+  memberPhoto: DjangoImageType
+  memberType: TeamMemberTypeEnum!
+}
+
+enum TeamMemberTypeEnum {
+  BOARD_MEMBER
+  TEAM_MEMBER
+}
+
+type TeamMemberTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: TeamMemberType
+}
+
+type TeamMemberTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [TeamMemberType!]!
 }
 
 """
@@ -962,6 +1042,20 @@ input UpdateYoutubeVideoInput {
 }
 
 union UpdateYoutubeVideoPayload = YouTubeVideoTypeMutationResponseType | OperationInfo
+
+"""
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+"""
+input UpdateTeamMemberInput {
+  firstName: String
+  middleName: String
+  lastName: String
+  designation: String
+  memberType: TeamMemberTypeEnum
+  memberPhoto: Upload
+}
+
+union UpdateTeamMemberPayload = TeamMemberTypeMutationResponseType | OperationInfo
 
 scalar Upload
 
