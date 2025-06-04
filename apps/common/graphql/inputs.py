@@ -2,7 +2,7 @@ import strawberry
 import strawberry_django
 from strawberry.file_uploads import Upload
 
-from apps.common.models import Event, EventAsset, GalleryImage, Report
+from apps.common.models import Event, EventAsset, GalleryItem, ImageTypeEnum, Report, YouTubeVideo
 
 
 @strawberry_django.input(Event)
@@ -47,11 +47,28 @@ class UpdateReportInput:
     report_file: strawberry.auto
 
 
-@strawberry_django.input(GalleryImage)
-class ImageInput:
+@strawberry_django.input(GalleryItem)
+class GalleryItemInput:
     image: Upload
+    image_type: ImageTypeEnum
 
 
-@strawberry_django.partial(GalleryImage)
-class DeleteImageInput:
+@strawberry_django.partial(GalleryItem)
+class DeleteGalleryItemInput:
     id: strawberry.auto
+
+
+@strawberry_django.input(YouTubeVideo)
+class YoutubeVideoInput:
+    title: strawberry.auto
+    video_url: strawberry.auto
+    release_date: strawberry.auto
+    thumbnail: Upload
+
+
+@strawberry_django.partial(YouTubeVideo)
+class UpdateYoutubeVideoInput:
+    title: strawberry.auto
+    video_url: strawberry.auto
+    release_date: strawberry.auto
+    thumbnail: Upload | None = strawberry.UNSET

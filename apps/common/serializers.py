@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from apps.common.models import Event, EventAsset, GalleryImage, Report
+from apps.common.models import (
+    Event,
+    EventAsset,
+    GalleryItem,
+    Report,
+    YouTubeVideo,
+)
 
 
 class UserResourceSerializer(serializers.ModelSerializer):
@@ -97,13 +103,46 @@ class UpdateReportSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class ImageUploadSerializer(serializers.ModelSerializer):
+class GalleryItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = GalleryImage
-        fields = ("image",)
+        model = GalleryItem
+        fields = ("image", "image_type")
 
     def create(self, validated_data):
         user = self.context["request"].user
         validated_data["created_by"] = user
         validated_data["modified_by"] = user
         return super().create(validated_data)
+
+
+class CreateYoutubeVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = YouTubeVideo
+        fields = (
+            "title",
+            "video_url",
+            "thumbnail",
+            "release_date",
+        )
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        validated_data["created_by"] = user
+        validated_data["modified_by"] = user
+        return super().create(validated_data)
+
+
+class UpdateYoutubeVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = YouTubeVideo
+        fields = (
+            "title",
+            "video_url",
+            "thumbnail",
+            "release_date",
+        )
+
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
