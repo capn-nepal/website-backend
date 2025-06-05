@@ -117,8 +117,8 @@ class Mutation:
         data: UpdateYoutubeVideoInput,
         pk: strawberry.ID,
     ) -> MutationResponseType[YouTubeVideoType]:
-        report = await YouTubeVideo.objects.aget(pk=pk)
-        return await ModelMutation(UpdateYoutubeVideoSerializer).handle_update_mutation(data, info, report)
+        video = await YouTubeVideo.objects.aget(pk=pk)
+        return await ModelMutation(UpdateYoutubeVideoSerializer).handle_update_mutation(data, info, video)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def archive_youtube_video(
@@ -126,9 +126,9 @@ class Mutation:
         info: Info,
         pk: strawberry.ID,
     ) -> MutationResponseType[YouTubeVideoType]:
-        report = await YouTubeVideo.objects.aget(pk=pk)
-        if report.is_archived:
-            return MutationResponseType(ok=False, errors=["Report is already archived."])  # type: ignore[reportReturnType]
-        report.is_archived = True
-        await sync_to_async(report.save)(update_fields=["is_archived"])
+        video = await YouTubeVideo.objects.aget(pk=pk)
+        if video.is_archived:
+            return MutationResponseType(ok=False, errors=["Video is already archived."])  # type: ignore[reportReturnType]
+        video.is_archived = True
+        await sync_to_async(video.save)(update_fields=["is_archived"])
         return MutationResponseType(ok=True, errors=None)  # type: ignore[reportReturnType]
