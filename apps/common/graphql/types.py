@@ -3,7 +3,7 @@ import datetime
 import strawberry
 import strawberry_django
 
-from apps.common.models import Event, EventAsset, GalleryImage, Report
+from apps.common.models import Event, EventAsset, GalleryItem, Report, YouTubeVideo
 from apps.user.graphql.types import UserType
 
 
@@ -45,7 +45,18 @@ class ReportType:
     status: strawberry.auto
 
 
-@strawberry_django.type(GalleryImage)
-class ImageType:
+@strawberry_django.type(GalleryItem)
+class GalleryItemType:
     id: strawberry.auto
     image: strawberry.auto
+    image_type: strawberry.auto
+
+
+@strawberry_django.type(YouTubeVideo)
+class YouTubeVideoType:
+    id: strawberry.ID
+    title: strawberry.auto
+    video_url: strawberry.auto
+    thumbnail: strawberry.auto
+    release_date: strawberry.auto
+    is_archived: strawberry.auto

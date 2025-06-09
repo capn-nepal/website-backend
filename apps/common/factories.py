@@ -3,7 +3,7 @@ from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from factory.django import DjangoModelFactory
 
-from apps.common.models import Event, Report
+from apps.common.models import Event, GalleryItem, Report, YouTubeVideo
 from apps.user.factories import UserFactory
 
 
@@ -35,3 +35,21 @@ class ReportFactory(DjangoModelFactory):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         model = Report
+
+
+class YouTubeVideoFactory(DjangoModelFactory):
+    created_by = factory.SubFactory(UserFactory)
+    modified_by = factory.SubFactory(UserFactory)
+    thumbnail = factory.LazyFunction(lambda: ContentFile(b"fake_image_data", name="thumbnail_image.jpg"))
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        model = YouTubeVideo
+
+
+class GalleryItemFactory(DjangoModelFactory):
+    created_by = factory.SubFactory(UserFactory)
+    modified_by = factory.SubFactory(UserFactory)
+    image = factory.LazyFunction(lambda: ContentFile(b"fake_image_data", name="fake_gallery_image.jpg"))
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        model = GalleryItem
