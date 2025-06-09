@@ -7,10 +7,10 @@ from strawberry_django.permissions import IsAuthenticated
 from apps.user.graphql.inputs import ChangePasswordInput, LoginInput
 from apps.user.serializers import ChangePasswordSerializer, LoginSerializer
 from main.graphql.context import Info
+from utils.graphql.common import parse_input_data
 from utils.graphql.mutations import (
     MutationResponseType,
     mutation_is_not_valid,
-    process_input_data,
 )
 
 from .types import UserMeType
@@ -26,7 +26,7 @@ class Mutation:
         data: LoginInput,  # type: ignore[reportInvalidTypeForm]
         info: Info,
     ) -> MutationResponseType[UserMeType]:
-        serializer = LoginSerializer(data=process_input_data(data), context={"request": info.context.request})
+        serializer = LoginSerializer(data=parse_input_data(data), context={"request": info.context.request})
         if errors := mutation_is_not_valid(serializer):
             return MutationResponseType(
                 ok=False,
@@ -48,7 +48,7 @@ class Mutation:
         data: ChangePasswordInput,  # type: ignore[reportInvalidTypeForm]
         info: Info,
     ) -> MutationResponseType[UserMeType]:
-        serializer = ChangePasswordSerializer(data=process_input_data(data), context={"request": info.context.request})
+        serializer = ChangePasswordSerializer(data=parse_input_data(data), context={"request": info.context.request})
         if errors := mutation_is_not_valid(serializer):
             return MutationResponseType(
                 ok=False,
