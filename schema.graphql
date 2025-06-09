@@ -41,6 +41,8 @@ union ArchiveReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 union ArchiveVoxpopEpisodePayload = VoxPopEpisodeTypeMutationResponseType | OperationInfo
 
+union ArchiveYoutubeVideoPayload = YouTubeVideoTypeMutationResponseType | OperationInfo
+
 """
 Author(id, created_at, modified_at, created_by, modified_by, name, image)
 """
@@ -484,7 +486,10 @@ type Mutation {
   createReport(data: CreateReportInput!): CreateReportPayload! @isAuthenticated
   updateReport(data: UpdateReportInput!, pk: ID!): UpdateReportPayload! @isAuthenticated
   archiveReport(pk: ID!): ArchiveReportPayload! @isAuthenticated
-  addImage(data: ImageInput!): AddImagePayload! @isAuthenticated
+  addGalleryItem(data: GalleryItemInput!): AddGalleryItemPayload! @isAuthenticated
+  addYoutubeVideo(data: YoutubeVideoInput!): AddYoutubeVideoPayload! @isAuthenticated
+  updateYoutubeVideo(data: UpdateYoutubeVideoInput!, pk: ID!): UpdateYoutubeVideoPayload! @isAuthenticated
+  archiveYoutubeVideo(pk: ID!): ArchiveYoutubeVideoPayload! @isAuthenticated
   createPodcastSeason(data: CreatePodcastSeasonInput!): CreatePodcastSeasonPayload! @isAuthenticated
   updatePodcastSeason(data: UpdatePodcastSeasonInput!, pk: ID!): UpdatePodcastSeasonPayload! @isAuthenticated
   createPodcastEpisode(data: CreatePodcastEpisodeInput!): CreatePodcastEpisodePayload! @isAuthenticated
@@ -652,7 +657,10 @@ type Query {
   eventAsset(id: ID!): EventAssetType! @isAuthenticated
   reports(pagination: OffsetPaginationInput, filters: ReportFilter, order: ReportOrder): ReportTypeOffsetPaginated! @isAuthenticated
   report(id: ID!): ReportType! @isAuthenticated
-  images(pagination: OffsetPaginationInput, order: ImageOrder): ImageTypeOffsetPaginated!
+  galleryItems(pagination: OffsetPaginationInput, filters: GalleryItemFilter, order: GalleryItemOrder): GalleryItemTypeOffsetPaginated! @isAuthenticated
+  galleryItem(id: ID!): GalleryItemType! @isAuthenticated
+  youtubeVideos(pagination: OffsetPaginationInput, filters: YouTubeVideoFilter, order: YouTubeVideoOrder): YouTubeVideoTypeOffsetPaginated! @isAuthenticated
+  youtubeVideo(id: ID!): YouTubeVideoType! @isAuthenticated
   podcastSeasons(pagination: OffsetPaginationInput, filters: PodcastSeasonFilter, order: PodcastSeasonOrder): PodcastSeasonTypeOffsetPaginated! @isAuthenticated
   podcastSeason(id: ID!): PodcastSeasonType! @isAuthenticated
   podcastEpisodes(pagination: OffsetPaginationInput, filters: PodcastEpisodeFilter, order: PodcastEpisodeOrder): PodcastEpisodeTypeOffsetPaginated! @isAuthenticated
@@ -865,6 +873,18 @@ union UpdateVoxpopEpisodePayload = VoxPopEpisodeTypeMutationResponseType | Opera
 
 union UpdateVoxpopSeasonPayload = VoxPopSeasonTypeMutationResponseType | OperationInfo
 
+"""
+YouTubeVideo(id, created_at, modified_at, created_by, modified_by, title, video_url, thumbnail, release_date, is_archived)
+"""
+input UpdateYoutubeVideoInput {
+  title: String
+  videoUrl: String
+  releaseDate: DateTime
+  thumbnail: Upload
+}
+
+union UpdateYoutubeVideoPayload = YouTubeVideoTypeMutationResponseType | OperationInfo
+
 scalar Upload
 
 """
@@ -1008,4 +1028,61 @@ type VoxPopSeasonTypeOffsetPaginated {
 
   """List of paginated results."""
   results: [VoxPopSeasonType!]!
+}
+
+"""
+YouTubeVideo(id, created_at, modified_at, created_by, modified_by, title, video_url, thumbnail, release_date, is_archived)
+"""
+input YouTubeVideoFilter {
+  id: IDBaseFilterLookup
+  title: StrFilterLookup
+  isArchived: Boolean
+  AND: YouTubeVideoFilter
+  OR: YouTubeVideoFilter
+  NOT: YouTubeVideoFilter
+  DISTINCT: Boolean
+}
+
+input YouTubeVideoOrder {
+  id: Ordering
+  releaseDate: Ordering
+  title: Ordering
+}
+
+"""
+YouTubeVideo(id, created_at, modified_at, created_by, modified_by, title, video_url, thumbnail, release_date, is_archived)
+"""
+type YouTubeVideoType {
+  id: ID!
+  title: String!
+  videoUrl: String!
+  thumbnail: DjangoImageType
+  releaseDate: DateTime!
+  isArchived: Boolean!
+}
+
+type YouTubeVideoTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: YouTubeVideoType
+}
+
+type YouTubeVideoTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [YouTubeVideoType!]!
+}
+
+"""
+YouTubeVideo(id, created_at, modified_at, created_by, modified_by, title, video_url, thumbnail, release_date, is_archived)
+"""
+input YoutubeVideoInput {
+  title: String!
+  videoUrl: String!
+  releaseDate: DateTime!
+  thumbnail: Upload!
 }
