@@ -37,9 +37,9 @@ type AppEnumCollectionDummyEnum {
 
 union ArchiveEventPayload = EventTypeMutationResponseType | OperationInfo
 
-union ArchivePodcastEpisodePayload = PodcastEpisodeTypeMutationResponseType | OperationInfo
-
 union ArchiveJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+union ArchivePodcastEpisodePayload = PodcastEpisodeTypeMutationResponseType | OperationInfo
 
 union ArchivePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
@@ -237,6 +237,18 @@ input CreateNewsInput {
 union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 """
+JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
+"""
+input CreateJobVacancyInput {
+  position: ID!
+  description: String!
+  numberOfVacancies: Int!
+  deadline: Date!
+}
+
+union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+"""
 PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
 """
 input CreatePodcastEpisodeInput {
@@ -260,18 +272,6 @@ input CreatePodcastSeasonInput {
 }
 
 union CreatePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
-
-"""
-JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
-"""
-input CreateJobVacancyInput {
-  position: ID!
-  description: String!
-  numberOfVacancies: Int!
-  deadline: Date!
-}
-
-union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 """
 Position(id, created_at, modified_at, created_by, modified_by, name, summary, key_responsibilities, qualifications, preferred_skills, employment_type, is_archived)
@@ -343,9 +343,6 @@ scalar CustomErrorType
 """Date (isoformat)"""
 scalar Date
 
-"""Date with time (isoformat)"""
-scalar DateTime
-
 input DateDateFilterLookup {
   """Exact match. Filter will be skipped on `null` value"""
   exact: Date
@@ -386,6 +383,9 @@ input DateRangeLookup {
   start: Date = null
   end: Date = null
 }
+
+"""Date with time (isoformat)"""
+scalar DateTime
 
 """
 GalleryItem(id, created_at, modified_at, created_by, modified_by, image, image_type)
@@ -1180,6 +1180,18 @@ input UpdateNewsInput {
 union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 """
+JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
+"""
+input UpdateJobVacancyInput {
+  description: String
+  numberOfVacancies: Int
+  deadline: Date
+  position: ID
+}
+
+union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+"""
 PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
 """
 input UpdatePodcastEpisodeInput {
@@ -1203,18 +1215,6 @@ input UpdatePodcastSeasonInput {
 }
 
 union UpdatePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
-
-"""
-JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
-"""
-input UpdateJobVacancyInput {
-  description: String
-  numberOfVacancies: Int
-  deadline: Date
-  position: ID
-}
-
-union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 """
 Position(id, created_at, modified_at, created_by, modified_by, name, summary, key_responsibilities, qualifications, preferred_skills, employment_type, is_archived)
