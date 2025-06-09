@@ -26,8 +26,8 @@ class Mutation:
         data: UpdateTeamMemberInput,
         pk: strawberry.ID,
     ) -> MutationResponseType[TeamMemberType]:
-        report = await TeamMember.objects.aget(pk=pk)
-        return await ModelMutation(UpdateTeamMemberSerializer).handle_update_mutation(data, info, report)
+        team = await TeamMember.objects.aget(pk=pk)
+        return await ModelMutation(UpdateTeamMemberSerializer).handle_update_mutation(data, info, team)
 
     delete_team_member: TeamMemberType = delete(
         DeleteTeamMemberInput,
