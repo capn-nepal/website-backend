@@ -5,7 +5,7 @@ from .models import JobVacancy, Position
 
 @admin.register(JobVacancy)
 class JobVacancyAdmin(admin.ModelAdmin):
-    list_display = ("position", "description", "deadline", "number_of_vacancies")
+    list_display = ("position", "deadline", "number_of_vacancies")
     list_filter = ("position", "deadline")
     search_fields = ("position",)
 

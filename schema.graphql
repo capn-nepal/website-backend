@@ -612,7 +612,6 @@ input IntRangeLookup {
 JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
 """
 input JobVacancyFilter {
-  id: IDBaseFilterLookup
   deadline: DateDateFilterLookup
   isArchived: Boolean
   AND: JobVacancyFilter
@@ -899,7 +898,6 @@ type PodcastSeasonTypeOffsetPaginated {
 Position(id, created_at, modified_at, created_by, modified_by, name, summary, key_responsibilities, qualifications, preferred_skills, employment_type, is_archived)
 """
 input PositionFilter {
-  id: IDBaseFilterLookup
   employmentType: EmployMentTypeEnum
   isArchived: Boolean
   AND: PositionFilter
