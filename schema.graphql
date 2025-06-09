@@ -219,6 +219,18 @@ input CreateEventInput {
 union CreateEventPayload = EventTypeMutationResponseType | OperationInfo
 
 """
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+"""
+input CreateNewsInput {
+  title: String!
+  description: String!
+  publishedDate: DateTime!
+  newsType: NewsTypeEnum!
+}
+
+union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
+"""
 PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
 """
 input CreatePodcastEpisodeInput {
@@ -242,18 +254,6 @@ input CreatePodcastSeasonInput {
 }
 
 union CreatePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
-
-"""
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
-"""
-input CreateNewsInput {
-  title: String!
-  description: String!
-  publishedDate: DateTime!
-  newsType: NewsTypeEnum!
-}
-
-union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 """
 Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
@@ -512,7 +512,6 @@ type Mutation {
   createVoxpopEpisode(data: CreateVoxPopEpisodeInput!): CreateVoxpopEpisodePayload! @isAuthenticated
   updateVoxpopEpisode(data: UpdateVoxPopEpisodeInput!, pk: ID!): UpdateVoxpopEpisodePayload! @isAuthenticated
   archiveVoxpopEpisode(pk: ID!): ArchiveVoxpopEpisodePayload! @isAuthenticated
-  addImage(data: ImageInput!): AddImagePayload! @isAuthenticated
   createNews(data: CreateNewsInput!): CreateNewsPayload! @isAuthenticated
   updateNews(data: UpdateNewsInput!, pk: ID!): UpdateNewsPayload! @isAuthenticated
 }
@@ -734,7 +733,6 @@ type Query {
   voxpopSeason(id: ID!): VoxPopSeasonType! @isAuthenticated
   voxpopEpisodes(pagination: OffsetPaginationInput, filters: VoxPopEpisodeFilter, order: VoxPopEpisodeOrder): VoxPopEpisodeTypeOffsetPaginated! @isAuthenticated
   voxpopEpisode(id: ID!): VoxPopEpisodeType! @isAuthenticated
-  images(pagination: OffsetPaginationInput, order: ImageOrder): ImageTypeOffsetPaginated!
   news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated! @isAuthenticated
   enums: AppEnumCollection!
 }
@@ -878,6 +876,19 @@ input UpdateEventInput {
 union UpdateEventPayload = EventTypeMutationResponseType | OperationInfo
 
 """
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+"""
+input UpdateNewsInput {
+  title: String
+  description: String
+  publishedDate: DateTime
+  newsType: NewsTypeEnum
+  status: StatusEnum
+}
+
+union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
+"""
 PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
 """
 input UpdatePodcastEpisodeInput {
@@ -901,19 +912,6 @@ input UpdatePodcastSeasonInput {
 }
 
 union UpdatePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
-
-"""
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
-"""
-input UpdateNewsInput {
-  title: String
-  description: String
-  publishedDate: DateTime
-  newsType: NewsTypeEnum
-  status: StatusEnum
-}
-
-union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 """
 Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
