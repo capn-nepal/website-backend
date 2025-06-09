@@ -66,7 +66,7 @@ class Mutation:
         return await ModelMutation(UpdatePositionSerializer).handle_update_mutation(data, info, position)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
-    async def archive_posotion(
+    async def archive_position(
         self,
         info: Info,
         pk: strawberry.ID,

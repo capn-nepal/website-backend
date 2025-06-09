@@ -41,7 +41,7 @@ union ArchivePodcastEpisodePayload = PodcastEpisodeTypeMutationResponseType | Op
 
 union ArchiveJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
-union ArchivePosotionPayload = PositionTypeMutationResponseType | OperationInfo
+union ArchivePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
 union ArchiveReportPayload = ReportTypeMutationResponseType | OperationInfo
 
@@ -752,7 +752,7 @@ type NewsTypeOffsetPaginated {
   archiveJobVacancy(pk: ID!): ArchiveJobVacancyPayload! @isAuthenticated
   createPosition(data: CreatePositionInput!): CreatePositionPayload! @isAuthenticated
   updatePosition(data: UpdatePositionInput!, pk: ID!): UpdatePositionPayload! @isAuthenticated
-  archivePosotion(pk: ID!): ArchivePosotionPayload! @isAuthenticated
+  archivePosition(pk: ID!): ArchivePositionPayload! @isAuthenticated
 }
 
 type OffsetPaginationInfo {
