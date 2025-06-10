@@ -1,6 +1,6 @@
 from apps.user.factories import UserFactory
 from apps.vacancy.factories import JobVacancyFactory, PositionFactory
-from apps.vacancy.models import EmployMentTypeEnum
+from apps.vacancy.models import EmploymentTypeEnum
 from main.tests.base_test import TestCase
 
 
@@ -33,11 +33,9 @@ class TestJobVacancyQuery(TestCase):
         cls.user = UserFactory.create(email="vacancyuser@example.com")
         cls.position = PositionFactory.create(
             name="name1",
-            employment_type=EmployMentTypeEnum.TEMPORARY,
+            employment_type=EmploymentTypeEnum.TEMPORARY,
             summary="summary1",
-            key_responsibilities="somthing",
-            qualifications="q",
-            preferred_skills="skills",
+            description="description",
         )
 
         cls.vacancies = [
@@ -104,9 +102,7 @@ class TestPositionQuery(TestCase):
                         id
                         name
                         summary
-                        keyResponsibilities
-                        qualifications
-                        preferredSkills
+                        description
                         employmentType
                     }
                 }
@@ -120,19 +116,15 @@ class TestPositionQuery(TestCase):
         cls.positions = [
             PositionFactory.create(
                 name="Position A",
-                employment_type=EmployMentTypeEnum.FULL_TIME,
+                employment_type=EmploymentTypeEnum.FULL_TIME,
                 summary="Summary A",
-                key_responsibilities="Responsibilities A",
-                qualifications="Qualifications A",
-                preferred_skills="Skills A",
+                description="description A",
             ),
             PositionFactory.create(
                 name="Position B",
-                employment_type=EmployMentTypeEnum.CONTRACT,
+                employment_type=EmploymentTypeEnum.CONTRACT,
                 summary="Summary B",
-                key_responsibilities="Responsibilities B",
-                qualifications="Qualifications B",
-                preferred_skills="Skills B",
+                description="description B",
             ),
         ]
 
@@ -163,9 +155,7 @@ class TestPositionQuery(TestCase):
                         id=self.gID(position.pk),
                         name=position.name,
                         summary=position.summary,
-                        keyResponsibilities=position.key_responsibilities,
-                        qualifications=position.qualifications,
-                        preferredSkills=position.preferred_skills,
+                        description=position.description,
                         employmentType=position.employment_type.name,
                     )
                     for position in self.positions

@@ -1,6 +1,6 @@
 from apps.user.factories import UserFactory
 from apps.vacancy.factories import JobVacancyFactory, PositionFactory
-from apps.vacancy.models import EmployMentTypeEnum
+from apps.vacancy.models import EmploymentTypeEnum
 from main.tests.base_test import TestCase
 
 
@@ -85,11 +85,9 @@ class TestJobVacancyMutation(TestCase):
         cls.user = UserFactory.create(email="vacancyuser@example.com")
         cls.position = PositionFactory.create(
             name="Test Position",
-            employment_type=EmployMentTypeEnum.TEMPORARY,
+            employment_type=EmploymentTypeEnum.TEMPORARY,
             summary="Summary",
-            key_responsibilities="Responsibilities",
-            qualifications="Qualifications",
-            preferred_skills="Skills",
+            description="description",
         )
 
     def _create_vacancy_mutation(self, data: dict, **kwargs):
@@ -198,9 +196,7 @@ class TestPositionMutation(TestCase):
                             id
                             name
                             summary
-                            keyResponsibilities
-                            qualifications
-                            preferredSkills
+                            description
                             employmentType
                         }
                     }
@@ -224,9 +220,7 @@ class TestPositionMutation(TestCase):
                             id
                             name
                             summary
-                            keyResponsibilities
-                            qualifications
-                            preferredSkills
+                            description
                             employmentType
                         }
                     }
@@ -249,9 +243,7 @@ class TestPositionMutation(TestCase):
                             id
                             name
                             summary
-                            keyResponsibilities
-                            qualifications
-                            preferredSkills
+                            description
                             employmentType
                         }
                     }
@@ -285,11 +277,9 @@ class TestPositionMutation(TestCase):
     def test_create_position(self):
         data = {
             "name": "Position1",
-            "employmentType": EmployMentTypeEnum.TEMPORARY.name,
+            "employmentType": EmploymentTypeEnum.TEMPORARY.name,
             "summary": "Summary1",
-            "keyResponsibilities": "Responsibilities",
-            "qualifications": "Qualifications",
-            "preferredSkills": "Skills",
+            "description": "description",
         }
 
         # Without authentication
@@ -305,24 +295,19 @@ class TestPositionMutation(TestCase):
         assert response_data["errors"] is None, content
         assert response_data["result"]["name"] == data["name"]
         assert response_data["result"]["summary"] == data["summary"]
-        assert response_data["result"]["preferredSkills"] == data["preferredSkills"]
 
     def test_update_position(self):
         position = PositionFactory.create(
             name="Test Position",
-            employment_type=EmployMentTypeEnum.TEMPORARY,
+            employment_type=EmploymentTypeEnum.TEMPORARY,
             summary="Summary",
-            key_responsibilities="Responsibilities",
-            qualifications="Qualifications",
-            preferred_skills="Skills",
+            description="updated description",
         )
         data = {
             "name": "Updated name",
             "summary": "Updated summary",
-            "keyResponsibilities": "Updated responsibilities",
-            "qualifications": "Updated Qualifications",
-            "preferredSkills": "Updated Skills",
-            "employmentType": EmployMentTypeEnum.FULL_TIME.name,
+            "description": "Updated description",
+            "employmentType": EmploymentTypeEnum.FULL_TIME.name,
         }
 
         # Without authentication
@@ -339,16 +324,13 @@ class TestPositionMutation(TestCase):
 
         position.refresh_from_db()
         assert response_data["result"]["name"] == position.name
-        assert response_data["result"]["keyResponsibilities"] == position.key_responsibilities
 
     def test_archive_position(self):
         position = PositionFactory.create(
             name="Test Position",
-            employment_type=EmployMentTypeEnum.TEMPORARY,
+            employment_type=EmploymentTypeEnum.TEMPORARY,
             summary="Summary",
-            key_responsibilities="Responsibilities",
-            qualifications="Qualifications",
-            preferred_skills="Skills",
+            description="description",
         )
 
         # Without authentication

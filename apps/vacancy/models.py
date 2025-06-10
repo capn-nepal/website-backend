@@ -5,7 +5,7 @@ from django_choices_field import IntegerChoicesField
 from apps.common.models import UserResource
 
 
-class EmployMentTypeEnum(models.IntegerChoices):
+class EmploymentTypeEnum(models.IntegerChoices):
     FULL_TIME = 10, "Full Time"
     PART_TIME = 20, "Part Time"
     CONTRACT = 30, "Contract"
@@ -16,10 +16,8 @@ class EmployMentTypeEnum(models.IntegerChoices):
 class Position(UserResource):
     name = models.CharField(max_length=255, verbose_name=_("Position Name"))
     summary = models.TextField(verbose_name=_("Position Summary"))
-    key_responsibilities = models.TextField(verbose_name=_("Responsibilities"))
-    qualifications = models.TextField(verbose_name=_("Qualifications"))
-    preferred_skills = models.TextField(blank=True, null=True, verbose_name=_("Skills"))
-    employment_type: int = IntegerChoicesField(choices_enum=EmployMentTypeEnum)  # type: ignore[reportAssignmentType]
+    description = models.TextField(verbose_name=_("Description"))
+    employment_type: int = IntegerChoicesField(choices_enum=EmploymentTypeEnum)  # type: ignore[reportAssignmentType]
     is_archived = models.BooleanField(default=False)
 
     def __str__(self):

@@ -9,9 +9,7 @@ class PositionSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "summary",
-            "key_responsibilities",
-            "qualifications",
-            "preferred_skills",
+            "description",
             "employment_type",
         )
 

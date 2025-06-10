@@ -1,7 +1,7 @@
 import strawberry
 import strawberry_django
 
-from apps.vacancy.models import EmployMentTypeEnum, JobVacancy, Position
+from apps.vacancy.models import EmploymentTypeEnum, JobVacancy, Position
 
 
 @strawberry_django.input(JobVacancy)
@@ -24,17 +24,13 @@ class UpdateJobVacancyInput:
 class CreatePositionInput:
     name: strawberry.auto
     summary: strawberry.auto
-    key_responsibilities: strawberry.auto
-    qualifications: strawberry.auto
-    preferred_skills: strawberry.auto
-    employment_type: EmployMentTypeEnum
+    description: strawberry.auto
+    employment_type: EmploymentTypeEnum
 
 
 @strawberry_django.partial(Position)
 class UpdatePositionInput:
     name: strawberry.auto
     summary: strawberry.auto
-    key_responsibilities: strawberry.auto
-    qualifications: strawberry.auto
-    preferred_skills: strawberry.auto
+    description: strawberry.auto
     employment_type: strawberry.auto

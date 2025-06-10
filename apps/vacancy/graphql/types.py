@@ -18,7 +18,5 @@ class PositionType:
     id: strawberry.ID
     name: strawberry.auto
     summary: strawberry.auto
-    key_responsibilities: strawberry.auto
-    qualifications: strawberry.auto
-    preferred_skills: strawberry.auto
+    description: strawberry.auto
     employment_type: strawberry.auto

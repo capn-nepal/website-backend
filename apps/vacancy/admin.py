@@ -9,6 +9,7 @@ class JobVacancyAdmin(admin.ModelAdmin):
     list_filter = ("deadline",)
     search_fields = ("position",)
     autocomplete_fields = ("position",)
+    list_select_related = ["position"]
 
 
 @admin.register(Position)

@@ -225,18 +225,6 @@ input CreateEventInput {
 union CreateEventPayload = EventTypeMutationResponseType | OperationInfo
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
-"""
-input CreateNewsInput {
-  title: String!
-  description: String!
-  publishedDate: DateTime!
-  newsType: NewsTypeEnum!
-}
-
-union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
-
-"""
 JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
 """
 input CreateJobVacancyInput {
@@ -247,6 +235,18 @@ input CreateJobVacancyInput {
 }
 
 union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+"""
+input CreateNewsInput {
+  title: String!
+  description: String!
+  publishedDate: DateTime!
+  newsType: NewsTypeEnum!
+}
+
+union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 """
 PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
@@ -274,15 +274,13 @@ input CreatePodcastSeasonInput {
 union CreatePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
 
 """
-Position(id, created_at, modified_at, created_by, modified_by, name, summary, key_responsibilities, qualifications, preferred_skills, employment_type, is_archived)
+Position(id, created_at, modified_at, created_by, modified_by, name, summary, description, employment_type, is_archived)
 """
 input CreatePositionInput {
   name: String!
   summary: String!
-  keyResponsibilities: String!
-  qualifications: String!
-  preferredSkills: String
-  employmentType: EmployMentTypeEnum!
+  description: String!
+  employmentType: EmploymentTypeEnum!
 }
 
 union CreatePositionPayload = PositionTypeMutationResponseType | OperationInfo
@@ -430,7 +428,7 @@ enum DummyEnum {
   VALUE_2
 }
 
-enum EmployMentTypeEnum {
+enum EmploymentTypeEnum {
   FULL_TIME
   PART_TIME
   CONTRACT
@@ -695,6 +693,12 @@ type Mutation {
   deleteTeamMember(data: DeleteTeamMemberInput!): DeleteTeamMemberPayload! @isAuthenticated
   addTeamMember(data: CreateTeamMemberInput!): AddTeamMemberPayload! @isAuthenticated
   updateTeamMember(data: UpdateTeamMemberInput!, pk: ID!): UpdateTeamMemberPayload! @isAuthenticated
+  createJobVacancy(data: CreateJobVacancyInput!): CreateJobVacancyPayload! @isAuthenticated
+  updateJobVacancy(data: UpdateJobVacancyInput!, pk: ID!): UpdateJobVacancyPayload! @isAuthenticated
+  archiveJobVacancy(pk: ID!): ArchiveJobVacancyPayload! @isAuthenticated
+  createPosition(data: CreatePositionInput!): CreatePositionPayload! @isAuthenticated
+  updatePosition(data: UpdatePositionInput!, pk: ID!): UpdatePositionPayload! @isAuthenticated
+  archivePosition(pk: ID!): ArchivePositionPayload! @isAuthenticated
 }
 
 """
@@ -745,13 +749,6 @@ type NewsTypeOffsetPaginated {
 
   """List of paginated results."""
   results: [NewsType!]!
-  addImage(data: ImageInput!): AddImagePayload! @isAuthenticated
-  createJobVacancy(data: CreateJobVacancyInput!): CreateJobVacancyPayload! @isAuthenticated
-  updateJobVacancy(data: UpdateJobVacancyInput!, pk: ID!): UpdateJobVacancyPayload! @isAuthenticated
-  archiveJobVacancy(pk: ID!): ArchiveJobVacancyPayload! @isAuthenticated
-  createPosition(data: CreatePositionInput!): CreatePositionPayload! @isAuthenticated
-  updatePosition(data: UpdatePositionInput!, pk: ID!): UpdatePositionPayload! @isAuthenticated
-  archivePosition(pk: ID!): ArchivePositionPayload! @isAuthenticated
 }
 
 type OffsetPaginationInfo {
@@ -895,10 +892,10 @@ type PodcastSeasonTypeOffsetPaginated {
 }
 
 """
-Position(id, created_at, modified_at, created_by, modified_by, name, summary, key_responsibilities, qualifications, preferred_skills, employment_type, is_archived)
+Position(id, created_at, modified_at, created_by, modified_by, name, summary, description, employment_type, is_archived)
 """
 input PositionFilter {
-  employmentType: EmployMentTypeEnum
+  employmentType: EmploymentTypeEnum
   isArchived: Boolean
   AND: PositionFilter
   OR: PositionFilter
@@ -912,16 +909,14 @@ input PositionOrder {
 }
 
 """
-Position(id, created_at, modified_at, created_by, modified_by, name, summary, key_responsibilities, qualifications, preferred_skills, employment_type, is_archived)
+Position(id, created_at, modified_at, created_by, modified_by, name, summary, description, employment_type, is_archived)
 """
 type PositionType {
   id: ID!
   name: String!
   summary: String!
-  keyResponsibilities: String!
-  qualifications: String!
-  preferredSkills: String
-  employmentType: EmployMentTypeEnum!
+  description: String!
+  employmentType: EmploymentTypeEnum!
 }
 
 type PositionTypeMutationResponseType {
@@ -970,7 +965,6 @@ type Query {
   news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated! @isAuthenticated
   teamMembers(pagination: OffsetPaginationInput, filters: TeamMemberFilter, order: TeamMemberOrder): TeamMemberTypeOffsetPaginated! @isAuthenticated
   teamMember(id: ID!): TeamMemberType! @isAuthenticated
-  images(pagination: OffsetPaginationInput, order: ImageOrder): ImageTypeOffsetPaginated!
   jobVacancies(pagination: OffsetPaginationInput, filters: JobVacancyFilter, order: JobVacancyOrder): JobVacancyTypeOffsetPaginated! @isAuthenticated
   jobVacancy(id: ID!): JobVacancyType! @isAuthenticated
   positions(pagination: OffsetPaginationInput, filters: PositionFilter, order: PositionOrder): PositionTypeOffsetPaginated! @isAuthenticated
@@ -1167,6 +1161,18 @@ input UpdateEventInput {
 union UpdateEventPayload = EventTypeMutationResponseType | OperationInfo
 
 """
+JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
+"""
+input UpdateJobVacancyInput {
+  description: String
+  numberOfVacancies: Int
+  deadline: Date
+  position: ID
+}
+
+union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+"""
 News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
 """
 input UpdateNewsInput {
@@ -1178,18 +1184,6 @@ input UpdateNewsInput {
 }
 
 union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
-
-"""
-JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
-"""
-input UpdateJobVacancyInput {
-  description: String
-  numberOfVacancies: Int
-  deadline: Date
-  position: ID
-}
-
-union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 """
 PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
@@ -1217,15 +1211,13 @@ input UpdatePodcastSeasonInput {
 union UpdatePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
 
 """
-Position(id, created_at, modified_at, created_by, modified_by, name, summary, key_responsibilities, qualifications, preferred_skills, employment_type, is_archived)
+Position(id, created_at, modified_at, created_by, modified_by, name, summary, description, employment_type, is_archived)
 """
 input UpdatePositionInput {
   name: String
   summary: String
-  keyResponsibilities: String
-  qualifications: String
-  preferredSkills: String
-  employmentType: EmployMentTypeEnum
+  description: String
+  employmentType: EmploymentTypeEnum
 }
 
 union UpdatePositionPayload = PositionTypeMutationResponseType | OperationInfo
