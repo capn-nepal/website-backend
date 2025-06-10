@@ -219,6 +219,18 @@ input CreateEventInput {
 union CreateEventPayload = EventTypeMutationResponseType | OperationInfo
 
 """
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+"""
+input CreateNewsInput {
+  title: String!
+  description: String!
+  publishedDate: DateTime!
+  newsType: NewsTypeEnum!
+}
+
+union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
+"""
 PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
 """
 input CreatePodcastEpisodeInput {
@@ -500,6 +512,58 @@ type Mutation {
   createVoxpopEpisode(data: CreateVoxPopEpisodeInput!): CreateVoxpopEpisodePayload! @isAuthenticated
   updateVoxpopEpisode(data: UpdateVoxPopEpisodeInput!, pk: ID!): UpdateVoxpopEpisodePayload! @isAuthenticated
   archiveVoxpopEpisode(pk: ID!): ArchiveVoxpopEpisodePayload! @isAuthenticated
+  createNews(data: CreateNewsInput!): CreateNewsPayload! @isAuthenticated
+  updateNews(data: UpdateNewsInput!, pk: ID!): UpdateNewsPayload! @isAuthenticated
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+"""
+input NewsFilter {
+  id: IDBaseFilterLookup
+  newsType: NewsTypeEnum
+  status: StatusEnum
+  AND: NewsFilter
+  OR: NewsFilter
+  NOT: NewsFilter
+  DISTINCT: Boolean
+}
+
+input NewsOrder {
+  id: Ordering
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+"""
+type NewsType {
+  id: ID!
+  title: String!
+  description: String!
+  publishedDate: DateTime!
+  status: StatusEnum!
+  newsType: NewsTypeEnum!
+}
+
+enum NewsTypeEnum {
+  NEWS
+  OTHER_UPDATE
+}
+
+type NewsTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: NewsType
+}
+
+type NewsTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [NewsType!]!
 }
 
 type OffsetPaginationInfo {
@@ -669,6 +733,7 @@ type Query {
   voxpopSeason(id: ID!): VoxPopSeasonType! @isAuthenticated
   voxpopEpisodes(pagination: OffsetPaginationInput, filters: VoxPopEpisodeFilter, order: VoxPopEpisodeOrder): VoxPopEpisodeTypeOffsetPaginated! @isAuthenticated
   voxpopEpisode(id: ID!): VoxPopEpisodeType! @isAuthenticated
+  news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated! @isAuthenticated
   enums: AppEnumCollection!
 }
 
@@ -809,6 +874,19 @@ input UpdateEventInput {
 }
 
 union UpdateEventPayload = EventTypeMutationResponseType | OperationInfo
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+"""
+input UpdateNewsInput {
+  title: String
+  description: String
+  publishedDate: DateTime
+  newsType: NewsTypeEnum
+  status: StatusEnum
+}
+
+union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 """
 PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
