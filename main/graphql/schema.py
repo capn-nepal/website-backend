@@ -12,6 +12,8 @@ from apps.news.graphql import mutations as news_mutations
 from apps.news.graphql import queries as news_queries
 from apps.podcast.graphql import mutations as podcast_mutations
 from apps.podcast.graphql import queries as podcast_queries
+from apps.team.graphql import mutations as team_mutations
+from apps.team.graphql import queries as team_queries
 from apps.user.graphql import mutations as user_mutations
 from apps.user.graphql import queries as user_queries
 
@@ -36,6 +38,7 @@ class Query(
     common_queries.Query,
     podcast_queries.Query,
     news_queries.Query,
+    team_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
         resolver=lambda: AppEnumCollectionData(),
@@ -49,6 +52,7 @@ class Mutation(
     common_mutations.Mutation,
     podcast_mutations.Mutation,
     news_mutations.Mutation,
+    team_mutations.Mutation,
 ): ...
 
 
