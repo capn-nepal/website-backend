@@ -6,8 +6,9 @@ from .models import JobVacancy, Position
 @admin.register(JobVacancy)
 class JobVacancyAdmin(admin.ModelAdmin):
     list_display = ("position", "deadline", "number_of_vacancies")
-    list_filter = ("position", "deadline")
+    list_filter = ("deadline",)
     search_fields = ("position",)
+    autocomplete_fields = ("position",)
 
 
 @admin.register(Position)

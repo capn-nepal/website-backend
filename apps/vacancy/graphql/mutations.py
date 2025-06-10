@@ -12,10 +12,8 @@ from apps.vacancy.graphql.inputs import (
 from apps.vacancy.graphql.types import JobVacancyType, PositionType
 from apps.vacancy.models import JobVacancy, Position
 from apps.vacancy.serializers import (
-    CreateJobVacancySerializer,
-    CreatePositionSerializer,
-    UpdateJobVacancySerializer,
-    UpdatePositionSerializer,
+    JobVacancySerializer,
+    PositionSerializer,
 )
 from main.graphql.context import Info
 from utils.graphql.mutations import ModelMutation
@@ -26,7 +24,7 @@ from utils.graphql.types import MutationResponseType
 class Mutation:
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_job_vacancy(self, info: Info, data: CreateJobVacancyInput) -> MutationResponseType[JobVacancyType]:
-        return await ModelMutation(CreateJobVacancySerializer).handle_create_mutation(data, info, None)
+        return await ModelMutation(JobVacancySerializer).handle_create_mutation(data, info, None)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def update_job_vacancy(
@@ -36,7 +34,7 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[JobVacancyType]:
         job_vacancy = await JobVacancy.objects.aget(pk=pk)
-        return await ModelMutation(UpdateJobVacancySerializer).handle_update_mutation(data, info, job_vacancy)
+        return await ModelMutation(JobVacancySerializer).handle_update_mutation(data, info, job_vacancy)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def archive_job_vacancy(
@@ -53,7 +51,7 @@ class Mutation:
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_position(self, info: Info, data: CreatePositionInput) -> MutationResponseType[PositionType]:
-        return await ModelMutation(CreatePositionSerializer).handle_create_mutation(data, info, None)
+        return await ModelMutation(PositionSerializer).handle_create_mutation(data, info, None)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def update_position(
@@ -63,7 +61,7 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[PositionType]:
         position = await Position.objects.aget(pk=pk)
-        return await ModelMutation(UpdatePositionSerializer).handle_update_mutation(data, info, position)
+        return await ModelMutation(PositionSerializer).handle_update_mutation(data, info, position)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def archive_position(
