@@ -22,9 +22,9 @@ union AddAuthorPayload = AuthorTypeMutationResponseType | OperationInfo
 
 union AddGalleryItemPayload = GalleryItemTypeMutationResponseType | OperationInfo
 
-union AddYoutubeVideoPayload = YouTubeVideoTypeMutationResponseType | OperationInfo
-
 union AddTeamMemberPayload = TeamMemberTypeMutationResponseType | OperationInfo
+
+union AddYoutubeVideoPayload = YouTubeVideoTypeMutationResponseType | OperationInfo
 
 type AppEnumCollection {
   DummyEnum: [AppEnumCollectionDummyEnum!]!
@@ -271,6 +271,18 @@ input CreateReportInput {
 union CreateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+"""
+input CreateTeamMemberInput {
+  firstName: String!
+  middleName: String
+  lastName: String!
+  designation: String!
+  memberPhoto: Upload!
+  memberType: TeamMemberTypeEnum
+}
+
+"""
 VoxPopEpisode(id, created_at, modified_at, created_by, modified_by, voxpop_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
 """
 input CreateVoxPopEpisodeInput {
@@ -294,18 +306,6 @@ input CreateVoxPopSeasonInput {
 union CreateVoxpopEpisodePayload = VoxPopEpisodeTypeMutationResponseType | OperationInfo
 
 union CreateVoxpopSeasonPayload = VoxPopSeasonTypeMutationResponseType | OperationInfo
-
-"""
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
-"""
-input CreateTeamMemberInput {
-  firstName: String!
-  middleName: String
-  lastName: String!
-  designation: String!
-  memberPhoto: Upload!
-  memberType: TeamMemberTypeEnum
-}
 
 """A generic type to return error messages"""
 scalar CustomErrorType
@@ -537,6 +537,9 @@ type Mutation {
   archiveVoxpopEpisode(pk: ID!): ArchiveVoxpopEpisodePayload! @isAuthenticated
   createNews(data: CreateNewsInput!): CreateNewsPayload! @isAuthenticated
   updateNews(data: UpdateNewsInput!, pk: ID!): UpdateNewsPayload! @isAuthenticated
+  deleteTeamMember(data: DeleteTeamMemberInput!): DeleteTeamMemberPayload! @isAuthenticated
+  addTeamMember(data: CreateTeamMemberInput!): AddTeamMemberPayload! @isAuthenticated
+  updateTeamMember(data: UpdateTeamMemberInput!, pk: ID!): UpdateTeamMemberPayload! @isAuthenticated
 }
 
 """
@@ -587,10 +590,6 @@ type NewsTypeOffsetPaginated {
 
   """List of paginated results."""
   results: [NewsType!]!
-  addImage(data: ImageInput!): AddImagePayload! @isAuthenticated
-  deleteTeamMember(data: DeleteTeamMemberInput!): DeleteTeamMemberPayload! @isAuthenticated
-  addTeamMember(data: CreateTeamMemberInput!): AddTeamMemberPayload! @isAuthenticated
-  updateTeamMember(data: UpdateTeamMemberInput!, pk: ID!): UpdateTeamMemberPayload! @isAuthenticated
 }
 
 type OffsetPaginationInfo {
@@ -761,7 +760,6 @@ type Query {
   voxpopEpisodes(pagination: OffsetPaginationInput, filters: VoxPopEpisodeFilter, order: VoxPopEpisodeOrder): VoxPopEpisodeTypeOffsetPaginated! @isAuthenticated
   voxpopEpisode(id: ID!): VoxPopEpisodeType! @isAuthenticated
   news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated! @isAuthenticated
-  images(pagination: OffsetPaginationInput, order: ImageOrder): ImageTypeOffsetPaginated!
   teamMembers(pagination: OffsetPaginationInput, filters: TeamMemberFilter, order: TeamMemberOrder): TeamMemberTypeOffsetPaginated! @isAuthenticated
   teamMember(id: ID!): TeamMemberType! @isAuthenticated
   enums: AppEnumCollection!
@@ -1007,6 +1005,20 @@ input UpdateReportInput {
 union UpdateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+"""
+input UpdateTeamMemberInput {
+  firstName: String
+  middleName: String
+  lastName: String
+  designation: String
+  memberType: TeamMemberTypeEnum
+  memberPhoto: Upload
+}
+
+union UpdateTeamMemberPayload = TeamMemberTypeMutationResponseType | OperationInfo
+
+"""
 VoxPopEpisode(id, created_at, modified_at, created_by, modified_by, voxpop_season, episode_number, title, video_url, thumbnail, release_date, is_archived)
 """
 input UpdateVoxPopEpisodeInput {
@@ -1042,20 +1054,6 @@ input UpdateYoutubeVideoInput {
 }
 
 union UpdateYoutubeVideoPayload = YouTubeVideoTypeMutationResponseType | OperationInfo
-
-"""
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
-"""
-input UpdateTeamMemberInput {
-  firstName: String
-  middleName: String
-  lastName: String
-  designation: String
-  memberType: TeamMemberTypeEnum
-  memberPhoto: Upload
-}
-
-union UpdateTeamMemberPayload = TeamMemberTypeMutationResponseType | OperationInfo
 
 scalar Upload
 
