@@ -37,7 +37,11 @@ type AppEnumCollectionDummyEnum {
 
 union ArchiveEventPayload = EventTypeMutationResponseType | OperationInfo
 
+union ArchiveJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
 union ArchivePodcastEpisodePayload = PodcastEpisodeTypeMutationResponseType | OperationInfo
+
+union ArchivePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
 union ArchiveReportPayload = ReportTypeMutationResponseType | OperationInfo
 
@@ -221,6 +225,18 @@ input CreateEventInput {
 union CreateEventPayload = EventTypeMutationResponseType | OperationInfo
 
 """
+JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
+"""
+input CreateJobVacancyInput {
+  position: ID!
+  description: String!
+  numberOfVacancies: Int!
+  deadline: Date!
+}
+
+union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+"""
 News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
 """
 input CreateNewsInput {
@@ -256,6 +272,18 @@ input CreatePodcastSeasonInput {
 }
 
 union CreatePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
+
+"""
+Position(id, created_at, modified_at, created_by, modified_by, name, summary, description, employment_type, is_archived)
+"""
+input CreatePositionInput {
+  name: String!
+  summary: String!
+  description: String!
+  employmentType: EmploymentTypeEnum!
+}
+
+union CreatePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
 """
 Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
@@ -313,6 +341,47 @@ scalar CustomErrorType
 """Date (isoformat)"""
 scalar Date
 
+input DateDateFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: Date
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [Date!]
+
+  """Greater than. Filter will be skipped on `null` value"""
+  gt: Date
+
+  """Greater than or equal to. Filter will be skipped on `null` value"""
+  gte: Date
+
+  """Less than. Filter will be skipped on `null` value"""
+  lt: Date
+
+  """Less than or equal to. Filter will be skipped on `null` value"""
+  lte: Date
+
+  """Inclusive range test (between)"""
+  range: DateRangeLookup
+  year: IntComparisonFilterLookup
+  month: IntComparisonFilterLookup
+  day: IntComparisonFilterLookup
+  weekDay: IntComparisonFilterLookup
+  isoWeekDay: IntComparisonFilterLookup
+  week: IntComparisonFilterLookup
+  isoYear: IntComparisonFilterLookup
+  quarter: IntComparisonFilterLookup
+}
+
+input DateRangeLookup {
+  start: Date = null
+  end: Date = null
+}
+
 """Date with time (isoformat)"""
 scalar DateTime
 
@@ -357,6 +426,14 @@ type DjangoModelType {
 enum DummyEnum {
   VALUE_1
   VALUE_2
+}
+
+enum EmploymentTypeEnum {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  TEMPORARY
 }
 
 """
@@ -496,6 +573,82 @@ enum ImageTypeEnum {
   ARTWORK
 }
 
+input IntComparisonFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: Int
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [Int!]
+
+  """Greater than. Filter will be skipped on `null` value"""
+  gt: Int
+
+  """Greater than or equal to. Filter will be skipped on `null` value"""
+  gte: Int
+
+  """Less than. Filter will be skipped on `null` value"""
+  lt: Int
+
+  """Less than or equal to. Filter will be skipped on `null` value"""
+  lte: Int
+
+  """Inclusive range test (between)"""
+  range: IntRangeLookup
+}
+
+input IntRangeLookup {
+  start: Int = null
+  end: Int = null
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
+"""
+input JobVacancyFilter {
+  deadline: DateDateFilterLookup
+  isArchived: Boolean
+  AND: JobVacancyFilter
+  OR: JobVacancyFilter
+  NOT: JobVacancyFilter
+  DISTINCT: Boolean
+}
+
+input JobVacancyOrder {
+  id: Ordering
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
+"""
+type JobVacancyType {
+  id: ID!
+  description: String!
+  position: DjangoModelType!
+  numberOfVacancies: Int!
+  deadline: Date!
+}
+
+type JobVacancyTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: JobVacancyType
+}
+
+type JobVacancyTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [JobVacancyType!]!
+}
+
 """
 User(id, password, last_login, is_superuser, first_name, last_name, is_staff, is_active, date_joined, email, display_name)
 """
@@ -540,6 +693,12 @@ type Mutation {
   deleteTeamMember(data: DeleteTeamMemberInput!): DeleteTeamMemberPayload! @isAuthenticated
   addTeamMember(data: CreateTeamMemberInput!): AddTeamMemberPayload! @isAuthenticated
   updateTeamMember(data: UpdateTeamMemberInput!, pk: ID!): UpdateTeamMemberPayload! @isAuthenticated
+  createJobVacancy(data: CreateJobVacancyInput!): CreateJobVacancyPayload! @isAuthenticated
+  updateJobVacancy(data: UpdateJobVacancyInput!, pk: ID!): UpdateJobVacancyPayload! @isAuthenticated
+  archiveJobVacancy(pk: ID!): ArchiveJobVacancyPayload! @isAuthenticated
+  createPosition(data: CreatePositionInput!): CreatePositionPayload! @isAuthenticated
+  updatePosition(data: UpdatePositionInput!, pk: ID!): UpdatePositionPayload! @isAuthenticated
+  archivePosition(pk: ID!): ArchivePositionPayload! @isAuthenticated
 }
 
 """
@@ -732,6 +891,50 @@ type PodcastSeasonTypeOffsetPaginated {
   results: [PodcastSeasonType!]!
 }
 
+"""
+Position(id, created_at, modified_at, created_by, modified_by, name, summary, description, employment_type, is_archived)
+"""
+input PositionFilter {
+  employmentType: EmploymentTypeEnum
+  isArchived: Boolean
+  AND: PositionFilter
+  OR: PositionFilter
+  NOT: PositionFilter
+  DISTINCT: Boolean
+}
+
+input PositionOrder {
+  id: Ordering
+  name: Ordering
+}
+
+"""
+Position(id, created_at, modified_at, created_by, modified_by, name, summary, description, employment_type, is_archived)
+"""
+type PositionType {
+  id: ID!
+  name: String!
+  summary: String!
+  description: String!
+  employmentType: EmploymentTypeEnum!
+}
+
+type PositionTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: PositionType
+}
+
+type PositionTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [PositionType!]!
+}
+
 type Query {
   users(pagination: OffsetPaginationInput, filters: UserFilter, order: UserOrder): UserTypeOffsetPaginated! @isAuthenticated
   me: UserMeType
@@ -762,6 +965,10 @@ type Query {
   news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated! @isAuthenticated
   teamMembers(pagination: OffsetPaginationInput, filters: TeamMemberFilter, order: TeamMemberOrder): TeamMemberTypeOffsetPaginated! @isAuthenticated
   teamMember(id: ID!): TeamMemberType! @isAuthenticated
+  jobVacancies(pagination: OffsetPaginationInput, filters: JobVacancyFilter, order: JobVacancyOrder): JobVacancyTypeOffsetPaginated! @isAuthenticated
+  jobVacancy(id: ID!): JobVacancyType! @isAuthenticated
+  positions(pagination: OffsetPaginationInput, filters: PositionFilter, order: PositionOrder): PositionTypeOffsetPaginated! @isAuthenticated
+  position(id: ID!): PositionType! @isAuthenticated
   enums: AppEnumCollection!
 }
 
@@ -954,6 +1161,18 @@ input UpdateEventInput {
 union UpdateEventPayload = EventTypeMutationResponseType | OperationInfo
 
 """
+JobVacancy(id, created_at, modified_at, created_by, modified_by, position, description, number_of_vacancies, deadline, is_archived)
+"""
+input UpdateJobVacancyInput {
+  description: String
+  numberOfVacancies: Int
+  deadline: Date
+  position: ID
+}
+
+union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+"""
 News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
 """
 input UpdateNewsInput {
@@ -990,6 +1209,18 @@ input UpdatePodcastSeasonInput {
 }
 
 union UpdatePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
+
+"""
+Position(id, created_at, modified_at, created_by, modified_by, name, summary, description, employment_type, is_archived)
+"""
+input UpdatePositionInput {
+  name: String
+  summary: String
+  description: String
+  employmentType: EmploymentTypeEnum
+}
+
+union UpdatePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
 """
 Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
