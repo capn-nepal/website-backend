@@ -2,13 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_choices_field import IntegerChoicesField
 
-from apps.common.models import UserResource
-
-
-class BlogStatusEnum(models.IntegerChoices):
-    DRAFT = 50, "Draft"
-    PUBLISHED = 60, "Published"
-    ARCHIVED = 70, "Archived"
+from apps.common.models import StatusEnum, UserResource
 
 
 class Author(UserResource):
@@ -35,7 +29,7 @@ class Blog(UserResource):
         verbose_name=_("Cover Image"),
     )
     featured = models.BooleanField(verbose_name=_("Featured"), default=False)
-    status: int = IntegerChoicesField(choices_enum=BlogStatusEnum, default=BlogStatusEnum.DRAFT)  # type: ignore[reportAssignmentType]
+    status: int = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)  # type: ignore[reportAssignmentType]
 
     def __str__(self):
         return self.title

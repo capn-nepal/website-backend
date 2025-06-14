@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.file_uploads import Upload
 
 from apps.podcast.models import (
     PodcastEpisode,
@@ -30,7 +31,7 @@ class CreatePodcastEpisodeInput:
     release_date: strawberry.auto
     episode_number: strawberry.auto
     video_url: strawberry.auto
-    thumbnail: strawberry.auto
+    thumbnail: Upload
 
 
 @strawberry_django.partial(PodcastEpisode)
@@ -40,7 +41,7 @@ class UpdatePodcastEpisodeInput:
     release_date: strawberry.auto
     episode_number: strawberry.auto
     video_url: strawberry.auto
-    thumbnail: strawberry.auto
+    thumbnail: Upload | None = strawberry.UNSET
 
 
 @strawberry_django.input(VoxPopSeason)
@@ -64,7 +65,7 @@ class CreateVoxPopEpisodeInput:
     release_date: strawberry.auto
     episode_number: strawberry.auto
     video_url: strawberry.auto
-    thumbnail: strawberry.auto
+    thumbnail: Upload
 
 
 @strawberry_django.partial(VoxPopEpisode)
@@ -74,4 +75,4 @@ class UpdateVoxPopEpisodeInput:
     release_date: strawberry.auto
     episode_number: strawberry.auto
     video_url: strawberry.auto
-    thumbnail: strawberry.auto
+    thumbnail: Upload | None = strawberry.UNSET

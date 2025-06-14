@@ -301,7 +301,7 @@ class TestPodcastEpisodeMutation(TestCase):
                   episodeNumber
                   isArchived
                   podcastSeason {
-                    pk
+                    id
                   }
                 }
               }
@@ -367,21 +367,21 @@ class TestPodcastEpisodeMutation(TestCase):
 
         update_data = {
             "title": "Updated Episode",
-            "podcastSeason": self.gID(season.pk),
+            "podcastSeason": self.gID(season.id),
             "episodeNumber": 1,
             "videoUrl": "https://example.com/updated",
             "releaseDate": "2025-08-01",
         }
 
         # Without authentication
-        content = self._update_episode(self.gID(episode.pk), update_data)
+        content = self._update_episode(self.gID(episode.id), update_data)
         assert content["data"]["updatePodcastEpisode"]["messages"] == [
             {"message": "User is not authenticated."},
         ], content
 
         # With authentication
         self.force_login(self.user)
-        content = self._update_episode(self.gID(episode.pk), update_data)
+        content = self._update_episode(self.gID(episode.id), update_data)
         response = content["data"]["updatePodcastEpisode"]
 
         assert response["errors"] is None, content
@@ -390,7 +390,7 @@ class TestPodcastEpisodeMutation(TestCase):
         assert response["result"]["videoUrl"] == "https://example.com/updated"
         assert response["result"]["episodeNumber"] == 1
         assert response["result"]["isArchived"] is False
-        assert response["result"]["podcastSeason"]["pk"] == str(season.pk)
+        assert response["result"]["podcastSeason"]["id"] == str(season.id)
 
     def test_archive_podcast_episode(self):
         season = PodcastSeasonFactory.create(season_number=123)
@@ -461,6 +461,9 @@ class TestVoxPopEpisodeMutation(TestCase):
                 releaseDate
                 isArchived
                 episodeNumber
+                voxpopSeason {
+                  id
+                }
               }
             }
             ... on OperationInfo {
@@ -517,21 +520,21 @@ class TestVoxPopEpisodeMutation(TestCase):
 
         update_data = {
             "title": "Updated Vox",
-            "voxpopSeason": self.gID(season.pk),
+            "voxpopSeason": self.gID(season.id),
             "episodeNumber": 1,
             "videoUrl": "https://voxpop.com/new.mp4",
             "releaseDate": "2025-08-01",
         }
 
         # Without login
-        content = self._update_episode(self.gID(episode.pk), update_data)
+        content = self._update_episode(self.gID(episode.id), update_data)
         assert content["data"]["updateVoxpopEpisode"]["messages"] == [
             {"message": "User is not authenticated."},
         ], content
 
         # With login
         self.force_login(self.user)
-        content = self._update_episode(self.gID(episode.pk), update_data)
+        content = self._update_episode(self.gID(episode.id), update_data)
         result = content["data"]["updateVoxpopEpisode"]["result"]
 
         assert content["data"]["updateVoxpopEpisode"]["errors"] is None, content

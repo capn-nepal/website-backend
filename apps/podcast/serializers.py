@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.podcast.models import PodcastEpisode, PodcastSeason, VoxPopEpisode, VoxPopSeason
 
 
-class CreatePodcastSeasonSerializer(serializers.ModelSerializer):
+class PodcastSeasonSerializer(serializers.ModelSerializer):
     class Meta:
         model = PodcastSeason
         fields = ("title", "description", "season_number")
@@ -14,19 +14,13 @@ class CreatePodcastSeasonSerializer(serializers.ModelSerializer):
         validated_data["modified_by"] = user
         return super().create(validated_data)
 
-
-class UpdatePodcastSeasonSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PodcastSeason
-        fields = ("title", "description", "season_number")
-
     def update(self, instance, validated_data):
         user = self.context["request"].user
         validated_data["modified_by"] = user
         return super().update(instance, validated_data)
 
 
-class CreatePodcastEpisodeSerializer(serializers.ModelSerializer):
+class PodcastEpisodeSerializer(serializers.ModelSerializer):
     podcast_season = serializers.PrimaryKeyRelatedField(queryset=PodcastSeason.objects.all(), write_only=True)
 
     class Meta:
@@ -46,26 +40,13 @@ class CreatePodcastEpisodeSerializer(serializers.ModelSerializer):
         validated_data["modified_by"] = user
         return super().create(validated_data)
 
-
-class UpdatePodcastEpisodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PodcastEpisode
-        fields = (
-            "title",
-            "release_date",
-            "thumbnail",
-            "video_url",
-            "episode_number",
-            "podcast_season",
-        )
-
     def update(self, instance, validated_data):
         user = self.context["request"].user
         validated_data["modified_by"] = user
         return super().update(instance, validated_data)
 
 
-class CreateVoxPopSerializer(serializers.ModelSerializer):
+class VoxPopSeasonSerializer(serializers.ModelSerializer):
     class Meta:
         model = VoxPopSeason
         fields = ("title", "description", "season_number")
@@ -75,19 +56,13 @@ class CreateVoxPopSerializer(serializers.ModelSerializer):
         validated_data["modified_by"] = self.context["request"].user
         return super().create(validated_data)
 
-
-class UpdateVoxPopSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = VoxPopSeason
-        fields = ("title", "description", "season_number")
-
     def update(self, instance, validated_data):
         user = self.context["request"].user
         validated_data["modified_by"] = user
         return super().update(instance, validated_data)
 
 
-class CreateVoxPopEpisodeSerializer(serializers.ModelSerializer):
+class VoxPopEpisodeSerializer(serializers.ModelSerializer):
     voxpop_season = serializers.PrimaryKeyRelatedField(queryset=VoxPopSeason.objects.all(), write_only=True)
 
     class Meta:
@@ -106,19 +81,6 @@ class CreateVoxPopEpisodeSerializer(serializers.ModelSerializer):
         validated_data["created_by"] = user
         validated_data["modified_by"] = user
         return super().create(validated_data)
-
-
-class UpdateVoxPopEpisodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = VoxPopEpisode
-        fields = (
-            "title",
-            "episode_number",
-            "voxpop_season",
-            "video_url",
-            "thumbnail",
-            "release_date",
-        )
 
     def update(self, instance, validated_data):
         user = self.context["request"].user

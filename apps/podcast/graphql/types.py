@@ -20,7 +20,7 @@ class PodcastSeasonType:
 @strawberry_django.type(PodcastEpisode)
 class PodcastEpisodeType:
     id: strawberry.ID
-    podcast_season: strawberry.auto
+    podcast_season: PodcastSeasonType
     release_date: strawberry.auto
     episode_number: strawberry.auto
     title: strawberry.auto
@@ -40,7 +40,7 @@ class VoxPopSeasonType:
 @strawberry_django.type(VoxPopEpisode)
 class VoxPopEpisodeType:
     id: strawberry.ID
-    voxpop_season: strawberry.auto
+    voxpop_season: VoxPopSeasonType
     release_date: strawberry.auto
     episode_number: strawberry.auto
     title: strawberry.auto

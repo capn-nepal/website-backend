@@ -2,7 +2,14 @@ import strawberry
 import strawberry_django
 from strawberry.file_uploads import Upload
 
-from apps.common.models import Event, EventAsset, GalleryItem, ImageTypeEnum, Report, YouTubeVideo
+from apps.common.models import (
+    Event,
+    EventAsset,
+    GalleryItem,
+    ImageTypeEnum,
+    Report,
+    YouTubeVideo,
+)
 
 
 @strawberry_django.input(Event)
@@ -34,8 +41,7 @@ class CreateReportInput:
     title: strawberry.auto
     description: strawberry.auto
     published_date: strawberry.auto
-    report_file: strawberry.auto
-    status: strawberry.auto
+    report_file: Upload
 
 
 @strawberry_django.partial(Report)
@@ -44,7 +50,7 @@ class UpdateReportInput:
     description: strawberry.auto
     published_date: strawberry.auto
     status: strawberry.auto
-    report_file: strawberry.auto
+    report_file: Upload | None = strawberry.UNSET
 
 
 @strawberry_django.input(GalleryItem)

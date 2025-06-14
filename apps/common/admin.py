@@ -23,7 +23,7 @@ class EventAssetsAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ("title", "published_date", "status", "is_deleted")
+    list_display = ("title", "published_date", "status")
     list_filter = ("id", "title")
     search_fields = ("title", "status")
 

@@ -14,12 +14,6 @@ class AuthorSerializer(serializers.ModelSerializer):
         validated_data["modified_by"] = user
         return super().create(validated_data)
 
-
-class UpdateAuthorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Author
-        fields = ("name", "image")
-
     def update(self, instance, validated_data):
         user = self.context["request"].user
         validated_data["modified_by"] = user
@@ -49,9 +43,6 @@ class CreateBlogSerializer(serializers.ModelSerializer):
 
 
 class UpdateBlogSerializer(serializers.ModelSerializer):
-    def validate(self, attrs):
-        return super().validate(attrs)
-
     class Meta:
         model = Blog
         fields = (
@@ -64,13 +55,25 @@ class UpdateBlogSerializer(serializers.ModelSerializer):
             "status",
         )
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
 
-class CreateBlogAssetSerializer(serializers.ModelSerializer):
+
+class BlogAssetSerializer(serializers.ModelSerializer):
+    blog = serializers.PrimaryKeyRelatedField(queryset=Blog.objects.all(), write_only=True)
+
+    class Meta:
+        model = BlogAsset
+        fields = ("blog", "file")
+
     def create(self, validated_data):
         validated_data["created_by"] = self.context["request"].user
         validated_data["modified_by"] = self.context["request"].user
         return super().create(validated_data)
 
-    class Meta:
-        model = BlogAsset
-        fields = ("blog", "file")
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)

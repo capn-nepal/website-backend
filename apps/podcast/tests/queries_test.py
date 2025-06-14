@@ -95,6 +95,9 @@ class TestPodcastEpisodeQuery(TestCase):
                         title
                         episodeNumber
                         videoUrl
+                        podcastSeason{
+                            id
+                        }
                     }
                 }
             }
@@ -155,6 +158,7 @@ class TestPodcastEpisodeQuery(TestCase):
                         title=episode.title,
                         episodeNumber=episode.episode_number,
                         videoUrl=episode.video_url,
+                        podcastSeason={"id": self.gID(episode.podcast_season.id)},
                     )
                     for episode in self.episodes
                 ],
@@ -247,7 +251,7 @@ class TestVoxPopEpisodeQuery(TestCase):
                         episodeNumber
                         videoUrl
                         voxpopSeason {
-                            pk
+                            id
                         }
                     }
                 }
@@ -302,7 +306,7 @@ class TestVoxPopEpisodeQuery(TestCase):
                     title=episode.title,
                     episodeNumber=episode.episode_number,
                     videoUrl=episode.video_url,
-                    voxpopSeason={"pk": str(episode.voxpop_season.pk)},
+                    voxpopSeason={"id": self.gID(episode.voxpop_season.id)},
                 )
                 for episode in self.episodes
             ],

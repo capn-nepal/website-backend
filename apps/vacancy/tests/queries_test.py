@@ -20,7 +20,7 @@ class TestJobVacancyQuery(TestCase):
                         deadline
                         numberOfVacancies
                         position {
-                            pk
+                            id
                         }
                     }
                 }
@@ -80,7 +80,7 @@ class TestJobVacancyQuery(TestCase):
                         description=vacancy.description,
                         deadline=str(vacancy.deadline),
                         numberOfVacancies=vacancy.number_of_vacancies,
-                        position={"pk": self.gID(vacancy.position.pk)},
+                        position={"id": self.gID(vacancy.position.id)},
                     )
                     for vacancy in self.vacancies
                 ],
