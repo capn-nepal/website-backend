@@ -86,6 +86,7 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = [
     APP_DOMAIN.hostname,
+    "web",
     *env("ADDITIONAL_ALLOWED_HOSTS"),
 ]
 
