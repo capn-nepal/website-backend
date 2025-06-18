@@ -303,7 +303,7 @@ class TestBlogAssetsMutation(TestCase):
                             name
                         }
                         blog {
-                            pk
+                            id
                         }
                     }
                 }

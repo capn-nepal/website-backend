@@ -3,7 +3,13 @@ import datetime
 import strawberry
 import strawberry_django
 
-from apps.common.models import Event, EventAsset, GalleryItem, Report, YouTubeVideo
+from apps.common.models import (
+    Event,
+    EventAsset,
+    GalleryItem,
+    Report,
+    YouTubeVideo,
+)
 from apps.user.graphql.types import UserType
 
 
@@ -30,7 +36,7 @@ class EventType:
 @strawberry_django.type(EventAsset)
 class EventAssetType:
     id: strawberry.ID
-    event: strawberry.auto
+    event: EventType
     image: strawberry.auto
 
 
@@ -41,7 +47,6 @@ class ReportType:
     description: strawberry.auto
     published_date: strawberry.auto
     report_file: strawberry.auto
-    is_deleted: strawberry.auto
     status: strawberry.auto
 
 

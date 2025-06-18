@@ -17,7 +17,7 @@ class TestJobVacancyMutation(TestCase):
                             deadline
                             numberOfVacancies
                             position {
-                                pk
+                                id
                             }
                         }
                     }
@@ -43,7 +43,7 @@ class TestJobVacancyMutation(TestCase):
                             deadline
                             numberOfVacancies
                             position {
-                                pk
+                                id
                             }
                         }
                     }
@@ -113,7 +113,7 @@ class TestJobVacancyMutation(TestCase):
             "description": "New job vacancy",
             "deadline": "2025-12-01",
             "numberOfVacancies": 5,
-            "position": self.position.pk,
+            "position": self.position.id,
         }
         # Without authentication
         content = self._create_vacancy_mutation(data)
@@ -140,7 +140,7 @@ class TestJobVacancyMutation(TestCase):
             "description": "Updated desc",
             "deadline": "2025-12-31",
             "numberOfVacancies": 10,
-            "position": self.position.pk,
+            "position": self.position.id,
         }
         # Without authentication
         content = self._update_vacancy_mutation(str(vacancy.pk), data)
@@ -160,7 +160,7 @@ class TestJobVacancyMutation(TestCase):
                 description=vacancy.description,
                 deadline=str(vacancy.deadline),
                 numberOfVacancies=vacancy.number_of_vacancies,
-                position={"pk": self.gID(vacancy.position.pk)},
+                position={"id": self.gID(vacancy.position.id)},
             ),
         ), content
 

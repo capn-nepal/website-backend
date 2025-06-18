@@ -18,14 +18,12 @@ from apps.common.graphql.inputs import (
 from apps.common.graphql.types import EventAssetType, EventType, GalleryItemType, ReportType, YouTubeVideoType
 from apps.common.models import Event, Report, YouTubeVideo
 from apps.common.serializers import (
-    CreateEventSerializer,
     CreateReportSerializer,
-    CreateYoutubeVideoSerializer,
     EventAssetsSerializer,
+    EventSerializer,
     GalleryItemSerializer,
-    UpdateEventSerializer,
     UpdateReportSerializer,
-    UpdateYoutubeVideoSerializer,
+    YoutubeVideoSerializer,
 )
 from main.graphql.context import Info
 from utils.graphql.mutations import ModelMutation
@@ -37,7 +35,7 @@ class Mutation:
     # Event --------------------------
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_event(self, info: Info, data: CreateEventInput) -> MutationResponseType[EventType]:
-        return await ModelMutation(CreateEventSerializer).handle_create_mutation(data, info, None)
+        return await ModelMutation(EventSerializer).handle_create_mutation(data, info, None)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_event_asset(self, info: Info, data: CreateEventAssetsInput) -> MutationResponseType[EventAssetType]:
@@ -51,7 +49,7 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[EventType]:
         event = await Event.objects.aget(pk=pk)
-        return await ModelMutation(UpdateEventSerializer).handle_update_mutation(data, info, event)
+        return await ModelMutation(EventSerializer).handle_update_mutation(data, info, event)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def archive_event(
@@ -81,19 +79,6 @@ class Mutation:
         report = await Report.objects.aget(pk=pk)
         return await ModelMutation(UpdateReportSerializer).handle_update_mutation(data, info, report)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
-    async def archive_report(
-        self,
-        info: Info,
-        pk: strawberry.ID,
-    ) -> MutationResponseType[ReportType]:
-        report = await Report.objects.aget(pk=pk)
-        if report.is_deleted:
-            return MutationResponseType(ok=False, errors=["Report is already archived."])  # type: ignore[reportReturnType]
-        report.is_deleted = True
-        await sync_to_async(report.save)(update_fields=["is_deleted"])
-        return MutationResponseType(ok=True, errors=None)  # type: ignore[reportReturnType]
-
     # Images -----------------------------------
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def add_gallery_item(self, info: Info, data: GalleryItemInput) -> MutationResponseType[GalleryItemType]:
@@ -108,7 +93,7 @@ class Mutation:
     # youtube videos -----------------------------------
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def add_youtube_video(self, info: Info, data: YoutubeVideoInput) -> MutationResponseType[YouTubeVideoType]:
-        return await ModelMutation(CreateYoutubeVideoSerializer).handle_create_mutation(data, info, None)
+        return await ModelMutation(YoutubeVideoSerializer).handle_create_mutation(data, info, None)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def update_youtube_video(
@@ -118,7 +103,7 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[YouTubeVideoType]:
         video = await YouTubeVideo.objects.aget(pk=pk)
-        return await ModelMutation(UpdateYoutubeVideoSerializer).handle_update_mutation(data, info, video)
+        return await ModelMutation(YoutubeVideoSerializer).handle_update_mutation(data, info, video)
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def archive_youtube_video(

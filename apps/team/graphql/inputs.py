@@ -25,6 +25,6 @@ class UpdateTeamMemberInput:
     member_photo: Upload | None = strawberry.UNSET
 
 
-@strawberry_django.partial(TeamMember)
+@strawberry_django.input(TeamMember)
 class DeleteTeamMemberInput:
     id: strawberry.auto

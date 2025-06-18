@@ -8,6 +8,7 @@ class PodcastSeason(UserResource):
     title = models.CharField(max_length=100, verbose_name=_("Podcast Title"))
     description = models.TextField(blank=True)
     season_number = models.PositiveIntegerField(unique=True)
+    is_archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -33,6 +34,7 @@ class VoxPopSeason(UserResource):
     title = models.CharField(max_length=100, verbose_name=_("Title"))
     description = models.TextField(blank=True)
     season_number = models.PositiveIntegerField(unique=True)
+    is_archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

@@ -41,11 +41,13 @@ union ArchiveJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationI
 
 union ArchivePodcastEpisodePayload = PodcastEpisodeTypeMutationResponseType | OperationInfo
 
+union ArchivePodcastSeasonPayload = PodcastSeasonTypeMutationResponseType | OperationInfo
+
 union ArchivePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
-union ArchiveReportPayload = ReportTypeMutationResponseType | OperationInfo
-
 union ArchiveVoxpopEpisodePayload = VoxPopEpisodeTypeMutationResponseType | OperationInfo
+
+union ArchiveVoxpopSeasonPayload = VoxPopSeasonTypeMutationResponseType | OperationInfo
 
 union ArchiveYoutubeVideoPayload = YouTubeVideoTypeMutationResponseType | OperationInfo
 
@@ -94,7 +96,7 @@ BlogAsset(id, created_at, modified_at, created_by, modified_by, file, blog)
 """
 type BlogAssetsType {
   id: ID!
-  blog: DjangoModelType!
+  blog: BlogType!
   file: DjangoFileType!
 }
 
@@ -120,7 +122,7 @@ Blog(id, created_at, modified_at, created_by, modified_by, title, published_date
 input BlogFilter {
   id: IDBaseFilterLookup
   title: StrFilterLookup
-  status: BlogStatusEnum!
+  status: StatusEnum
   AND: BlogFilter
   OR: BlogFilter
   NOT: BlogFilter
@@ -130,12 +132,6 @@ input BlogFilter {
 input BlogOrder {
   id: Ordering
   title: Ordering
-}
-
-enum BlogStatusEnum {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
 }
 
 """
@@ -150,7 +146,7 @@ type BlogType {
   coverImage: DjangoImageType!
   featured: Boolean!
   content: String!
-  status: BlogStatusEnum!
+  status: StatusEnum!
 }
 
 type BlogTypeMutationResponseType {
@@ -193,10 +189,10 @@ input CreateBlogInput {
   title: String!
   publishedDate: Date!
   description: String!
-  coverImage: Upload!
   featured: Boolean
   content: String!
   author: ID!
+  coverImage: Upload!
 }
 
 union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
@@ -257,13 +253,13 @@ input CreatePodcastEpisodeInput {
   releaseDate: DateTime!
   episodeNumber: Int!
   videoUrl: String!
-  thumbnail: Upload
+  thumbnail: Upload!
 }
 
 union CreatePodcastEpisodePayload = PodcastEpisodeTypeMutationResponseType | OperationInfo
 
 """
-PodcastSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+PodcastSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number, is_archived)
 """
 input CreatePodcastSeasonInput {
   title: String!
@@ -286,14 +282,13 @@ input CreatePositionInput {
 union CreatePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
 """
-Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, status)
 """
 input CreateReportInput {
   title: String!
   description: String!
   publishedDate: Date!
   reportFile: Upload!
-  status: StatusEnum
 }
 
 union CreateReportPayload = ReportTypeMutationResponseType | OperationInfo
@@ -319,11 +314,11 @@ input CreateVoxPopEpisodeInput {
   releaseDate: DateTime!
   episodeNumber: Int!
   videoUrl: String!
-  thumbnail: Upload
+  thumbnail: Upload!
 }
 
 """
-VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number, is_archived)
 """
 input CreateVoxPopSeasonInput {
   title: String!
@@ -419,10 +414,6 @@ type DjangoImageType {
   height: Int!
 }
 
-type DjangoModelType {
-  pk: ID!
-}
-
 enum DummyEnum {
   VALUE_1
   VALUE_2
@@ -441,7 +432,7 @@ EventAsset(id, created_at, modified_at, created_by, modified_by, event, image)
 """
 type EventAssetType {
   id: ID!
-  event: DjangoModelType!
+  event: EventType!
   image: DjangoImageType!
 }
 
@@ -628,7 +619,7 @@ JobVacancy(id, created_at, modified_at, created_by, modified_by, position, descr
 type JobVacancyType {
   id: ID!
   description: String!
-  position: DjangoModelType!
+  position: PositionType!
   numberOfVacancies: Int!
   deadline: Date!
 }
@@ -673,18 +664,19 @@ type Mutation {
   archiveEvent(pk: ID!): ArchiveEventPayload! @isAuthenticated
   createReport(data: CreateReportInput!): CreateReportPayload! @isAuthenticated
   updateReport(data: UpdateReportInput!, pk: ID!): UpdateReportPayload! @isAuthenticated
-  archiveReport(pk: ID!): ArchiveReportPayload! @isAuthenticated
   addGalleryItem(data: GalleryItemInput!): AddGalleryItemPayload! @isAuthenticated
   addYoutubeVideo(data: YoutubeVideoInput!): AddYoutubeVideoPayload! @isAuthenticated
   updateYoutubeVideo(data: UpdateYoutubeVideoInput!, pk: ID!): UpdateYoutubeVideoPayload! @isAuthenticated
   archiveYoutubeVideo(pk: ID!): ArchiveYoutubeVideoPayload! @isAuthenticated
   createPodcastSeason(data: CreatePodcastSeasonInput!): CreatePodcastSeasonPayload! @isAuthenticated
   updatePodcastSeason(data: UpdatePodcastSeasonInput!, pk: ID!): UpdatePodcastSeasonPayload! @isAuthenticated
+  archivePodcastSeason(pk: ID!): ArchivePodcastSeasonPayload! @isAuthenticated
   createPodcastEpisode(data: CreatePodcastEpisodeInput!): CreatePodcastEpisodePayload! @isAuthenticated
   updatePodcastEpisode(data: UpdatePodcastEpisodeInput!, pk: ID!): UpdatePodcastEpisodePayload! @isAuthenticated
   archivePodcastEpisode(pk: ID!): ArchivePodcastEpisodePayload! @isAuthenticated
   createVoxpopSeason(data: CreateVoxPopSeasonInput!): CreateVoxpopSeasonPayload! @isAuthenticated
   updateVoxpopSeason(data: UpdateVoxPopSeasonInput!, pk: ID!): UpdateVoxpopSeasonPayload! @isAuthenticated
+  archiveVoxpopSeason(pk: ID!): ArchiveVoxpopSeasonPayload! @isAuthenticated
   createVoxpopEpisode(data: CreateVoxPopEpisodeInput!): CreateVoxpopEpisodePayload! @isAuthenticated
   updateVoxpopEpisode(data: UpdateVoxPopEpisodeInput!, pk: ID!): UpdateVoxpopEpisodePayload! @isAuthenticated
   archiveVoxpopEpisode(pk: ID!): ArchiveVoxpopEpisodePayload! @isAuthenticated
@@ -706,8 +698,8 @@ News(id, created_at, modified_at, created_by, modified_by, title, description, p
 """
 input NewsFilter {
   id: IDBaseFilterLookup
-  newsType: NewsTypeEnum
   status: StatusEnum
+  newsType: NewsTypeEnum
   AND: NewsFilter
   OR: NewsFilter
   NOT: NewsFilter
@@ -808,7 +800,7 @@ PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_sea
 """
 input PodcastEpisodeFilter {
   id: IDBaseFilterLookup
-  isArchived: Boolean!
+  isArchived: Boolean
   AND: PodcastEpisodeFilter
   OR: PodcastEpisodeFilter
   NOT: PodcastEpisodeFilter
@@ -824,7 +816,7 @@ PodcastEpisode(id, created_at, modified_at, created_by, modified_by, podcast_sea
 """
 type PodcastEpisodeType {
   id: ID!
-  podcastSeason: DjangoModelType!
+  podcastSeason: PodcastSeasonType!
   releaseDate: DateTime!
   episodeNumber: Int!
   title: String!
@@ -850,11 +842,11 @@ type PodcastEpisodeTypeOffsetPaginated {
 }
 
 """
-PodcastSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+PodcastSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number, is_archived)
 """
 input PodcastSeasonFilter {
   id: IDBaseFilterLookup
-  title: StrFilterLookup
+  isArchived: Boolean
   AND: PodcastSeasonFilter
   OR: PodcastSeasonFilter
   NOT: PodcastSeasonFilter
@@ -866,7 +858,7 @@ input PodcastSeasonOrder {
 }
 
 """
-PodcastSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+PodcastSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number, is_archived)
 """
 type PodcastSeasonType {
   id: ID!
@@ -973,12 +965,11 @@ type Query {
 }
 
 """
-Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, status)
 """
 input ReportFilter {
   id: IDBaseFilterLookup
-  status: StatusEnum!
-  isDeleted: Boolean
+  status: StatusEnum
   AND: ReportFilter
   OR: ReportFilter
   NOT: ReportFilter
@@ -990,7 +981,7 @@ input ReportOrder {
 }
 
 """
-Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, status)
 """
 type ReportType {
   id: ID!
@@ -998,7 +989,6 @@ type ReportType {
   description: String!
   publishedDate: Date!
   reportFile: DjangoFileType!
-  isDeleted: Boolean!
   status: StatusEnum!
 }
 
@@ -1021,6 +1011,7 @@ type ReportTypeOffsetPaginated {
 enum StatusEnum {
   DRAFT
   PUBLISHED
+  ARCHIVED
 }
 
 input StrFilterLookup {
@@ -1141,8 +1132,8 @@ input UpdateBlogInput {
   description: String
   featured: Boolean
   content: String
-  status: BlogStatusEnum
-  coverImage: ID
+  status: StatusEnum
+  coverImage: Upload
 }
 
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
@@ -1200,7 +1191,7 @@ input UpdatePodcastEpisodeInput {
 union UpdatePodcastEpisodePayload = PodcastEpisodeTypeMutationResponseType | OperationInfo
 
 """
-PodcastSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+PodcastSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number, is_archived)
 """
 input UpdatePodcastSeasonInput {
   title: String
@@ -1223,7 +1214,7 @@ input UpdatePositionInput {
 union UpdatePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
 """
-Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, is_deleted, status)
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, status)
 """
 input UpdateReportInput {
   title: String
@@ -1262,7 +1253,7 @@ input UpdateVoxPopEpisodeInput {
 }
 
 """
-VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number, is_archived)
 """
 input UpdateVoxPopSeasonInput {
   title: String
@@ -1348,7 +1339,7 @@ VoxPopEpisode(id, created_at, modified_at, created_by, modified_by, voxpop_seaso
 """
 input VoxPopEpisodeFilter {
   id: IDBaseFilterLookup
-  isArchived: Boolean!
+  isArchived: Boolean
   AND: VoxPopEpisodeFilter
   OR: VoxPopEpisodeFilter
   NOT: VoxPopEpisodeFilter
@@ -1364,7 +1355,7 @@ VoxPopEpisode(id, created_at, modified_at, created_by, modified_by, voxpop_seaso
 """
 type VoxPopEpisodeType {
   id: ID!
-  voxpopSeason: DjangoModelType!
+  voxpopSeason: VoxPopSeasonType!
   releaseDate: DateTime!
   episodeNumber: Int!
   title: String!
@@ -1394,11 +1385,12 @@ input VoxPopOrder {
 }
 
 """
-VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number, is_archived)
 """
 input VoxPopSeasonFilter {
   id: IDBaseFilterLookup
   title: StrFilterLookup
+  isArchived: Boolean
   AND: VoxPopSeasonFilter
   OR: VoxPopSeasonFilter
   NOT: VoxPopSeasonFilter
@@ -1406,7 +1398,7 @@ input VoxPopSeasonFilter {
 }
 
 """
-VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number)
+VoxPopSeason(id, created_at, modified_at, created_by, modified_by, title, description, season_number, is_archived)
 """
 type VoxPopSeasonType {
   id: ID!

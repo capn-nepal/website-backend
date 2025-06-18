@@ -27,5 +27,5 @@ class BlogType:
 @strawberry_django.type(BlogAsset)
 class BlogAssetsType:
     id: strawberry.ID
-    blog: strawberry.auto
+    blog: BlogType
     file: strawberry.auto

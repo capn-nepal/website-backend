@@ -32,8 +32,9 @@ class UserResource(models.Model):
 
 
 class StatusEnum(models.IntegerChoices):
-    DRAFT = 101, "Draft"
-    PUBLISHED = 102, "Published"
+    DRAFT = 50, "Draft"
+    PUBLISHED = 60, "Published"
+    ARCHIVED = 70, "Archived"
 
 
 class Event(UserResource):
@@ -62,7 +63,6 @@ class Report(UserResource):
     description = models.TextField(verbose_name=_("Description"))
     published_date = models.DateField(verbose_name=_("Published Date"))
     report_file = models.FileField(upload_to="reports/", verbose_name=_("Report File"))
-    is_deleted = models.BooleanField(default=False)
     status: int = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)  # type: ignore[reportAssignmentType]
 
     def __str__(self):
@@ -76,7 +76,7 @@ class ImageTypeEnum(models.IntegerChoices):
 
 class GalleryItem(UserResource):  # type: ignore[reportAssignmentType]
     image = models.ImageField(upload_to="gallery/")
-    image_type = models.IntegerField(choices=ImageTypeEnum.choices, default=ImageTypeEnum.IMAGE)  # type: ignore[reportAssignmentType]
+    image_type: int = models.IntegerField(choices=ImageTypeEnum.choices, default=ImageTypeEnum.IMAGE)  # type: ignore[reportAssignmentType]
 
     def __str__(self):
         return str(self.id)

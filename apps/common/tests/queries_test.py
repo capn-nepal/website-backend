@@ -22,7 +22,6 @@ class TestReportQuery(TestCase):
                         title
                         description
                         publishedDate
-                        isDeleted
                     }
                 }
             }
@@ -76,7 +75,6 @@ class TestReportQuery(TestCase):
                         title=report.title,
                         description=report.description,
                         publishedDate=str(report.published_date),
-                        isDeleted=False,
                     )
                     for report in self.reports
                 ],

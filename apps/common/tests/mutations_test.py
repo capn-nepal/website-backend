@@ -307,22 +307,6 @@ class TestReportMutations(TestCase):
           }
         }
         """
-        ARCHIVE_REPORT = """
-          mutation ArchiveReport($pk: ID!) {
-            archiveReport(pk: $pk) {
-              ... on ReportTypeMutationResponseType {
-                errors
-                ok
-              }
-              ... on OperationInfo {
-                __typename
-                messages {
-                  message
-                }
-              }
-            }
-          }
-        """
 
     @classmethod
     def setUpClass(cls):
@@ -336,12 +320,6 @@ class TestReportMutations(TestCase):
                 "pk": pk,
                 "data": data,
             },
-        )
-
-    def _archive_report_mutation(self, pk):
-        return self.query_check(
-            self.Mutation.ARCHIVE_REPORT,
-            variables={"pk": pk},
         )
 
     def test_update_report(self):
@@ -381,30 +359,6 @@ class TestReportMutations(TestCase):
                 publishedDate=str(report.published_date),
             ),
         ), content
-
-    def test_archive_report(self):
-        report = ReportFactory.create(
-            title="report000",
-            description="ddddddd",
-            published_date="2025-08-01",
-        )
-
-        # Without authentication
-        content = self._archive_report_mutation(self.gID(report.pk))
-        assert content["data"]["archiveReport"]["messages"] == [
-            {
-                "message": "User is not authenticated.",
-            },
-        ], content
-
-        # With authentication
-        self.force_login(self.user)
-        content = self._archive_report_mutation(self.gID(report.pk))
-        resp_data = content["data"]["archiveReport"]
-        assert resp_data["errors"] is None, content
-        assert resp_data["ok"] is True, content
-        report.refresh_from_db()
-        assert report.is_deleted is True
 
 
 class TestYouTubeVideoMutation(TestCase):

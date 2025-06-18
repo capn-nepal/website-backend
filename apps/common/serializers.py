@@ -26,7 +26,7 @@ class UserResourceSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class CreateEventSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = (
@@ -42,21 +42,6 @@ class CreateEventSerializer(serializers.ModelSerializer):
         validated_data["created_by"] = user
         validated_data["modified_by"] = user
         return super().create(validated_data)
-
-
-class UpdateEventSerializer(serializers.ModelSerializer):
-    def validate(self, attrs):
-        return super().validate(attrs)
-
-    class Meta:
-        model = Event
-        fields = (
-            "name",
-            "description",
-            "location",
-            "start_date",
-            "end_date",
-        )
 
     def update(self, instance, validated_data):
         user = self.context["request"].user
@@ -77,11 +62,16 @@ class EventAssetsSerializer(serializers.ModelSerializer):
         validated_data["modified_by"] = user
         return super().create(validated_data)
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
+
 
 class CreateReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = ("title", "description", "published_date", "report_file", "status")
+        fields = ("title", "description", "published_date", "report_file")
 
     def create(self, validated_data):
         validated_data["created_by"] = self.context["request"].user
@@ -90,9 +80,6 @@ class CreateReportSerializer(serializers.ModelSerializer):
 
 
 class UpdateReportSerializer(serializers.ModelSerializer):
-    def validate(self, attrs):
-        return super().validate(attrs)
-
     class Meta:
         model = Report
         fields = ("title", "description", "published_date", "report_file", "status")
@@ -115,7 +102,7 @@ class GalleryItemSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class CreateYoutubeVideoSerializer(serializers.ModelSerializer):
+class YoutubeVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = YouTubeVideo
         fields = (
@@ -130,17 +117,6 @@ class CreateYoutubeVideoSerializer(serializers.ModelSerializer):
         validated_data["created_by"] = user
         validated_data["modified_by"] = user
         return super().create(validated_data)
-
-
-class UpdateYoutubeVideoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = YouTubeVideo
-        fields = (
-            "title",
-            "video_url",
-            "thumbnail",
-            "release_date",
-        )
 
     def update(self, instance, validated_data):
         user = self.context["request"].user

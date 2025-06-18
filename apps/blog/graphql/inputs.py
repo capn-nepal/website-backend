@@ -10,10 +10,10 @@ class CreateBlogInput:
     title: strawberry.auto
     published_date: strawberry.auto
     description: strawberry.auto
-    cover_image: strawberry.auto
     featured: strawberry.auto
     content: strawberry.auto
     author: strawberry.ID
+    cover_image: Upload
 
 
 @strawberry_django.partial(Blog)
@@ -25,7 +25,7 @@ class UpdateBlogInput:
     featured: strawberry.auto
     content: strawberry.auto
     status: strawberry.auto
-    cover_image: strawberry.ID | None = strawberry.UNSET
+    cover_image: Upload | None = strawberry.UNSET
 
 
 @strawberry_django.input(BlogAsset)
@@ -43,4 +43,4 @@ class AddAuthorInput:
 @strawberry_django.partial(Author)
 class UpdateAuthorInput:
     name: strawberry.auto
-    image: Upload | None
+    image: Upload | None = strawberry.UNSET

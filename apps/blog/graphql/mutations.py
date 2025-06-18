@@ -13,9 +13,8 @@ from apps.blog.graphql.types import AuthorType, BlogAssetsType, BlogType
 from apps.blog.models import Author, Blog
 from apps.blog.serializers import (
     AuthorSerializer,
-    CreateBlogAssetSerializer,
+    BlogAssetSerializer,
     CreateBlogSerializer,
-    UpdateAuthorSerializer,
     UpdateBlogSerializer,
 )
 from main.graphql.context import Info
@@ -41,7 +40,7 @@ class Mutation:
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_blog_assets(self, info: Info, data: CreateBlogAssetsInput) -> MutationResponseType[BlogAssetsType]:
-        return await ModelMutation(CreateBlogAssetSerializer).handle_create_mutation(data, info, None)
+        return await ModelMutation(BlogAssetSerializer).handle_create_mutation(data, info, None)
 
     # Author -----------
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
@@ -56,4 +55,4 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[AuthorType]:
         blog = await Author.objects.aget(pk=pk)
-        return await ModelMutation(UpdateAuthorSerializer).handle_update_mutation(data, info, blog)
+        return await ModelMutation(AuthorSerializer).handle_update_mutation(data, info, blog)
