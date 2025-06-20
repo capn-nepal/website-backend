@@ -1,8 +1,10 @@
 from rest_framework import serializers
 
 from apps.common.models import (
+    Artwork,
     Event,
     EventAsset,
+    Gallery,
     GalleryItem,
     Report,
     YouTubeVideo,
@@ -90,10 +92,46 @@ class UpdateReportSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class GallerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gallery
+        fields = ("name", "description")
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        validated_data["created_by"] = user
+        validated_data["modified_by"] = user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
+
+
 class GalleryItemSerializer(serializers.ModelSerializer):
+    gallery = serializers.PrimaryKeyRelatedField(queryset=Gallery.objects.all(), write_only=True)
+
     class Meta:
         model = GalleryItem
-        fields = ("image", "image_type")
+        fields = ("image", "gallery", "caption")
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        validated_data["created_by"] = user
+        validated_data["modified_by"] = user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
+
+
+class ArtworkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artwork
+        fields = ("image", "name")
 
     def create(self, validated_data):
         user = self.context["request"].user
