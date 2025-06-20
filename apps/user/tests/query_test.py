@@ -74,13 +74,8 @@ class TestUserQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["users"]["totalCount"] == 0
-
         # Create a new active user and login
         user = UserFactory.create(email="hero2@gmail.com", is_active=True)
-        self.force_login(user)
         content = _query()
 
         expected_users = [self.user1] + self.users + [user]

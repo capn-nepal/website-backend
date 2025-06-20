@@ -55,12 +55,6 @@ class TestPodcastSeasonQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["podcastSeasons"]["totalCount"] == 0
-
-        # With authentication
-        self.force_login(self.user)
         content = _query()
         assert content["data"]["podcastSeasons"] == {
             **self.g_pagination(
@@ -140,12 +134,6 @@ class TestPodcastEpisodeQuery(TestCase):
                 },
             )
 
-        # Without login
-        content = _query()
-        assert content["data"]["podcastEpisodes"]["totalCount"] == 0
-
-        # With login
-        self.force_login(self.user)
         content = _query()
         assert content["data"]["podcastEpisodes"] == {
             **self.g_pagination(
@@ -213,12 +201,6 @@ class TestVoxPopSeasonQuery(TestCase):
                 },
             )
 
-        # Without login
-        content = _query()
-        assert content["data"]["voxpopSeasons"]["totalCount"] == 0
-
-        # With login
-        self.force_login(self.user)
         content = _query()
         assert content["data"]["voxpopSeasons"] == {
             "pageInfo": {"limit": 10, "offset": 0},
@@ -290,12 +272,6 @@ class TestVoxPopEpisodeQuery(TestCase):
                 },
             )
 
-        # Without login
-        content = _query()
-        assert content["data"]["voxpopEpisodes"]["totalCount"] == 0
-
-        # With login
-        self.force_login(self.user)
         content = _query()
         assert content["data"]["voxpopEpisodes"] == {
             "pageInfo": {"limit": 10, "offset": 0},

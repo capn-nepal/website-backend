@@ -58,11 +58,6 @@ class TestReportQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["reports"]["totalCount"] == 0
-        #  With authentication
-        self.force_login(self.user)
         content = _query()
         assert content["data"]["reports"] == {
             **self.g_pagination(
@@ -137,11 +132,6 @@ class TestEventQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["events"]["totalCount"] == 0
-        #  With authentication
-        self.force_login(self.user)
         content = _query()
         assert content["data"]["events"] == {
             **self.g_pagination(
@@ -197,13 +187,7 @@ class TestYouTubeVideoQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["youtubeVideos"]["totalCount"] == 0
-
-        # With authentication
         self.force_login(self.user)
-
         # Create videos after login
         videos = [
             YouTubeVideoFactory.create(

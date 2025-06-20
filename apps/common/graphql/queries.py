@@ -1,7 +1,6 @@
 import strawberry
 import strawberry_django
 from strawberry_django.pagination import OffsetPaginated
-from strawberry_django.permissions import IsAuthenticated
 
 from .filters import (
     EventFilter,
@@ -30,34 +29,34 @@ class Query:
     events: OffsetPaginated[EventType] = strawberry_django.offset_paginated(
         order=EventOrder,
         filters=EventFilter,
-        extensions=[IsAuthenticated()],
+        extensions=[],
     )
-    event: EventType = strawberry_django.field(extensions=[IsAuthenticated()])
+    event: EventType = strawberry_django.field(extensions=[])
 
     event_assets: OffsetPaginated[EventAssetType] = strawberry_django.offset_paginated(
-        extensions=[IsAuthenticated()],
+        extensions=[],
     )
-    event_asset: EventAssetType = strawberry_django.field(extensions=[IsAuthenticated()])
+    event_asset: EventAssetType = strawberry_django.field(extensions=[])
     # report------------------
     reports: OffsetPaginated[ReportType] = strawberry_django.offset_paginated(
         order=ReportOrder,
         filters=ReportFilter,
-        extensions=[IsAuthenticated()],
+        extensions=[],
     )
-    report: ReportType = strawberry_django.field(extensions=[IsAuthenticated()])
+    report: ReportType = strawberry_django.field(extensions=[])
 
     # images ----------------------------
     gallery_items: OffsetPaginated[GalleryItemType] = strawberry_django.offset_paginated(
         filters=GalleryItemFilter,
         order=GalleryItemOrder,
-        extensions=[IsAuthenticated()],
+        extensions=[],
     )
-    gallery_item: GalleryItemType = strawberry_django.field(extensions=[IsAuthenticated()])
+    gallery_item: GalleryItemType = strawberry_django.field(extensions=[])
 
     # youtube videos -------------------------------------------
     youtube_videos: OffsetPaginated[YouTubeVideoType] = strawberry_django.offset_paginated(
         filters=YouTubeVideoFilter,
         order=YouTubeVideoOrder,
-        extensions=[IsAuthenticated()],
+        extensions=[],
     )
-    youtube_video: YouTubeVideoType = strawberry_django.field(extensions=[IsAuthenticated()])
+    youtube_video: YouTubeVideoType = strawberry_django.field(extensions=[])

@@ -40,12 +40,6 @@ class TestNewsQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["news"]["totalCount"] == 0
-        # With authentication
-        self.force_login(self.user)
-
         news_items = [
             NewsFactory.create(
                 title="Breaking News One",

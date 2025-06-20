@@ -19,8 +19,10 @@ urlpatterns = [
     path("health-check/", include("health_check.urls")),
     path(
         "graphql/",
-        CustomAsyncGraphQLView.as_view(
-            **base_graphql_kwargs,
+        csrf_exempt(
+            CustomAsyncGraphQLView.as_view(
+                **base_graphql_kwargs,
+            ),
         ),
         name="graphql",
     ),

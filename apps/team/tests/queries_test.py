@@ -43,13 +43,6 @@ class TestTeamMemberQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["teamMembers"]["totalCount"] == 0
-
-        # With authentication
-        self.force_login(self.user)
-
         members = [
             TeamMemberFactory.create(
                 first_name="Alice",

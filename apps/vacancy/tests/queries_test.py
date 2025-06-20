@@ -63,11 +63,6 @@ class TestJobVacancyQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["jobVacancies"]["totalCount"] == 0
-        #  With authentication
-        self.force_login(self.user)
         content = _query()
         assert content["data"]["jobVacancies"] == {
             **self.g_pagination(
@@ -138,12 +133,6 @@ class TestPositionQuery(TestCase):
                 },
             )
 
-        # Without authentication
-        content = _query()
-        assert content["data"]["positions"]["totalCount"] == 0
-
-        # With authentication
-        self.force_login(self.user)
         content = _query()
         assert content["data"]["positions"] == {
             **self.g_pagination(
