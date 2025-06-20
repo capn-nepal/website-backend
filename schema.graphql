@@ -1035,35 +1035,35 @@ type Query {
   blogAsset(id: ID!): BlogAssetsType!
   authors(pagination: OffsetPaginationInput): AuthorTypeOffsetPaginated!
   author(id: ID!): AuthorType!
-  events(pagination: OffsetPaginationInput, filters: EventFilter, order: EventOrder): EventTypeOffsetPaginated! @isAuthenticated
-  event(id: ID!): EventType! @isAuthenticated
-  eventAssets(pagination: OffsetPaginationInput): EventAssetTypeOffsetPaginated! @isAuthenticated
-  eventAsset(id: ID!): EventAssetType! @isAuthenticated
-  reports(pagination: OffsetPaginationInput, filters: ReportFilter, order: ReportOrder): ReportTypeOffsetPaginated! @isAuthenticated
-  report(id: ID!): ReportType! @isAuthenticated
+  events(pagination: OffsetPaginationInput, filters: EventFilter, order: EventOrder): EventTypeOffsetPaginated!
+  event(id: ID!): EventType!
+  eventAssets(pagination: OffsetPaginationInput): EventAssetTypeOffsetPaginated!
+  eventAsset(id: ID!): EventAssetType!
+  reports(pagination: OffsetPaginationInput, filters: ReportFilter, order: ReportOrder): ReportTypeOffsetPaginated!
+  report(id: ID!): ReportType!
   galleries(pagination: OffsetPaginationInput, filters: GalleryFilter, order: GalleryOrder): GalleryTypeOffsetPaginated!
   gallery(id: ID!): GalleryType!
   galleryItems(pagination: OffsetPaginationInput, filters: GalleryItemFilter, order: GalleryItemOrder): GalleryItemTypeOffsetPaginated!
   galleryItem(id: ID!): GalleryItemType!
   artWorks(pagination: OffsetPaginationInput, order: ArtworkOrder): ArtworkTypeOffsetPaginated!
   artWork(id: ID!): ArtworkType!
-  youtubeVideos(pagination: OffsetPaginationInput, filters: YouTubeVideoFilter, order: YouTubeVideoOrder): YouTubeVideoTypeOffsetPaginated! @isAuthenticated
-  youtubeVideo(id: ID!): YouTubeVideoType! @isAuthenticated
-  podcastSeasons(pagination: OffsetPaginationInput, filters: PodcastSeasonFilter, order: PodcastSeasonOrder): PodcastSeasonTypeOffsetPaginated! @isAuthenticated
-  podcastSeason(id: ID!): PodcastSeasonType! @isAuthenticated
-  podcastEpisodes(pagination: OffsetPaginationInput, filters: PodcastEpisodeFilter, order: PodcastEpisodeOrder): PodcastEpisodeTypeOffsetPaginated! @isAuthenticated
-  podcastEpisode(id: ID!): PodcastEpisodeType! @isAuthenticated
-  voxpopSeasons(pagination: OffsetPaginationInput, filters: VoxPopSeasonFilter, order: VoxPopOrder): VoxPopSeasonTypeOffsetPaginated! @isAuthenticated
-  voxpopSeason(id: ID!): VoxPopSeasonType! @isAuthenticated
-  voxpopEpisodes(pagination: OffsetPaginationInput, filters: VoxPopEpisodeFilter, order: VoxPopEpisodeOrder): VoxPopEpisodeTypeOffsetPaginated! @isAuthenticated
-  voxpopEpisode(id: ID!): VoxPopEpisodeType! @isAuthenticated
-  news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated! @isAuthenticated
-  teamMembers(pagination: OffsetPaginationInput, filters: TeamMemberFilter, order: TeamMemberOrder): TeamMemberTypeOffsetPaginated! @isAuthenticated
-  teamMember(id: ID!): TeamMemberType! @isAuthenticated
-  jobVacancies(pagination: OffsetPaginationInput, filters: JobVacancyFilter, order: JobVacancyOrder): JobVacancyTypeOffsetPaginated! @isAuthenticated
-  jobVacancy(id: ID!): JobVacancyType! @isAuthenticated
-  positions(pagination: OffsetPaginationInput, filters: PositionFilter, order: PositionOrder): PositionTypeOffsetPaginated! @isAuthenticated
-  position(id: ID!): PositionType! @isAuthenticated
+  youtubeVideos(pagination: OffsetPaginationInput, filters: YouTubeVideoFilter, order: YouTubeVideoOrder): YouTubeVideoTypeOffsetPaginated!
+  youtubeVideo(id: ID!): YouTubeVideoType!
+  podcastSeasons(pagination: OffsetPaginationInput, filters: PodcastSeasonFilter, order: PodcastSeasonOrder): PodcastSeasonTypeOffsetPaginated!
+  podcastSeason(id: ID!): PodcastSeasonType!
+  podcastEpisodes(pagination: OffsetPaginationInput, filters: PodcastEpisodeFilter, order: PodcastEpisodeOrder): PodcastEpisodeTypeOffsetPaginated!
+  podcastEpisode(id: ID!): PodcastEpisodeType!
+  voxpopSeasons(pagination: OffsetPaginationInput, filters: VoxPopSeasonFilter, order: VoxPopOrder): VoxPopSeasonTypeOffsetPaginated!
+  voxpopSeason(id: ID!): VoxPopSeasonType!
+  voxpopEpisodes(pagination: OffsetPaginationInput, filters: VoxPopEpisodeFilter, order: VoxPopEpisodeOrder): VoxPopEpisodeTypeOffsetPaginated!
+  voxpopEpisode(id: ID!): VoxPopEpisodeType!
+  news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated!
+  teamMembers(pagination: OffsetPaginationInput, filters: TeamMemberFilter, order: TeamMemberOrder): TeamMemberTypeOffsetPaginated!
+  teamMember(id: ID!): TeamMemberType!
+  jobVacancies(pagination: OffsetPaginationInput, filters: JobVacancyFilter, order: JobVacancyOrder): JobVacancyTypeOffsetPaginated!
+  jobVacancy(id: ID!): JobVacancyType!
+  positions(pagination: OffsetPaginationInput, filters: PositionFilter, order: PositionOrder): PositionTypeOffsetPaginated!
+  position(id: ID!): PositionType!
   enums: AppEnumCollection!
 }
 
