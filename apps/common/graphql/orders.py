@@ -2,7 +2,9 @@ import strawberry
 import strawberry_django
 
 from apps.common.models import (
+    Artwork,
     Event,
+    Gallery,
     GalleryItem,
     Report,
     YouTubeVideo,
@@ -19,10 +21,19 @@ class ReportOrder:
     id: strawberry.auto
 
 
+@strawberry_django.ordering.order(Gallery)
+class GalleryOrder:
+    id: strawberry.auto
+
+
 @strawberry_django.ordering.order(GalleryItem)
 class GalleryItemOrder:
     id: strawberry.auto
-    created_at: strawberry.auto
+
+
+@strawberry_django.ordering.order(Artwork)
+class ArtworkOrder:
+    id: strawberry.auto
 
 
 @strawberry_django.ordering.order(YouTubeVideo)

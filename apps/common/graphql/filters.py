@@ -3,8 +3,8 @@ import strawberry_django
 
 from apps.common.models import (
     Event,
+    Gallery,
     GalleryItem,
-    ImageTypeEnum,
     Report,
     StatusEnum,
     YouTubeVideo,
@@ -23,14 +23,18 @@ class ReportFilter:
     status: StatusEnum | None = strawberry.UNSET
 
 
-@strawberry_django.filters.filter(GalleryItem, lookups=True)
-class GalleryItemFilter:
-    id: strawberry.auto
-    image_type: ImageTypeEnum | None = strawberry.UNSET
-
-
 @strawberry_django.filters.filter(YouTubeVideo, lookups=True)
 class YouTubeVideoFilter:
     id: strawberry.auto
     title: strawberry.auto
+    is_archived: bool | None = strawberry.UNSET
+
+
+@strawberry_django.filters.filter(Gallery, lookups=True)
+class GalleryFilter:
+    is_archived: bool | None = strawberry.UNSET
+
+
+@strawberry_django.filters.filter(GalleryItem, lookups=True)
+class GalleryItemFilter:
     is_archived: bool | None = strawberry.UNSET

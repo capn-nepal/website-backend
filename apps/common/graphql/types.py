@@ -4,8 +4,10 @@ import strawberry
 import strawberry_django
 
 from apps.common.models import (
+    Artwork,
     Event,
     EventAsset,
+    Gallery,
     GalleryItem,
     Report,
     YouTubeVideo,
@@ -50,11 +52,21 @@ class ReportType:
     status: strawberry.auto
 
 
+@strawberry_django.type(Gallery)
+class GalleryType:
+    id: strawberry.ID
+    name: strawberry.auto
+    description: strawberry.auto
+    is_archived: strawberry.auto
+
+
 @strawberry_django.type(GalleryItem)
 class GalleryItemType:
     id: strawberry.auto
     image: strawberry.auto
-    image_type: strawberry.auto
+    gallery: GalleryType
+    caption: strawberry.auto
+    is_archived: strawberry.auto
 
 
 @strawberry_django.type(YouTubeVideo)
@@ -65,3 +77,10 @@ class YouTubeVideoType:
     thumbnail: strawberry.auto
     release_date: strawberry.auto
     is_archived: strawberry.auto
+
+
+@strawberry_django.type(Artwork)
+class ArtworkType:
+    id: strawberry.ID
+    name: strawberry.auto
+    image: strawberry.auto
