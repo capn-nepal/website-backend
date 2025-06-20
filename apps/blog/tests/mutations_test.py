@@ -373,9 +373,6 @@ class TestAuthorMutations(TestCase):
                             result {
                                 id
                                 name
-                                image {
-                                    url
-                                }
                             }
                         }
                         ... on OperationInfo {
@@ -396,9 +393,6 @@ class TestAuthorMutations(TestCase):
                         result {
                             id
                             name
-                            image {
-                                url
-                            }
                         }
                     }
                     ... on OperationInfo {
@@ -456,7 +450,6 @@ class TestAuthorMutations(TestCase):
             result=dict(
                 id=self.gID(author.pk),
                 name=author.name,
-                image=dict(url=author.image.url if author.image else None),
             ),
         ), content
 
@@ -488,6 +481,5 @@ class TestAuthorMutations(TestCase):
             result=dict(
                 id=self.gID(author.pk),
                 name=author.name,
-                image=None,
             ),
         ), content

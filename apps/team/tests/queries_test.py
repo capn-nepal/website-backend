@@ -16,9 +16,6 @@ class TestTeamMemberQuery(TestCase):
                 middleName
                 lastName
                 designation
-                memberPhoto {
-                  url
-                }
               }
               pageInfo {
                 limit
@@ -73,7 +70,6 @@ class TestTeamMemberQuery(TestCase):
                         middleName=member.middle_name,
                         lastName=member.last_name,
                         designation=member.designation,
-                        memberPhoto={"url": member.member_photo.url} if member.member_photo else None,
                     )
                     for member in members
                 ],
