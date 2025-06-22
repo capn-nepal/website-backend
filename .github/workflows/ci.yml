@@ -24,6 +24,7 @@ on:
 
 env:
   COMPOSE_FILE: docker-compose.yaml:.github/gh-docker-compose.yaml
+  DJANGO_SECRET_KEY: "insecure-django-secret-key"
 
 jobs:
   pre_commit_checks:
