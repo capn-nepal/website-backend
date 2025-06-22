@@ -2,8 +2,6 @@
 x-server: &base_server_setup
   build:
     context: ./
-    tags:
-      - tccms/tccms:${DOCKER_TAG:-latest}
   # Used for python debugging.
   stdin_open: true
   tty: true
@@ -11,25 +9,18 @@ x-server: &base_server_setup
     DEBUG: ${DEBUG:-true}
     ENABLE_DEBUG_TOOLBAR: ${ENABLE_DEBUG_TOOLBAR:-true}
     APP_ENVIRONMENT: ${APP_ENVIRONMENT:-DEV}
-    SECRET_KEY: ${SECRET_KEY:?error}
+    DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?error}
     # Domain configs
     APP_DOMAIN: ${APP_DOMAIN:-http://localhost:8000}
     FRONTEND_DOMAIN: ${FRONTEND_DOMAIN:-http://localhost:3000}  # NOTE: Not used right now
     SESSION_COOKIE_DOMAIN: ${SESSION_COOKIE_DOMAIN:-localhost}
     CSRF_COOKIE_DOMAIN: ${CSRF_COOKIE_DOMAIN:-localhost}
     # Postgres
-    POSTGRES_DB: ${POSTGRES_DB:-tccms}
+    POSTGRES_DB: ${POSTGRES_DB:-capn}
     POSTGRES_USER: ${POSTGRES_USER:-postgres}
     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     POSTGRES_HOST: ${POSTGRES_HOST:-db}
     POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-    # Email (Using mailpit)
-    EMAIL_HOST: ${EMAIL_HOST:-mailpit}
-    EMAIL_PORT: ${EMAIL_PORT:-1025}
-    EMAIL_USE_TLS: ${EMAIL_USE_TLS:-false}
-    EMAIL_HOST_USER: ${EMAIL_HOST_USER:-mailpit}
-    EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-mailpit}
-    DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-CMS Dev <cms@togglecorp.com>}
   env_file:
     - path: .env
       required: false
@@ -40,30 +31,16 @@ x-server: &base_server_setup
     - ipython_data_local:/root/.ipython/profile_default   # persist ipython data, including ipython history
   depends_on:
     - db
-    - mailpit
 
 services:
   db:
     image: postgres:17
     environment:
-      POSTGRES_DB: tccms
+      POSTGRES_DB: capn
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data17:/var/lib/postgresql/data
-
-  mailpit:
-      image: axllent/mailpit:latest
-      restart: unless-stopped
-      ports:
-        - 127.0.0.1:8025:8025  # Web
-      environment:
-        MP_MAX_MESSAGES: 200
-        MP_DATA_FILE: /data/mailpit.db
-        MP_SMTP_AUTH_ACCEPT_ANY: 1
-        MP_SMTP_AUTH_ALLOW_INSECURE: 1
-      volumes:
-        - mailpit_data:/data
 
   web:
     <<: *base_server_setup
@@ -78,5 +55,4 @@ services:
 
 volumes:
   postgres_data17:
-  mailpit_data:
   ipython_data_local:
