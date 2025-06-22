@@ -24,7 +24,6 @@ on:
 
 env:
   COMPOSE_FILE: docker-compose.yaml:.github/gh-docker-compose.yaml
-  SECRET_KEY: "ci-test-insecure-django-secret-key"
 
 jobs:
   pre_commit_checks:
