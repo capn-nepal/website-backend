@@ -5,23 +5,43 @@ from strawberry_django.mutations import delete
 from strawberry_django.permissions import IsAuthenticated
 
 from apps.common.graphql.inputs import (
+    ArtworkInput,
     CreateEventAssetsInput,
     CreateEventInput,
     CreateReportInput,
-    DeleteGalleryItemInput,
+    DeleteArtWorkInput,
+    GalleryInput,
     GalleryItemInput,
+    GalleryItemUpdateInput,
+    GalleryUpdateInput,
     UpdateEventInput,
     UpdateReportInput,
     UpdateYoutubeVideoInput,
     YoutubeVideoInput,
 )
-from apps.common.graphql.types import EventAssetType, EventType, GalleryItemType, ReportType, YouTubeVideoType
-from apps.common.models import Event, Report, YouTubeVideo
+from apps.common.graphql.types import (
+    ArtworkType,
+    EventAssetType,
+    EventType,
+    GalleryItemType,
+    GalleryType,
+    ReportType,
+    YouTubeVideoType,
+)
+from apps.common.models import (
+    Event,
+    Gallery,
+    GalleryItem,
+    Report,
+    YouTubeVideo,
+)
 from apps.common.serializers import (
+    ArtworkSerializer,
     CreateReportSerializer,
     EventAssetsSerializer,
     EventSerializer,
     GalleryItemSerializer,
+    GallerySerializer,
     UpdateReportSerializer,
     YoutubeVideoSerializer,
 )
@@ -79,17 +99,6 @@ class Mutation:
         report = await Report.objects.aget(pk=pk)
         return await ModelMutation(UpdateReportSerializer).handle_update_mutation(data, info, report)
 
-    # Images -----------------------------------
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
-    async def add_gallery_item(self, info: Info, data: GalleryItemInput) -> MutationResponseType[GalleryItemType]:
-        return await ModelMutation(GalleryItemSerializer).handle_create_mutation(data, info, None)
-
-    delete_gallery_item: GalleryItemType = delete(
-        DeleteGalleryItemInput,
-        key_attr="id",
-        extensions=[IsAuthenticated()],
-    )
-
     # youtube videos -----------------------------------
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def add_youtube_video(self, info: Info, data: YoutubeVideoInput) -> MutationResponseType[YouTubeVideoType]:
@@ -117,3 +126,68 @@ class Mutation:
         video.is_archived = True
         await sync_to_async(video.save)(update_fields=["is_archived"])
         return MutationResponseType(ok=True, errors=None)  # type: ignore[reportReturnType]
+
+    # Images -----------------------------------
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def create_gallery(self, info: Info, data: GalleryInput) -> MutationResponseType[GalleryType]:
+        return await ModelMutation(GallerySerializer).handle_create_mutation(data, info, None)
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def update_gallery(
+        self,
+        info: Info,
+        data: GalleryUpdateInput,
+        pk: strawberry.ID,
+    ) -> MutationResponseType[GalleryType]:
+        video = await Gallery.objects.aget(pk=pk)
+        return await ModelMutation(GallerySerializer).handle_update_mutation(data, info, video)
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def archive_gallery(
+        self,
+        info: Info,
+        pk: strawberry.ID,
+    ) -> MutationResponseType[GalleryType]:
+        gallery = await Gallery.objects.aget(pk=pk)
+        if gallery.is_archived:
+            return MutationResponseType(ok=False, errors=["gallery is already archived."])  # type: ignore[reportReturnType]
+        gallery.is_archived = True
+        await sync_to_async(gallery.save)(update_fields=["is_archived"])
+        return MutationResponseType(ok=True, errors=None)  # type: ignore[reportReturnType]
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def add_gallery_item(self, info: Info, data: GalleryItemInput) -> MutationResponseType[GalleryItemType]:
+        return await ModelMutation(GalleryItemSerializer).handle_create_mutation(data, info, None)
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def update_gallery_item(
+        self,
+        info: Info,
+        data: GalleryItemUpdateInput,
+        pk: strawberry.ID,
+    ) -> MutationResponseType[GalleryItemType]:
+        video = await GalleryItem.objects.aget(pk=pk)
+        return await ModelMutation(GalleryItemSerializer).handle_update_mutation(data, info, video)
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def archive_gallery_item(
+        self,
+        info: Info,
+        pk: strawberry.ID,
+    ) -> MutationResponseType[GalleryItemType]:
+        gallery_item = await GalleryItem.objects.aget(pk=pk)
+        if gallery_item.is_archived:
+            return MutationResponseType(ok=False, errors=["Item is already archived."])  # type: ignore[reportReturnType]
+        gallery_item.is_archived = True
+        await sync_to_async(gallery_item.save)(update_fields=["is_archived"])
+        return MutationResponseType(ok=True, errors=None)  # type: ignore[reportReturnType]
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def create_artwork(self, info: Info, data: ArtworkInput) -> MutationResponseType[ArtworkType]:
+        return await ModelMutation(ArtworkSerializer).handle_create_mutation(data, info, None)
+
+    delete_artwork: ArtworkType = delete(
+        DeleteArtWorkInput,
+        key_attr="id",
+        extensions=[IsAuthenticated()],
+    )

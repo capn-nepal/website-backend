@@ -1,8 +1,10 @@
 from django.contrib import admin
 
 from .models import (
+    Artwork,
     Event,
     EventAsset,
+    Gallery,
     GalleryItem,
     Report,
     YouTubeVideo,
@@ -28,13 +30,26 @@ class ReportAdmin(admin.ModelAdmin):
     search_fields = ("title", "status")
 
 
-@admin.register(GalleryItem)
-class ImageAdmin(admin.ModelAdmin):
-    list_display = ("id", "image", "image_type")
-
-
 @admin.register(YouTubeVideo)
 class YouTubeVideoAdmin(admin.ModelAdmin):
     list_display = ("title", "release_date", "video_url", "is_archived")
     list_filter = ("id", "title")
     search_fields = ("title", "is_archived")
+
+
+@admin.register(Gallery)
+class GalleryAdmin(admin.ModelAdmin):
+    list_display = ("name", "is_archived")
+    search_fields = ("name",)
+
+
+@admin.register(GalleryItem)
+class GalleryItemAdmin(admin.ModelAdmin):
+    list_display = ("caption", "image", "is_archived", "gallery")
+    autocomplete_fields = ("gallery",)
+    list_select_related = ["gallery"]
+
+
+@admin.register(Artwork)
+class ArtworkAdmin(admin.ModelAdmin):
+    list_display = ("name", "image")

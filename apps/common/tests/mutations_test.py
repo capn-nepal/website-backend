@@ -6,10 +6,11 @@ from PIL import Image
 
 from apps.common.factories import (
     EventFactory,
+    GalleryFactory,
+    GalleryItemFactory,
     ReportFactory,
     YouTubeVideoFactory,
 )
-from apps.common.models import ImageTypeEnum
 from apps.user.factories import UserFactory
 from main import settings
 from main.tests.base_test import TestCase
@@ -38,11 +39,11 @@ def youtube_video_query(
         )
 
 
-def gallery_item_query(
+def image_query(
     *,
     query_check_func: typing.Callable,
     query: str,
-    image_data: dict,
+    data: dict,
     **kwargs,
 ) -> dict:
     with NamedTemporaryFile(suffix=".jpg", dir=settings.TEMP_DIR) as image_file:  # type: ignore[reportIncompatibleVariableOverride]
@@ -52,7 +53,7 @@ def gallery_item_query(
 
         return query_check_func(
             query,
-            variables={"data": image_data},
+            variables={"data": data},
             files={"image": image_file},
             map={"image": ["variables.data.image"]},
             **kwargs,
@@ -532,59 +533,440 @@ class TestYouTubeVideoMutation(TestCase):
         assert video.is_archived is True
 
 
-class TestGalleryItemMutation(TestCase):
+class TestCreateGalleryMutation(TestCase):
     class Mutation:
-        ADD_GALLERY_ITEM = """
-          mutation AddGalleryItem($data: GalleryItemInput!) {
-            addGalleryItem(data: $data) {
-              ... on GalleryItemTypeMutationResponseType {
+        CREATE_GALLERY = """
+          mutation CreateGallery($data: GalleryInput!) {
+            createGallery(data: $data) {
+              ... on GalleryTypeMutationResponseType {
                 errors
                 result {
+                  description
                   id
-                  imageType
-                  image {
-                    url
-                  }
+                  isArchived
+                  name
                 }
               }
               ... on OperationInfo {
                 __typename
                 messages {
+                  code
+                  field
+                  kind
                   message
                 }
               }
             }
           }
         """
+        UPDATE_GALLERY = """
+            mutation UpdateGallery($data: GalleryUpdateInput!, $pk: ID!) {
+                updateGallery(data: $data, pk: $pk) {
+                    ... on GalleryTypeMutationResponseType {
+                        errors
+                        result {
+                          description
+                          id
+                          isArchived
+                          name
+                        }
+                    }
+                    ... on OperationInfo {
+                        __typename
+                        messages {
+                            code
+                            field
+                            kind
+                            message
+                        }
+                    }
+                }
+            }
+        """
+
+        ARCHIVE_GALLERY = """
+            mutation ArchiveGallery($pk: ID!) {
+                archiveGallery(pk: $pk) {
+                    ... on GalleryTypeMutationResponseType {
+                        errors
+                    }
+                    ... on OperationInfo {
+                        __typename
+                        messages {
+                            code
+                            field
+                            kind
+                            message
+                        }
+                    }
+                }
+            }
+        """
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(email="testuser1234@example.com")
+        cls.user = UserFactory.create(email="testgallery@example.com")
 
-    def _create_gallery_item(self, image_data: dict, **kwargs):
-        return gallery_item_query(
-            query_check_func=self.query_check,
-            query=self.Mutation.ADD_GALLERY_ITEM,
-            image_data=image_data,
-            **kwargs,
+    def _create_gallery_mutation(self, data: dict):
+        return self.query_check(
+            self.Mutation.CREATE_GALLERY,
+            variables={"data": data},
         )
 
-    def test_add_gallery_item(self):
-        image_data = {
-            "imageType": ImageTypeEnum.ARTWORK.name,
+    def _update_gallery_mutation(self, pk, data):
+        return self.query_check(
+            self.Mutation.UPDATE_GALLERY,
+            variables={
+                "pk": pk,
+                "data": data,
+            },
+        )
+
+    def _archive_gallery_mutation(self, pk):
+        return self.query_check(
+            self.Mutation.ARCHIVE_GALLERY,
+            variables={"pk": pk},
+        )
+
+    def test_create_gallery_mutation(self):
+        gallery_data = {
+            "name": "gallery number one",
+            "description": "gallery one description",
         }
 
         # Without authentication
-        content = self._create_gallery_item(image_data)
-        assert content["data"]["addGalleryItem"]["messages"] == [
-            {"message": "User is not authenticated."},
+        content = self._create_gallery_mutation(gallery_data)
+        assert content["data"]["createGallery"]["messages"] == [
+            {
+                "code": None,
+                "field": "createGallery",
+                "kind": "PERMISSION",
+                "message": "User is not authenticated.",
+            },
         ], content
 
         # With authentication
         self.force_login(self.user)
-        content = self._create_gallery_item(image_data)
-        response_data = content["data"]["addGalleryItem"]
+        content = self._create_gallery_mutation(gallery_data)
+        response_data = content["data"]["createGallery"]
 
         assert response_data["errors"] is None, content
-        assert response_data["result"]["imageType"] == ImageTypeEnum.ARTWORK
+        assert response_data["result"]["name"] == gallery_data["name"]
+        assert response_data["result"]["description"] == gallery_data["description"]
+        assert response_data["result"]["isArchived"] is False
+
+    def test_update_gallery_mutation(self):
+        gallery = GalleryFactory.create(
+            name="gallelllllry",
+            description="galleryyyy description",
+        )
+        updated_gallery_data = {
+            "name": "updated gallelllllry",
+            "description": "updated galleryyyy description",
+        }
+        # Without authentication
+        content = self._update_gallery_mutation(self.gID(gallery.pk), updated_gallery_data)
+        assert content["data"]["updateGallery"]["messages"] == [
+            {
+                "code": None,
+                "field": "updateGallery",
+                "kind": "PERMISSION",
+                "message": "User is not authenticated.",
+            },
+        ], content
+        # With authentication
+        self.force_login(self.user)
+        content = self._update_gallery_mutation(self.gID(gallery.pk), updated_gallery_data)
+        response_data = content["data"]["updateGallery"]
+        assert response_data["errors"] is None, content
+        assert response_data["result"]["name"] == updated_gallery_data["name"]
+        assert response_data["result"]["description"] == updated_gallery_data["description"]
+        assert response_data["result"]["id"] == self.gID(gallery.pk)
+
+    def test_archive_gallery_mutation(self):
+        gallery = GalleryFactory.create(
+            name="gallery name",
+            description="gallery descccc",
+            is_archived=False,
+        )
+        # Without authentication
+        content = self._archive_gallery_mutation(self.gID(gallery.pk))
+        assert content["data"]["archiveGallery"]["messages"] == [
+            {
+                "code": None,
+                "field": "archiveGallery",
+                "kind": "PERMISSION",
+                "message": "User is not authenticated.",
+            },
+        ], content
+
+        # With authentication
+        self.force_login(self.user)
+        content = self._archive_gallery_mutation(self.gID(gallery.pk))
+        resp_data = content["data"]["archiveGallery"]
+        assert resp_data["errors"] is None, content
+        gallery.refresh_from_db()
+        assert gallery.is_archived is True
+
+
+class TestGalleryItemMutations(TestCase):
+    class Mutation:
+        ADD_GALLERY_ITEM = """
+            mutation AddGalleryItem($data: GalleryItemInput!) {
+                addGalleryItem(data: $data) {
+                    ... on GalleryItemTypeMutationResponseType {
+                        errors
+                        result {
+                            caption
+                            id
+                            isArchived
+                            gallery {
+                                id
+                            }
+                        }
+                    }
+                    ... on OperationInfo {
+                        __typename
+                        messages {
+                            code
+                            field
+                            kind
+                            message
+                        }
+                    }
+                }
+            }
+        """
+
+        UPDATE_GALLERY_ITEM = """
+            mutation UpdateGalleryItem($data: GalleryItemUpdateInput!, $pk: ID!) {
+                updateGalleryItem(data: $data, pk: $pk) {
+                    ... on GalleryItemTypeMutationResponseType {
+                        errors
+                        result {
+                            caption
+                            id
+                            isArchived
+                            gallery {
+                                id
+                            }
+                            image {
+                                url
+                            }
+                        }
+                    }
+                    ... on OperationInfo {
+                        __typename
+                        messages {
+                            code
+                            kind
+                            field
+                            message
+                        }
+                    }
+                }
+            }
+        """
+
+        ARCHIVE_GALLERY_ITEM = """
+            mutation ArchiveGalleryItem($pk: ID!) {
+                archiveGalleryItem(pk: $pk) {
+                    ... on GalleryItemTypeMutationResponseType {
+                        errors
+                    }
+                    ... on OperationInfo {
+                        __typename
+                        messages {
+                            code
+                            kind
+                            field
+                            message
+                        }
+                    }
+                }
+            }
+        """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = UserFactory.create(email="testuseritem@example.com")
+        cls.gallery = GalleryFactory.create(
+            name="Test Gallery",
+            description="Desc",
+        )
+
+    def _add_gallery_item(self, data: dict, **kwargs):
+        return image_query(
+            query_check_func=self.query_check,
+            query=self.Mutation.ADD_GALLERY_ITEM,
+            data=data,
+        )
+
+    def _update_gallery_item(self, pk, data):
+        return self.query_check(
+            self.Mutation.UPDATE_GALLERY_ITEM,
+            variables={
+                "pk": pk,
+                "data": data,
+            },
+        )
+
+    def _archive_gallery_item(self, pk):
+        return self.query_check(
+            self.Mutation.ARCHIVE_GALLERY_ITEM,
+            variables={"pk": pk},
+        )
+
+    def test_add_gallery_item(self):
+        data = {
+            "caption": "Test Caption",
+            "gallery": self.gID(self.gallery.pk),
+        }
+        # Without auth
+        content = self._add_gallery_item(data)
+        assert content["data"]["addGalleryItem"]["messages"] == [
+            {
+                "code": None,
+                "field": "addGalleryItem",
+                "kind": "PERMISSION",
+                "message": "User is not authenticated.",
+            },
+        ], content
+        # With auth
+        self.force_login(self.user)
+        content = self._add_gallery_item(data)
+        result = content["data"]["addGalleryItem"]["result"]
+        assert result["caption"] == data["caption"]
+        assert result["gallery"]["id"] == self.gID(self.gallery.pk)
+        self.gallery_item_id = result["id"]
+
+    def test_update_gallery_item(self):
+        item = GalleryItemFactory.create(
+            caption="captionnnnnn",
+            is_archived=False,
+            gallery=self.gallery,
+        )
+        update_data = {
+            "caption": "Updated caption",
+        }
+        self.force_login(self.user)
+        content = self._update_gallery_item(self.gID(item.pk), update_data)
+        response_data = content["data"]["updateGalleryItem"]
+        assert response_data["result"]["gallery"]["id"] == self.gID(self.gallery.pk)
+        assert response_data["result"]["image"]["url"] is not None
+        assert response_data["result"]["caption"] == update_data["caption"]
+
+    def test_archive_gallery_item_mutation(self):
+        item = GalleryItemFactory.create(
+            caption="Caption2",
+            is_archived=False,
+            gallery=self.gallery,
+        )
+        # Without authentication
+        content = self._archive_gallery_item(self.gID(item.pk))
+        assert content["data"]["archiveGalleryItem"]["messages"] == [
+            {
+                "code": None,
+                "field": "archiveGalleryItem",
+                "kind": "PERMISSION",
+                "message": "User is not authenticated.",
+            },
+        ], content
+
+        # With authentication
+        self.force_login(self.user)
+        content = self._archive_gallery_item(self.gID(item.pk))
+        resp_data = content["data"]["archiveGalleryItem"]
+        assert resp_data["errors"] is None, content
+        item.refresh_from_db()
+        assert item.is_archived is True
+
+
+class TestArtworkMutations(TestCase):
+    class Mutation:
+        CREATE_ARTWORK = """
+        mutation CreateArtwork($data: ArtworkInput!) {
+            createArtwork(data: $data) {
+                ... on ArtworkTypeMutationResponseType {
+                    errors
+                    result {
+                        id
+                        name
+                        image {
+                            url
+                        }
+                    }
+                }
+                ... on OperationInfo {
+                    __typename
+                    messages {
+                        code
+                        field
+                        kind
+                        message
+                    }
+                }
+            }
+        }
+    """
+
+        DELETE_ARTWORK = """
+        mutation DeleteArtwork($data: ArtWorkDeleteInput!) {
+            deleteArtwork(data: $data) {
+                ... on OperationInfo {
+                    __typename
+                    messages {
+                        code
+                        field
+                        kind
+                        message
+                    }
+                }
+            }
+        }
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = UserFactory.create(email="artwork@example.com")
+
+    def _create_artwork(self, data: dict, **kwargs):
+        return image_query(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_ARTWORK,
+            data=data,
+        )
+
+    def _delete_artwork(self, artwork_id: str):
+        return self.query_check(
+            self.Mutation.DELETE_ARTWORK,
+            variables={
+                "data": {
+                    "id": artwork_id,
+                },
+            },
+        )
+
+    def test_create_artwork_mutation(self):
+        artwork = {"name": "artwork-1"}
+        # Without authentication
+        content = self._create_artwork(artwork)
+        assert content["data"]["createArtwork"]["messages"] == [
+            {
+                "code": None,
+                "field": "createArtwork",
+                "kind": "PERMISSION",
+                "message": "User is not authenticated.",
+            },
+        ], content
+
+        # With authentication
+        self.force_login(self.user)
+        content = self._create_artwork(artwork)
+        result = content["data"]["createArtwork"]["result"]
+        assert result["name"] == artwork["name"]
+        assert result["id"] is not None
+        assert result["image"]["url"] is not None

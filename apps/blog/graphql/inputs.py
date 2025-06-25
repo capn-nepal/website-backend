@@ -20,11 +20,11 @@ class CreateBlogInput:
 class UpdateBlogInput:
     title: strawberry.auto
     published_date: strawberry.auto
-    author: strawberry.auto
     description: strawberry.auto
     featured: strawberry.auto
     content: strawberry.auto
     status: strawberry.auto
+    author: strawberry.ID | None = strawberry.UNSET
     cover_image: Upload | None = strawberry.UNSET
 
 

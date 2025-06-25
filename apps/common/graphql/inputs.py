@@ -3,10 +3,11 @@ import strawberry_django
 from strawberry.file_uploads import Upload
 
 from apps.common.models import (
+    Artwork,
     Event,
     EventAsset,
+    Gallery,
     GalleryItem,
-    ImageTypeEnum,
     Report,
     YouTubeVideo,
 )
@@ -55,12 +56,38 @@ class UpdateReportInput:
 
 @strawberry_django.input(GalleryItem)
 class GalleryItemInput:
+    caption: strawberry.auto
     image: Upload
-    image_type: ImageTypeEnum
+    gallery: strawberry.ID
 
 
 @strawberry_django.partial(GalleryItem)
-class DeleteGalleryItemInput:
+class GalleryItemUpdateInput:
+    caption: strawberry.auto
+    image: Upload | None = strawberry.UNSET
+    gallery: strawberry.ID | None = strawberry.UNSET
+
+
+@strawberry_django.input(Gallery)
+class GalleryInput:
+    name: strawberry.auto
+    description: strawberry.auto
+
+
+@strawberry_django.partial(Gallery)
+class GalleryUpdateInput:
+    name: strawberry.auto
+    description: strawberry.auto
+
+
+@strawberry_django.input(Artwork)
+class ArtworkInput:
+    name: strawberry.auto
+    image: Upload
+
+
+@strawberry_django.input(Artwork)
+class DeleteArtWorkInput:
     id: strawberry.auto
 
 

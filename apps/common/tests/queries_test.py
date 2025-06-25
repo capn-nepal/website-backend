@@ -1,5 +1,8 @@
 from apps.common.factories import (
+    ArtworkFactory,
     EventFactory,
+    GalleryFactory,
+    GalleryItemFactory,
     ReportFactory,
     YouTubeVideoFactory,
 )
@@ -215,6 +218,208 @@ class TestYouTubeVideoQuery(TestCase):
                         videoUrl=video.video_url,
                     )
                     for video in videos
+                ],
+            ),
+        }, content
+
+
+class TestArtWorksQuery(TestCase):
+    class Query:
+        ARTWORKS = """
+            query artWorks($pagination: OffsetPaginationInput, $order: ArtworkOrder) {
+                artWorks(pagination: $pagination, order: $order) {
+                    totalCount
+                    pageInfo {
+                        offset
+                        limit
+                    }
+                    results {
+                        id
+                        name
+                        image {
+                            url
+                        }
+                    }
+                }
+            }
+        """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.artworks = [
+            ArtworkFactory.create(
+                name="Mona Lisa",
+            ),
+            ArtworkFactory.create(
+                name="Starry Night",
+            ),
+        ]
+
+    def test_artworks_query(self):
+        def _query():
+            return self.query_check(
+                self.Query.ARTWORKS,
+                variables={
+                    "pagination": {"limit": 10, "offset": 0},
+                    "order": {"id": "ASC"},
+                },
+            )
+
+        content = _query()
+        assert content["data"]["artWorks"] == {
+            **self.g_pagination(
+                offset=0,
+                limit=10,
+                total_count=2,
+                results=[
+                    {
+                        "id": self.gID(artwork.pk),
+                        "name": artwork.name,
+                        "image": {
+                            "url": f"http://testserver{artwork.image.url if artwork.image else None}",
+                        },
+                    }
+                    for artwork in self.artworks
+                ],
+            ),
+        }, content
+
+
+class TestGalleryQuery(TestCase):
+    class Query:
+        GALLERIES = """
+            query galleries($pagination: OffsetPaginationInput, $order: GalleryOrder) {
+                galleries(pagination: $pagination, order: $order) {
+                    totalCount
+                    pageInfo {
+                        offset
+                        limit
+                    }
+                    results {
+                        description
+                        id
+                        isArchived
+                        name
+                    }
+                }
+            }
+        """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.galleries = [
+            GalleryFactory.create(
+                name="Gallery 1",
+                description="Description1",
+                is_archived=False,
+            ),
+            GalleryFactory.create(
+                name="Gallery2",
+                description="Description2",
+                is_archived=False,
+            ),
+        ]
+
+    def test_gallery_query(self):
+        def _query():
+            return self.query_check(
+                self.Query.GALLERIES,
+                variables={
+                    "pagination": {"limit": 10, "offset": 0},
+                    "order": {"id": "ASC"},
+                },
+            )
+
+        content = _query()
+        assert content["data"]["galleries"] == {
+            **self.g_pagination(
+                offset=0,
+                limit=10,
+                total_count=2,
+                results=[
+                    {
+                        "id": self.gID(gallery.pk),
+                        "name": gallery.name,
+                        "description": gallery.description,
+                        "isArchived": gallery.is_archived,
+                    }
+                    for gallery in self.galleries
+                ],
+            ),
+        }, content
+
+
+class TestGalleryItemQuery(TestCase):
+    class Query:
+        GALLERY_ITEMS = """
+            query galleryItems($pagination: OffsetPaginationInput, $order: GalleryItemOrder) {
+                galleryItems(pagination: $pagination, order: $order) {
+                    totalCount
+                    pageInfo {
+                        limit
+                        offset
+                    }
+                    results {
+                        caption
+                        id
+                        isArchived
+                        gallery {
+                            id
+                        }
+                        image {
+                            url
+                        }
+                    }
+                }
+            }
+        """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.gallery = GalleryFactory.create()
+        cls.gallery_items = [
+            GalleryItemFactory.create(
+                caption="Caption1",
+                is_archived=False,
+                gallery=cls.gallery,
+            ),
+            GalleryItemFactory.create(
+                caption="Caption2",
+                is_archived=False,
+                gallery=cls.gallery,
+            ),
+        ]
+
+    def test_gallery_items_query(self):
+        def _query():
+            return self.query_check(
+                self.Query.GALLERY_ITEMS,
+                variables={
+                    "pagination": {"limit": 10, "offset": 0},
+                    "order": {"id": "ASC"},
+                },
+            )
+
+        content = _query()
+        assert content["data"]["galleryItems"] == {
+            **self.g_pagination(
+                offset=0,
+                limit=10,
+                total_count=2,
+                results=[
+                    {
+                        "id": self.gID(item.pk),
+                        "caption": item.caption,
+                        "isArchived": item.is_archived,
+                        "image": {
+                            "url": f"http://testserver{item.image.url if item.image else None}",
+                        },
+                        "gallery": {"id": self.gID(item.gallery.pk)},
+                    }
+                    for item in self.gallery_items
                 ],
             ),
         }, content
