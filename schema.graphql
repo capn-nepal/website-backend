@@ -158,7 +158,7 @@ type BlogAssetsTypeOffsetPaginated {
 }
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status, slug)
 """
 input BlogFilter {
   id: IDBaseFilterLookup
@@ -176,7 +176,7 @@ input BlogOrder {
 }
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status, slug)
 """
 type BlogType {
   id: ID!
@@ -226,7 +226,7 @@ input CreateBlogAssetsInput {
 union CreateBlogAssetsPayload = BlogAssetsTypeMutationResponseType | OperationInfo
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status, slug)
 """
 input CreateBlogInput {
   title: String!
@@ -278,7 +278,7 @@ input CreateJobVacancyInput {
 union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug)
 """
 input CreateNewsInput {
   title: String!
@@ -327,13 +327,14 @@ input CreatePositionInput {
 union CreatePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
 """
-Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, status)
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, cover_image, status)
 """
 input CreateReportInput {
   title: String!
   description: String!
   publishedDate: Date!
   reportFile: Upload!
+  coverImage: Upload!
 }
 
 union CreateReportPayload = ReportTypeMutationResponseType | OperationInfo
@@ -797,7 +798,7 @@ type Mutation {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug)
 """
 input NewsFilter {
   id: IDBaseFilterLookup
@@ -814,7 +815,7 @@ input NewsOrder {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug)
 """
 type NewsType {
   id: ID!
@@ -822,7 +823,8 @@ type NewsType {
   description: String!
   publishedDate: DateTime!
   status: StatusEnum!
-  newsType: NewsTypeEnum!
+  slug: String!
+  newsType: String!
 }
 
 enum NewsTypeEnum {
@@ -1007,7 +1009,7 @@ type PositionType {
   name: String!
   summary: String!
   description: String!
-  employmentType: EmploymentTypeEnum!
+  employmentType: String!
 }
 
 type PositionTypeMutationResponseType {
@@ -1068,7 +1070,7 @@ type Query {
 }
 
 """
-Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, status)
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, cover_image, status)
 """
 input ReportFilter {
   id: IDBaseFilterLookup
@@ -1084,7 +1086,7 @@ input ReportOrder {
 }
 
 """
-Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, status)
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, cover_image, status)
 """
 type ReportType {
   id: ID!
@@ -1093,6 +1095,7 @@ type ReportType {
   publishedDate: Date!
   reportFile: DjangoFileType!
   status: StatusEnum!
+  coverImage: DjangoFileType!
 }
 
 type ReportTypeMutationResponseType {
@@ -1191,7 +1194,7 @@ type TeamMemberType {
   lastName: String!
   designation: String!
   memberPhoto: DjangoFileType
-  memberType: TeamMemberTypeEnum!
+  memberType: String!
 }
 
 enum TeamMemberTypeEnum {
@@ -1226,7 +1229,7 @@ input UpdateAuthorInput {
 union UpdateAuthorPayload = AuthorTypeMutationResponseType | OperationInfo
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, description, cover_image, featured, status, slug)
 """
 input UpdateBlogInput {
   title: String
@@ -1271,7 +1274,7 @@ input UpdateJobVacancyInput {
 union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type)
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug)
 """
 input UpdateNewsInput {
   title: String
@@ -1321,7 +1324,7 @@ input UpdatePositionInput {
 union UpdatePositionPayload = PositionTypeMutationResponseType | OperationInfo
 
 """
-Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, status)
+Report(id, created_at, modified_at, created_by, modified_by, title, description, published_date, report_file, cover_image, status)
 """
 input UpdateReportInput {
   title: String
@@ -1329,6 +1332,7 @@ input UpdateReportInput {
   publishedDate: Date
   status: StatusEnum
   reportFile: Upload
+  coverImage: Upload
 }
 
 union UpdateReportPayload = ReportTypeMutationResponseType | OperationInfo

@@ -145,7 +145,7 @@ class TestPositionQuery(TestCase):
                         name=position.name,
                         summary=position.summary,
                         description=position.description,
-                        employmentType=position.employment_type.name,
+                        employmentType=position.employment_type.label,
                     )
                     for position in self.positions
                 ],

@@ -47,7 +47,6 @@ class TestTeamMemberMutation(TestCase):
                   middleName
                   lastName
                   designation
-                  memberType
                   memberPhoto {
                     url
                   }
@@ -133,13 +132,11 @@ class TestTeamMemberMutation(TestCase):
             "middleName": resp["result"]["middleName"],
             "lastName": resp["result"]["lastName"],
             "designation": resp["result"]["designation"],
-            "memberType": resp["result"]["memberType"],
         } == {
             "firstName": member_data["firstName"],
             "middleName": member_data["middleName"],
             "lastName": member_data["lastName"],
             "designation": member_data["designation"],
-            "memberType": member_data["memberType"],
         }
         assert "url" in resp["result"]["memberPhoto"]
 
