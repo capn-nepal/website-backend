@@ -1,8 +1,10 @@
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_choices_field import IntegerChoicesField
 
 from apps.common.models import StatusEnum, UserResource
+from utils.common import unique_slugify
 
 
 class Author(UserResource):
@@ -30,6 +32,12 @@ class Blog(UserResource):
     )
     featured = models.BooleanField(verbose_name=_("Featured"), default=False)
     status: int = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)  # type: ignore[reportAssignmentType]
+    slug = models.SlugField(unique=True, max_length=250, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, slugify(self.title))
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
