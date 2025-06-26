@@ -23,7 +23,7 @@ app:
   # NOTE: Check main/settings.py for all available options
   env:
     # AWS
-    AWS_S3_ENABLED: "true"
+    AWS_S3_ENABLED: "false"
     AWS_S3_ENDPOINT_URL: "https://capn.minio.com"
     AWS_S3_STATIC_BUCKET_NAME: "static-data"
     AWS_S3_MEDIA_BUCKET_NAME: "media-data"
@@ -31,13 +31,21 @@ app:
     SESSION_COOKIE_DOMAIN: .test.com
     CSRF_COOKIE_DOMAIN: .test.com
     APP_TYPE: "WEB"
+    APP_DOMAIN: "https://capn-nepal.com"
+    APP_RELEASE: "1.1.1"
+    DJANGO_DEBUG: "false"
+    FRONTEND_DOMAIN: "https://capn-frontend.com"
+    SESSION_COOKIE_DOMAIN: "https://capn-session.com"
+    CSRF_COOKIE_DOMAIN: "https://capn-cookie.com"
+    SENTRY_ENABLED: "false"
+    TIME_ZONE: "Asia/Kathmandu"
 
   # NOTE: Check main/settings.py for all available options
   secrets:
-    DJANGO_SECRET_KEY: very-secret-key
+    DJANGO_SECRET_KEY: "very-secret-key"
     # Postgres
     POSTGRES_DB: "test"
-    POSTGRES_USER: "postgres"
+    POSTGRES_USER: "test"
     POSTGRES_PASSWORD: "test"
     POSTGRES_HOST: "test"
     POSTGRES_PORT: "test"
