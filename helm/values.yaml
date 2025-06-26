@@ -125,7 +125,7 @@ app:
     SENTRY_PROFILE_SAMPLE_RATE: "0.2"
 
   secrets:
-    DJANGO_SECRET_KEY: "thoh-2i##o2j^6--_sg-oq!j9ohqipx3_a-c2+"
+    DJANGO_SECRET_KEY: "{{ required \".Values.secrets.DJANGO_SECRET_KEY\" nil }}"
     # Postgres
     POSTGRES_DB: "{{ $.Values.postgresql.auth.database }}"
     POSTGRES_USER: "postgres"
