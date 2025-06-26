@@ -5,21 +5,41 @@ app:
     tag: latest
 
   ingress:
-    host: api.example.com
+    enabled: true
+    className: nginx
+    host: api.test.com
 
+  redis:
+    master:
+      persistence:
+        size: .5Gi
+        storageClass: longhorn
   postgresql:
+    enabled: true
+    auth:
+      postgresPassword: "testing-passowrd"
+      username: "test"
+      password: "testing-passowrd"
+      database: "test"
     primary:
       persistence:
-        storageClass: my-storage-class
+        storageClass: "longhorn"
+        size: 1Gi
 
   minio:
+    enabled: true
     global:
-      defaultStorageClass: my-storage-class
+      defaultStorageClass: longhorn
     apiIngress:
-      hostname: minio.example.com
+      enabled: true
+      ingressClassName: nginx
+      hostname: capn-minio-test.com
     auth:
-      rootPassword: very-secure-password
-
+      rootUser: timur
+      rootPassword: capan-passowrd
+    persistence:
+      enabled: true
+      size: 0.5Gi
   # NOTE: Check main/settings.py for all available options
   env:
     # AWS
