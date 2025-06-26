@@ -73,7 +73,7 @@ class EventAssetsSerializer(serializers.ModelSerializer):
 class CreateReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = ("title", "description", "published_date", "report_file")
+        fields = ("title", "description", "published_date", "report_file", "cover_image")
 
     def create(self, validated_data):
         validated_data["created_by"] = self.context["request"].user
@@ -84,7 +84,7 @@ class CreateReportSerializer(serializers.ModelSerializer):
 class UpdateReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = ("title", "description", "published_date", "report_file", "status")
+        fields = ("title", "description", "published_date", "report_file", "cover_image", "status")
 
     def update(self, instance, validated_data):
         user = self.context["request"].user

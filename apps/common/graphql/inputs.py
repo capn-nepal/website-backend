@@ -43,6 +43,7 @@ class CreateReportInput:
     description: strawberry.auto
     published_date: strawberry.auto
     report_file: Upload
+    cover_image: Upload
 
 
 @strawberry_django.partial(Report)
@@ -52,6 +53,7 @@ class UpdateReportInput:
     published_date: strawberry.auto
     status: strawberry.auto
     report_file: Upload | None = strawberry.UNSET
+    cover_image: Upload | None = strawberry.UNSET
 
 
 @strawberry_django.input(GalleryItem)

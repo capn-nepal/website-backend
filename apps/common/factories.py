@@ -39,6 +39,7 @@ class ReportFactory(DjangoModelFactory):
             content_type="text/csv",
         ),
     )
+    cover_image = factory.LazyFunction(lambda: ContentFile(b"fake_image_data", name="fake_report_cover_image.jpg"))
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         model = Report
