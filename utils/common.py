@@ -1,5 +1,7 @@
 import copy
+from typing import TypeVar
 
+from django.db.models import Model
 from django.utils.crypto import get_random_string
 
 
@@ -20,7 +22,10 @@ def clean_up_none_keys(data):
     return _clone_data
 
 
-def unique_slugify(instance, slug):
+T = TypeVar("T", bound=Model)
+
+
+def unique_slugify(instance: T, slug: str) -> str:
     model = instance.__class__
     unique_slug = slug
     while model.objects.filter(slug=unique_slug).exists():
