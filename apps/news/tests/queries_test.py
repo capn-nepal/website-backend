@@ -64,7 +64,7 @@ class TestNewsQuery(TestCase):
                         id=self.gID(news.id),
                         title=news.title,
                         description=news.description,
-                        newsType=NewsTypeEnum.NEWS.name,
+                        newsType=NewsTypeEnum.NEWS.label,
                         status=StatusEnum.DRAFT.name,
                     )
                     for news in news_items

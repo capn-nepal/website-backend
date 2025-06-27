@@ -124,7 +124,7 @@ class TestNewsMutation(TestCase):
         assert response_data["errors"] is None, content
         assert response_data["result"]["title"] == update_data["title"]
         assert response_data["result"]["description"] == update_data["description"]
-        assert response_data["result"]["newsType"] == NewsTypeEnum.NEWS.name
+        assert response_data["result"]["newsType"] == NewsTypeEnum.NEWS.label
         assert response_data["result"]["status"] == StatusEnum.DRAFT.name
 
         news.refresh_from_db()

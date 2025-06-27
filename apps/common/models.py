@@ -63,6 +63,7 @@ class Report(UserResource):
     description = models.TextField(verbose_name=_("Description"))
     published_date = models.DateField(verbose_name=_("Published Date"))
     report_file = models.FileField(upload_to="reports/", verbose_name=_("Report File"))
+    cover_image = models.ImageField(upload_to="report_cover_image/", verbose_name=_("Report File"))
     status: int = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)  # type: ignore[reportAssignmentType]
 
     def __str__(self):

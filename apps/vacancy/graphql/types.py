@@ -1,7 +1,8 @@
 import strawberry
 import strawberry_django
+from asgiref.sync import sync_to_async
 
-from apps.vacancy.models import JobVacancy, Position
+from apps.vacancy.models import EmploymentTypeEnum, JobVacancy, Position
 
 
 @strawberry_django.type(Position)
@@ -10,7 +11,11 @@ class PositionType:
     name: strawberry.auto
     summary: strawberry.auto
     description: strawberry.auto
-    employment_type: strawberry.auto
+
+    @strawberry.field
+    @sync_to_async
+    def employment_type(self) -> str:
+        return EmploymentTypeEnum(self.employment_type).label
 
 
 @strawberry_django.type(JobVacancy)

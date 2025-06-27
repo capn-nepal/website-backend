@@ -50,6 +50,7 @@ class ReportType:
     published_date: strawberry.auto
     report_file: strawberry.auto
     status: strawberry.auto
+    cover_image: strawberry.auto
 
 
 @strawberry_django.type(Gallery)
