@@ -17,7 +17,7 @@ env = environ.Env(
     # Django
     DEBUG=(bool, False),
     ENABLE_DEBUG_TOOLBAR=(bool, False),
-    SECRET_KEY=str,
+    DJANGO_SECRET_KEY=str,
     ADDITIONAL_ALLOWED_HOSTS=(list, []),  # Eg: api.example.org
     APP_ENVIRONMENT=str,  # DEV, STAGE, PROD
     APP_TYPE=str,  # WEB, WORKER, WORKER-BEAT
@@ -28,7 +28,7 @@ env = environ.Env(
     FRONTEND_DOMAIN=str,  # Eg: https://web.example.org
     SESSION_COOKIE_DOMAIN=str,  # .example.com
     CSRF_COOKIE_DOMAIN=str,  # .example.com
-    TC_CMS_ADDITIONAL_TRUSTED_ORIGINS=(list, []),  # https://app1.example.com,https://app2.example.com
+    ADDITIONAL_TRUSTED_ORIGINS=(list, []),  # https://app1.example.com,https://app2.example.com
     # NOTE: Changing TIME_ZONE will break celery periodic tasks https://django-celery-beat.readthedocs.io/en/latest/#important-warning-about-time-zones
     TIME_ZONE=(str, "UTC"),
     # Database
@@ -52,14 +52,6 @@ env = environ.Env(
     # -- Filesystem (default) XXX: Don't use in production
     MEDIA_ROOT=(str, BASE_DIR / "data/media"),
     STATIC_ROOT=(str, BASE_DIR / "data/static"),
-    # Email
-    EMAIL_HOST=str,
-    EMAIL_SUBJECT_PREFIX=(str, "CMS:"),
-    EMAIL_USE_TLS=(bool, True),
-    EMAIL_PORT=(int, 587),
-    EMAIL_HOST_USER=str,
-    EMAIL_HOST_PASSWORD=str,
-    DEFAULT_FROM_EMAIL=str,
     # Sentry
     SENTRY_ENABLED=(bool, False),
     SENTRY_DEBUG=(bool, False),
@@ -80,7 +72,7 @@ FRONTEND_DOMAIN = env.url("FRONTEND_DOMAIN")
 APP_ENVIRONMENT = env("APP_ENVIRONMENT").upper()
 APP_TYPE = env("APP_TYPE").upper()
 APP_RELEASE = env("APP_RELEASE") or fetch_git_sha(BASE_DIR, raise_on_error=False)
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 DEBUG = env("DEBUG")
 
@@ -266,32 +258,22 @@ else:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Email config
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_SUBJECT_PREFIX = env("EMAIL_SUBJECT_PREFIX")
-EMAIL_USE_TLS = env("EMAIL_USE_TLS")
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-
 PREMAILER_OPTIONS = dict(
     disable_validation=not DEBUG,  # Enable validation in DEBUG only
 )
 
-HEALTHCHECK_CACHE_KEY = "tc_cms_healthcheck_key"
+HEALTHCHECK_CACHE_KEY = "capn_healthcheck_key"
 
 # Security Header configuration
 
-TC_CMS_TRUSTED_ORIGINS = [
+TRUSTED_ORIGINS = [
     APP_DOMAIN.geturl(),
     FRONTEND_DOMAIN.geturl(),
-    *env("TC_CMS_ADDITIONAL_TRUSTED_ORIGINS"),
+    *env("ADDITIONAL_TRUSTED_ORIGINS"),
 ]
 
-SESSION_COOKIE_NAME = f"TC_CMS-{APP_ENVIRONMENT}-SESSIONID"
-CSRF_COOKIE_NAME = f"TC_CMS-{APP_ENVIRONMENT}-CSRFTOKEN"
+SESSION_COOKIE_NAME = f"CAPN-{APP_ENVIRONMENT}-SESSIONID"
+CSRF_COOKIE_NAME = f"CAPN-{APP_ENVIRONMENT}-CSRFTOKEN"
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
@@ -305,7 +287,7 @@ if APP_DOMAIN.scheme == "https":
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    CSRF_TRUSTED_ORIGINS = TC_CMS_TRUSTED_ORIGINS
+    CSRF_TRUSTED_ORIGINS = TRUSTED_ORIGINS
 
 # -- https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SESSION_COOKIE_DOMAIN
 SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN")
@@ -314,9 +296,9 @@ CSRF_COOKIE_DOMAIN = env("CSRF_COOKIE_DOMAIN")
 
 
 # CORS
-CORS_ALLOWED_ORIGINS = TC_CMS_TRUSTED_ORIGINS
+CORS_ALLOWED_ORIGINS = TRUSTED_ORIGINS
 # NOTE: I added this here, @thenav56, is this necessary?
-CSRF_TRUSTED_ORIGINS = TC_CMS_TRUSTED_ORIGINS
+CSRF_TRUSTED_ORIGINS = TRUSTED_ORIGINS
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_URLS_REGEX = r"(^/media/.*$)|(^/graphql/$)"

@@ -5,62 +5,127 @@ app:
 
   ingress:
     enabled: true
-    className: nginx
+    className:
 
   redis:
-    enabled: true
+    enabled: false
+    architecture:
+    fullnameOverride:
+    auth:
+      enabled: false
+    master:
+      persistence:
+        enabled: true
+        size: .5Gi
+        storageClass:
 
   postgresql:
     enabled: true
-    fullnameOverride: "tccms-postgres"
+    fullnameOverride: "capn-postgresql"
+    architecture: standalone
     auth:
-      database: "tccms"
+      postgresPassword:
+      username:
+      password:
+      database:
     primary:
       persistence:
+        enabled: "true"
         storageClass:
-        size: "2Gi"
+        size: 1Gi
 
   minio:
-    enabled: true
-    fullnameOverride: tccms-minio
+    enabled: false
+    disableWebUI: true
+    mode: standalone
+    fullnameOverride: capn-minio
     global:
       defaultStorageClass:
     apiIngress:
-      ingressClassName: nginx
+      enabled: true
+      ingressClassName:
+      hostname:
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     auth:
-      rootUser: tccms
+      forceNewKeys: true
+      rootUser: capn
       rootPassword:
     persistence:
-      size: "1Gi"
-    defaultBuckets: static-data,media-data
+      enabled: true
+      size: 1Gi
+    defaultBuckets: capn-static,capn-media
     provisioning:
+      enabled: true
+      resourcesPreset: "nano"
+      cleanupAfterFinished:
+        enabled: true
       extraCommands:
-        - "mc anonymous set download provisioning/static-data"
+        - "mc anonymous set download provisioning/capn-static"
 
   api:
+    enabled: true
+    replicaCount: 1
     containerPort: 80
-    command: ["gunicorn", "config.wsgi:application", "--timeout=40", "--bind", "0.0.0.0:80"]
+    command: ["gunicorn", "main.wsgi:application", "--timeout=40", "--bind", "0.0.0.0:80"]
     resources:
       requests:
-        cpu: "0.2"
+        cpu: "1"
+        memory: 0.5Gi
+      limits:
+        cpu: "4"
+        memory: 1Gi
+
+  argoHook:
+    enabled: true
+    resources:
+      requests:
+        cpu: "0.1"
+        memory: 1Gi
+      limits:
+        cpu: "1"
+        memory: 2Gi
+    hooks:
+      db-migrate:
+        enabled: true
+        hook: PostSync
+        preserveHistory: true
+        command: ["/bin/bash", "-c"]
+        args:
+          - "./manage.py wait_for_resources --db && ./manage.py migrate"
+      collect-static:
+        enabled: true
+        hook: PostSync
+        command: ["/bin/bash", "-c"]
+        args:
+          - "./manage.py wait_for_resources --minio && ./manage.py collectstatic --noinput"
 
   worker:
-    enabled: true
+    enabled: false
 
-  # NOTE: Check main/settings.py for all available options
   env:
+    APP_RELEASE: "{{ $.Values.image.tag }}"
+    APP_ENVIRONMENT: "{{ $.Values.environment }}"
+    TIME_ZONE: "Asia/Kathmandu"
+    DJANGO_DEBUG: "false"
     # AWS
-    AWS_S3_ENABLED: "true"
+    AWS_S3_ENABLED: "false"
     AWS_S3_ENDPOINT_URL: "https://{{ $.Values.minio.apiIngress.hostname }}/"
-    AWS_S3_STATIC_BUCKET_NAME: "static-data"
-    AWS_S3_MEDIA_BUCKET_NAME: "media-data"
+    AWS_S3_MEDIA_BUCKET_NAME: "capn-media"
+    AWS_S3_STATIC_BUCKET_NAME: "capn-static"
     # App Domain
-    SESSION_COOKIE_DOMAIN: "{{ required \".Values.env.SESSION_COOKIE_DOMAIN\" nil }}"
-    CSRF_COOKIE_DOMAIN: "{{ required \".Values.env.CSRF_COOKIE_DOMAIN\" nil }}"
+    APP_TYPE: "WEB"
+    APP_DOMAIN: "{{ required \".app.env.APP_DOMAIN\" nil }}"
+    FRONTEND_DOMAIN: "{{ required \".app.env.FRONTEND_DOMAIN\" nil }}"
+    SESSION_COOKIE_DOMAIN: "{{ required \".app.env.SESSION_COOKIE_DOMAIN\" nil }}"
+    CSRF_COOKIE_DOMAIN: "{{ required \".app.env.CSRF_COOKIE_DOMAIN\" nil }}"
+    # Sentry
+    SENTRY_ENABLED: "false"
+    SENTRY_TRACES_SAMPLE_RATE: "0.2"
+    SENTRY_PROFILE_SAMPLE_RATE: "0.2"
 
-  # NOTE: Check main/settings.py for all available options
   secrets:
-    SECRET_KEY: "{{ required \".Values.secrets.SECRET_KEY\" nil }}"
+    DJANGO_SECRET_KEY: "{{ required \".Values.secrets.DJANGO_SECRET_KEY\" nil }}"
     # Postgres
     POSTGRES_DB: "{{ $.Values.postgresql.auth.database }}"
     POSTGRES_USER: "postgres"
@@ -68,6 +133,10 @@ app:
     POSTGRES_HOST: "{{ include \"postgresql.v1.primary.fullname\" $.Subcharts.postgresql }}"
     POSTGRES_PORT: "{{ include \"postgresql.v1.service.port\" $.Subcharts.postgresql }}"
     # Minio (S3)
-    AWS_S3_ACCESS_KEY_ID: "{{ required \".Values.minio.auth.rootUser\" $.Values.minio.auth.rootUser }}"
-    AWS_S3_SECRET_ACCESS_KEY: "{{ required \".Values.minio.auth.rootPassword\" $.Values.minio.auth.rootPassword }}"
-    AWS_S3_REGION: "us-east-1"
+    AWS_S3_ACCESS_KEY_ID: "{{ required \".app.minio.auth.rootUser\" $.Values.minio.auth.rootUser }}"
+    AWS_S3_SECRET_ACCESS_KEY: "{{ required \".app.minio.auth.rootPassword\" $.Values.minio.auth.rootPassword }}"
+    AWS_S3_REGION_NAME: "us-east-1"
+    AWS_S3_MEDIA_BUCKET_NAME: "capn-media"
+    AWS_S3_STATIC_BUCKET_NAME: "capn-static"
+    # Misc
+    SENTRY_DSN: "{{ required \".app.secrets.SENTRY_DSN\" nil }}"

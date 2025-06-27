@@ -24,7 +24,7 @@ on:
 
 env:
   COMPOSE_FILE: docker-compose.yaml:.github/gh-docker-compose.yaml
-  SECRET_KEY: "ci-test-insecure-django-secret-key"
+  DJANGO_SECRET_KEY: "insecure-django-secret-key"
 
 jobs:
   pre_commit_checks:
@@ -183,7 +183,7 @@ jobs:
           helm dependency build ./helm/
 
       - name: Helm lint
-        run: helm lint ./helm --values ./helm/values-test.yaml
+        run: helm lint ./helm --values ./helm/linter_values.yaml
 
       - name: Helm template
-        run: helm template ./helm --values ./helm/values-test.yaml
+        run: helm template ./helm --values ./helm/linter_values.yaml

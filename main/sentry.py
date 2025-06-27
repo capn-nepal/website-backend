@@ -39,7 +39,6 @@ class SentryConfig:
     profiles_sample_rate: float
     debug: bool
     # Custom configs
-    monitor_celery_beat_tasks: bool
     app_type: str
     tags: dict[str, str]
 
