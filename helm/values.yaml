@@ -24,14 +24,14 @@ app:
     fullnameOverride: "capn-postgresql"
     architecture: standalone
     auth:
-      postgresPassword:
-      username:
-      password:
-      database:
+      postgresPassword: ""
+      username: ""
+      password: ""
+      database: ""
     primary:
       persistence:
         enabled: "true"
-        storageClass:
+        storageClass: ""
         size: 1Gi
 
   minio:
@@ -90,15 +90,11 @@ app:
         enabled: true
         hook: PostSync
         preserveHistory: true
-        command: ["/bin/bash", "-c"]
-        args:
-          - "./manage.py wait_for_resources --db && ./manage.py migrate"
+        command: ["/bin/bash", "-c", "./manage.py wait_for_resources --db && ./manage.py migrate"]
       collect-static:
         enabled: true
         hook: PostSync
-        command: ["/bin/bash", "-c"]
-        args:
-          - "./manage.py wait_for_resources --minio && ./manage.py collectstatic --noinput"
+        command: ["/bin/bash", "-c", "./manage.py wait_for_resources --minio && ./manage.py collectstatic --noinput"]
 
   worker:
     enabled: false
