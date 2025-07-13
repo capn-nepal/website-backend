@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.models import UserResource
+from utils.fields import SecureImageField
 
 
 class PodcastSeason(UserResource):
@@ -19,7 +20,7 @@ class PodcastEpisode(UserResource):
     episode_number = models.PositiveIntegerField()
     title = models.CharField(max_length=255, verbose_name=_("Episode Title"))
     video_url = models.URLField()
-    thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True)
+    thumbnail = SecureImageField(upload_to="thumbnails/", blank=True, null=True)
     release_date = models.DateTimeField(verbose_name=_("Episode Release Date"))
     is_archived = models.BooleanField(default=False)
 
@@ -45,7 +46,7 @@ class VoxPopEpisode(UserResource):
     episode_number = models.PositiveIntegerField()
     title = models.CharField(max_length=255, verbose_name=_("Episode Title"))
     video_url = models.URLField()
-    thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True)
+    thumbnail = SecureImageField(upload_to="thumbnails/", blank=True, null=True)
     release_date = models.DateTimeField(verbose_name=_("Episode Release Date"))
     is_archived = models.BooleanField(default=False)
 

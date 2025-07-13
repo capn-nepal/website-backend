@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django_choices_field import IntegerChoicesField
 
 from apps.user.models import User
+from utils.fields import SecureFileField, SecureImageField
 
 
 # -- Abstracts
@@ -55,15 +56,15 @@ class EventAsset(UserResource):  # noqa: DJ008
         related_name="%(class)s_file",
         on_delete=models.PROTECT,
     )
-    image = models.ImageField(verbose_name=_("Event Images"))
+    image = SecureImageField(verbose_name=_("Event Images"))
 
 
 class Report(UserResource):
     title = models.CharField(max_length=200, verbose_name=_("Title"))
     description = models.TextField(verbose_name=_("Description"))
     published_date = models.DateField(verbose_name=_("Published Date"))
-    report_file = models.FileField(upload_to="reports/", verbose_name=_("Report File"))
-    cover_image = models.ImageField(upload_to="report_cover_image/", verbose_name=_("Report File"))
+    report_file = SecureFileField(upload_to="reports/", verbose_name=_("Report File"))
+    cover_image = SecureImageField(upload_to="report_cover_image/", verbose_name=_("Report File"))
     status: int = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)  # type: ignore[reportAssignmentType]
 
     def __str__(self):
@@ -81,7 +82,7 @@ class Gallery(UserResource):
 
 class GalleryItem(UserResource):
     gallery = models.ForeignKey(Gallery, related_name="gallery_images", on_delete=models.PROTECT)
-    image = models.ImageField(upload_to="gallery_images/")
+    image = SecureImageField(upload_to="gallery_images/")
     caption = models.CharField(max_length=255, blank=True, verbose_name=_("Image Caption"))
     is_archived = models.BooleanField(default=False)
 
@@ -91,7 +92,7 @@ class GalleryItem(UserResource):
 
 class Artwork(UserResource):
     name = models.CharField(max_length=200, verbose_name=_("Art Work Name"))
-    image = models.ImageField(upload_to="artwork_images/")
+    image = SecureImageField(upload_to="artwork_images/")
 
     def __str__(self):
         return self.name
@@ -100,7 +101,7 @@ class Artwork(UserResource):
 class YouTubeVideo(UserResource):
     title = models.CharField(max_length=255, verbose_name=_("Video Title"))
     video_url = models.URLField(verbose_name=_("Youtube Video Url"))
-    thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True)
+    thumbnail = SecureImageField(upload_to="thumbnails/", blank=True, null=True)
     release_date = models.DateTimeField(verbose_name=_(" Video Release Date"))
     is_archived = models.BooleanField(default=False)
 

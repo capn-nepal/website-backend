@@ -5,11 +5,12 @@ from django_choices_field import IntegerChoicesField
 
 from apps.common.models import StatusEnum, UserResource
 from utils.common import unique_slugify
+from utils.fields import SecureFileField, SecureImageField
 
 
 class Author(UserResource):
     name = models.CharField(max_length=200, verbose_name=("Name"))
-    image = models.ImageField(verbose_name=_("Author Image"), upload_to="author/", null=True, blank=True)
+    image = SecureImageField(verbose_name=_("Author Image"), upload_to="author/", null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -26,7 +27,7 @@ class Blog(UserResource):
     )
     content = models.TextField(verbose_name=_("Content"))
     description = models.CharField(verbose_name=_("Description"))
-    cover_image = models.ImageField(
+    cover_image = SecureImageField(
         upload_to="blogs/",
         verbose_name=_("Cover Image"),
     )
@@ -44,7 +45,7 @@ class Blog(UserResource):
 
 
 class BlogAsset(UserResource):
-    file = models.FileField(verbose_name=_("File"))
+    file = SecureFileField(verbose_name=_("File"))
     blog = models.ForeignKey(
         Blog,
         related_name="%(class)s_file",

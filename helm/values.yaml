@@ -63,6 +63,7 @@ app:
         enabled: true
       extraCommands:
         - "mc anonymous set download provisioning/capn-static"
+        - "mc anonymous set download provisioning/capn-media"
 
   api:
     enabled: true
