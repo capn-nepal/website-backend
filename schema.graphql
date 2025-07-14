@@ -340,7 +340,7 @@ input CreateReportInput {
 union CreateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
 """
 input CreateTeamMemberInput {
   firstName: String!
@@ -436,7 +436,7 @@ input DeleteArtWorkInput {
 union DeleteArtworkPayload = ArtworkType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
 """
 input DeleteTeamMemberInput {
   id: ID
@@ -1169,7 +1169,7 @@ input StrFilterLookup {
 }
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
 """
 input TeamMemberFilter {
   id: IDBaseFilterLookup
@@ -1185,7 +1185,7 @@ input TeamMemberOrder {
 }
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
 """
 type TeamMemberType {
   id: ID!
@@ -1338,7 +1338,7 @@ input UpdateReportInput {
 union UpdateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
 """
 input UpdateTeamMemberInput {
   firstName: String
