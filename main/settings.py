@@ -231,6 +231,7 @@ if env("AWS_S3_ENABLED"):
             "OPTIONS": {
                 **AWS_S3_CONFIG_OPTIONS,
                 "bucket_name": env("AWS_S3_MEDIA_BUCKET_NAME"),
+                "querystring_auth": False,
                 "location": "media/",
                 "file_overwrite": False,
             },
