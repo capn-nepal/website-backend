@@ -13,6 +13,7 @@ class CreateTeamMemberInput:
     designation: strawberry.auto
     member_photo: Upload
     member_type: strawberry.auto
+    bio: strawberry.auto
 
 
 @strawberry_django.partial(TeamMember)
@@ -22,6 +23,7 @@ class UpdateTeamMemberInput:
     last_name: strawberry.auto
     designation: strawberry.auto
     member_type: strawberry.auto
+    bio: strawberry.auto
     member_photo: Upload | None = strawberry.UNSET
 
 

@@ -349,6 +349,7 @@ input CreateTeamMemberInput {
   designation: String!
   memberPhoto: Upload!
   memberType: TeamMemberTypeEnum
+  bio: String
 }
 
 """
@@ -1194,6 +1195,7 @@ type TeamMemberType {
   lastName: String!
   designation: String!
   memberPhoto: DjangoFileType
+  bio: String
   memberType: String!
 }
 
@@ -1346,6 +1348,7 @@ input UpdateTeamMemberInput {
   lastName: String
   designation: String
   memberType: TeamMemberTypeEnum
+  bio: String
   memberPhoto: Upload
 }
 

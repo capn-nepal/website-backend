@@ -13,6 +13,7 @@ class TeamMemberType:
     last_name: strawberry.auto
     designation: strawberry.auto
     member_photo: strawberry.auto
+    bio: strawberry.auto
 
     @strawberry.field
     @sync_to_async
