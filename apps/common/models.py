@@ -40,7 +40,7 @@ class StatusEnum(models.IntegerChoices):
 
 class Event(UserResource):
     name = models.CharField(max_length=200, verbose_name=_("name"))
-    description = models.TextField(max_length=200, verbose_name=_("Description"))
+    description = models.TextField(verbose_name=_("Description"))
     location = models.CharField(verbose_name=_("Location"), null=True, blank=True)
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(verbose_name=_("End Date"))
