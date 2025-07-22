@@ -13,6 +13,10 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             "designation",
             "member_photo",
             "member_type",
+            "bio",
+            "linkedin_link",
+            "instagram_link",
+            "facebook_link",
         )
 
     def create(self, validated_data):

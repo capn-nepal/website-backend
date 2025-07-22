@@ -14,6 +14,9 @@ class TeamMemberType:
     designation: strawberry.auto
     member_photo: strawberry.auto
     bio: strawberry.auto
+    linkedin_link: strawberry.auto
+    instagram_link: strawberry.auto
+    facebook_link: strawberry.auto
 
     @strawberry.field
     @sync_to_async
