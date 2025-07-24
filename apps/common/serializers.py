@@ -37,6 +37,7 @@ class EventSerializer(serializers.ModelSerializer):
             "location",
             "start_date",
             "end_date",
+            "thumbnail",
         )
 
     def create(self, validated_data):

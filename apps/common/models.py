@@ -45,6 +45,7 @@ class Event(UserResource):
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(verbose_name=_("End Date"))
     is_deleted = models.BooleanField(default=False)
+    thumbnail = SecureImageField(upload_to="event-thumbnails/", blank=True, null=True)
 
     def __str__(self):
         return self.name

@@ -33,6 +33,7 @@ class EventType:
     start_date: strawberry.auto
     end_date: strawberry.auto
     description: strawberry.auto
+    thumbnail: strawberry.auto
 
 
 @strawberry_django.type(EventAsset)

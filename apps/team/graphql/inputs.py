@@ -14,6 +14,9 @@ class CreateTeamMemberInput:
     member_photo: Upload
     member_type: strawberry.auto
     bio: strawberry.auto
+    linkedin_link: strawberry.auto
+    instagram_link: strawberry.auto
+    facebook_link: strawberry.auto
 
 
 @strawberry_django.partial(TeamMember)
@@ -24,6 +27,9 @@ class UpdateTeamMemberInput:
     designation: strawberry.auto
     member_type: strawberry.auto
     bio: strawberry.auto
+    linkedin_link: strawberry.auto
+    instagram_link: strawberry.auto
+    facebook_link: strawberry.auto
     member_photo: Upload | None = strawberry.UNSET
 
 

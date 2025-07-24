@@ -20,6 +20,7 @@ class CreateEventInput:
     location: strawberry.auto
     start_date: strawberry.auto
     end_date: strawberry.auto
+    thumbnail: Upload | None = strawberry.UNSET
 
 
 @strawberry_django.partial(Event)
@@ -29,6 +30,7 @@ class UpdateEventInput:
     location: strawberry.auto
     start_date: strawberry.auto
     end_date: strawberry.auto
+    thumbnail: Upload | None = strawberry.UNSET
 
 
 @strawberry_django.input(EventAsset)

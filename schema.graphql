@@ -251,7 +251,7 @@ input CreateEventAssetsInput {
 }
 
 """
-Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted)
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted, thumbnail)
 """
 input CreateEventInput {
   name: String!
@@ -259,6 +259,7 @@ input CreateEventInput {
   location: String
   startDate: Date!
   endDate: Date!
+  thumbnail: Upload
 }
 
 union CreateEventPayload = EventTypeMutationResponseType | OperationInfo
@@ -340,7 +341,7 @@ input CreateReportInput {
 union CreateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
 """
 input CreateTeamMemberInput {
   firstName: String!
@@ -350,6 +351,9 @@ input CreateTeamMemberInput {
   memberPhoto: Upload!
   memberType: TeamMemberTypeEnum
   bio: String
+  linkedinLink: String
+  instagramLink: String
+  facebookLink: String
 }
 
 """
@@ -437,7 +441,7 @@ input DeleteArtWorkInput {
 union DeleteArtworkPayload = ArtworkType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
 """
 input DeleteTeamMemberInput {
   id: ID
@@ -490,7 +494,7 @@ type EventAssetTypeOffsetPaginated {
 }
 
 """
-Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted)
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted, thumbnail)
 """
 input EventFilter {
   id: IDBaseFilterLookup
@@ -506,7 +510,7 @@ input EventOrder {
 }
 
 """
-Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted)
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted, thumbnail)
 """
 type EventType {
   id: ID!
@@ -515,6 +519,7 @@ type EventType {
   startDate: Date!
   endDate: Date!
   description: String!
+  thumbnail: DjangoFileType
 }
 
 type EventTypeMutationResponseType {
@@ -1170,7 +1175,7 @@ input StrFilterLookup {
 }
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
 """
 input TeamMemberFilter {
   id: IDBaseFilterLookup
@@ -1186,7 +1191,7 @@ input TeamMemberOrder {
 }
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
 """
 type TeamMemberType {
   id: ID!
@@ -1196,6 +1201,9 @@ type TeamMemberType {
   designation: String!
   memberPhoto: DjangoFileType
   bio: String
+  linkedinLink: String
+  instagramLink: String
+  facebookLink: String
   memberType: String!
 }
 
@@ -1247,7 +1255,7 @@ input UpdateBlogInput {
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 
 """
-Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted)
+Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted, thumbnail)
 """
 input UpdateEventInput {
   name: String
@@ -1255,6 +1263,7 @@ input UpdateEventInput {
   location: String
   startDate: Date
   endDate: Date
+  thumbnail: Upload
 }
 
 union UpdateEventPayload = EventTypeMutationResponseType | OperationInfo
@@ -1340,7 +1349,7 @@ input UpdateReportInput {
 union UpdateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
 """
 input UpdateTeamMemberInput {
   firstName: String
@@ -1349,6 +1358,9 @@ input UpdateTeamMemberInput {
   designation: String
   memberType: TeamMemberTypeEnum
   bio: String
+  linkedinLink: String
+  instagramLink: String
+  facebookLink: String
   memberPhoto: Upload
 }
 

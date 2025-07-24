@@ -19,6 +19,9 @@ class TeamMember(UserResource):
     designation = models.CharField(max_length=150, verbose_name=_("Designation"))
     member_photo = SecureImageField(upload_to="member_photos/", blank=True, null=True)
     member_type: int = IntegerChoicesField(choices_enum=TeamMemberTypeEnum, default=TeamMemberTypeEnum.TEAM_MEMBER)  # type: ignore[reportAssignmentType]
+    linkedin_link = models.URLField(blank=True, null=True)
+    instagram_link = models.URLField(blank=True, null=True)
+    facebook_link = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.first_name
