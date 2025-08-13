@@ -3,12 +3,19 @@ app:
     name: SET-BY-CICD-IMAGE
     tag: SET-BY-CICD-TAG
 
+  global:
+    security:
+      allowInsecureImages: true
+    
   ingress:
     enabled: true
     className:
     annotations:
       nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+      
   redis:
+    image:
+      repository: bitnamilegacy/redis
     enabled: false
     architecture:
     fullnameOverride:
@@ -21,6 +28,8 @@ app:
         storageClass:
 
   postgresql:
+    image:
+      repository: bitnamilegacy/postgresql
     enabled: true
     fullnameOverride: "capn-postgresql"
     architecture: standalone
@@ -36,6 +45,8 @@ app:
         size: 1Gi
 
   minio:
+    image:
+      repository: bitnamilegacy/minio
     enabled: false
     disableWebUI: true
     mode: standalone
