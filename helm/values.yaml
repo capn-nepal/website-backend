@@ -6,13 +6,13 @@ app:
   global:
     security:
       allowInsecureImages: true
-    
+
   ingress:
     enabled: true
     className:
     annotations:
       nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-      
+
   redis:
     image:
       repository: bitnamilegacy/redis
