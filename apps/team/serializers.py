@@ -17,6 +17,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             "linkedin_link",
             "instagram_link",
             "facebook_link",
+            "member_order",
         )
 
     def create(self, validated_data):
