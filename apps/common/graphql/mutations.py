@@ -6,6 +6,7 @@ from strawberry_django.permissions import IsAuthenticated
 
 from apps.common.graphql.inputs import (
     ArtworkInput,
+    ChangemakerInput,
     CreateEventAssetsInput,
     CreateEventInput,
     CreateReportInput,
@@ -14,6 +15,7 @@ from apps.common.graphql.inputs import (
     GalleryItemInput,
     GalleryItemUpdateInput,
     GalleryUpdateInput,
+    UpdateChangemakerInput,
     UpdateEventInput,
     UpdateReportInput,
     UpdateYoutubeVideoInput,
@@ -21,6 +23,7 @@ from apps.common.graphql.inputs import (
 )
 from apps.common.graphql.types import (
     ArtworkType,
+    ChangemakerType,
     EventAssetType,
     EventType,
     GalleryItemType,
@@ -29,6 +32,7 @@ from apps.common.graphql.types import (
     YouTubeVideoType,
 )
 from apps.common.models import (
+    Changemaker,
     Event,
     Gallery,
     GalleryItem,
@@ -37,6 +41,7 @@ from apps.common.models import (
 )
 from apps.common.serializers import (
     ArtworkSerializer,
+    ChangemakerSerializer,
     CreateReportSerializer,
     EventAssetsSerializer,
     EventSerializer,
@@ -191,3 +196,31 @@ class Mutation:
         key_attr="id",
         extensions=[IsAuthenticated()],
     )
+
+    # Changemakers
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def create_changemaker(self, info: Info, data: ChangemakerInput) -> MutationResponseType[ChangemakerType]:
+        return await ModelMutation(ChangemakerSerializer).handle_create_mutation(data, info, None)
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def update_changemaker(
+        self,
+        info: Info,
+        data: UpdateChangemakerInput,
+        pk: strawberry.ID,
+    ) -> MutationResponseType[ChangemakerType]:
+        changemaker = await Changemaker.objects.aget(pk=pk)
+        return await ModelMutation(ChangemakerSerializer).handle_update_mutation(data, info, changemaker)
+
+    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    async def archive_changemaker(
+        self,
+        info: Info,
+        pk: strawberry.ID,
+    ) -> MutationResponseType[ChangemakerType]:
+        changemaker = await Changemaker.objects.aget(pk=pk)
+        if changemaker.is_archived:
+            return MutationResponseType(ok=False, errors=["Changemaker is already archived."])  # type: ignore[reportReturnType]
+        changemaker.is_archived = True
+        await sync_to_async(changemaker.save)(update_fields=["is_archived"])
+        return MutationResponseType(ok=True, errors=None)  # type: ignore[reportReturnType]

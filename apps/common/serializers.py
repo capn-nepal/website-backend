@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from apps.common.models import (
     Artwork,
+    Changemaker,
     Event,
     EventAsset,
     Gallery,
@@ -149,6 +150,30 @@ class YoutubeVideoSerializer(serializers.ModelSerializer):
             "video_url",
             "thumbnail",
             "release_date",
+        )
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        validated_data["created_by"] = user
+        validated_data["modified_by"] = user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        validated_data["modified_by"] = user
+        return super().update(instance, validated_data)
+
+
+class ChangemakerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Changemaker
+        fields = (
+            "name",
+            "logo",
+            "description",
+            "facebook_link",
+            "linkdin_link",
+            "instagram_link",
         )
 
     def create(self, validated_data):

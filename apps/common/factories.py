@@ -5,6 +5,7 @@ from factory.django import DjangoModelFactory
 
 from apps.common.models import (
     Artwork,
+    Changemaker,
     Event,
     Gallery,
     GalleryItem,
@@ -79,3 +80,12 @@ class ArtworkFactory(DjangoModelFactory):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         model = Artwork
+
+
+class ChangemakerFactory(DjangoModelFactory):
+    created_by = factory.SubFactory(UserFactory)
+    modified_by = factory.SubFactory(UserFactory)
+    logo = factory.LazyFunction(lambda: ContentFile(b"fake_logo", name="logo_image.jpg"))
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        model = Changemaker

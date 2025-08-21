@@ -5,6 +5,7 @@ from django.core.files.temp import NamedTemporaryFile
 from PIL import Image
 
 from apps.common.factories import (
+    ChangemakerFactory,
     EventFactory,
     GalleryFactory,
     GalleryItemFactory,
@@ -56,6 +57,27 @@ def image_query(
             variables={"data": data},
             files={"image": image_file},
             map={"image": ["variables.data.image"]},
+            **kwargs,
+        )
+
+
+def changemaker_logo_query(
+    *,
+    query_check_func: typing.Callable,
+    query: str,
+    data: dict,
+    **kwargs,
+) -> dict:
+    with NamedTemporaryFile(suffix=".jpg", dir=settings.TEMP_DIR) as image_file:  # type: ignore[reportIncompatibleVariableOverride]
+        image = Image.new("RGB", (100, 100), color="blue")
+        image.save(image_file, "JPEG")
+        image_file.seek(0)
+
+        return query_check_func(
+            query,
+            variables={"data": data},
+            files={"logo": image_file},
+            map={"logo": ["variables.data.logo"]},
             **kwargs,
         )
 
@@ -970,3 +992,146 @@ class TestArtworkMutations(TestCase):
         assert result["name"] == artwork["name"]
         assert result["id"] is not None
         assert result["image"]["url"] is not None
+
+
+class TestChangemakerMutation(TestCase):
+    class Mutation:
+        CREATE_CHANGEMAKER = """
+          mutation CreateChangemaker($data: ChangemakerInput!) {
+            createChangemaker(data: $data) {
+              ... on ChangemakerTypeMutationResponseType {
+                errors
+                result {
+                  id
+                  name
+                  description
+                  facebookLink
+                  instagramLink
+                  linkdinLink
+                  logo {
+                    url
+                  }
+                }
+              }
+              ... on OperationInfo {
+                __typename
+                messages {
+                  message
+                  kind
+                  field
+                  code
+                }
+              }
+            }
+          }
+        """
+
+        UPDATE_CHANGEMAKER = """
+          mutation UpdateChangemaker($pk: ID!, $data: UpdateChangemakerInput!) {
+            updateChangemaker(pk: $pk, data: $data) {
+              ... on ChangemakerTypeMutationResponseType {
+                errors
+                ok
+                result {
+                  id
+                  name
+                  description
+                }
+              }
+              ... on OperationInfo {
+                __typename
+                messages {
+                  message
+                  kind
+                  field
+                  code
+                }
+              }
+            }
+          }
+        """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = UserFactory.create(email="changemaker@example.com")
+
+    def _create_changemaker_mutation(self, data: dict):
+        return changemaker_logo_query(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_CHANGEMAKER,
+            data=data,
+        )
+
+    def _update_changemaker_mutation(self, pk, data: dict):
+        return self.query_check(
+            self.Mutation.UPDATE_CHANGEMAKER,
+            variables={
+                "pk": pk,
+                "data": data,
+            },
+        )
+
+    def test_create_changemaker(self):
+        data = {
+            "name": "Test Changemaker",
+            "description": "A test changemaker",
+            "facebookLink": "https://facebook.com/test",
+            "instagramLink": "https://instagram.com/test",
+            "linkdinLink": "https://linkedin.com/in/test",
+        }
+
+        # Without authentication
+        content = self._create_changemaker_mutation(data)
+        assert content["data"]["createChangemaker"]["messages"] == [
+            {
+                "code": None,
+                "field": "createChangemaker",
+                "kind": "PERMISSION",
+                "message": "User is not authenticated.",
+            },
+        ], content
+
+        # With authentication
+        self.force_login(self.user)
+        content = self._create_changemaker_mutation(data)
+        result = content["data"]["createChangemaker"]["result"]
+        assert result["id"] is not None
+        assert result["name"] == data["name"]
+        assert result["description"] == data["description"]
+        assert result["facebookLink"] == data["facebookLink"]
+        assert result["instagramLink"] == data["instagramLink"]
+        assert result["linkdinLink"] == data["linkdinLink"]
+        assert result["logo"]["url"] is not None
+
+    def test_update_changemaker(self):
+        changemaker = ChangemakerFactory.create(
+            name="Old Name",
+            description="Old Description",
+            facebook_link="https://old.fb",
+            instagram_link="https://old.ig",
+            linkdin_link="https://old.li",
+        )
+
+        update_data = {
+            "name": "Updated Name",
+            "description": "Updated description",
+        }
+
+        # Without authentication
+        content = self._update_changemaker_mutation(self.gID(changemaker.pk), update_data)
+        assert content["data"]["updateChangemaker"]["messages"] == [
+            {
+                "code": None,
+                "field": "updateChangemaker",
+                "kind": "PERMISSION",
+                "message": "User is not authenticated.",
+            },
+        ], content
+
+        # With authentication
+        self.force_login(self.user)
+        content = self._update_changemaker_mutation(self.gID(changemaker.pk), update_data)
+        response_data = content["data"]["updateChangemaker"]
+        assert response_data["result"]["name"] == update_data["name"]
+        assert response_data["result"]["description"] == update_data["description"]

@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import (
     Artwork,
+    Changemaker,
     Event,
     EventAsset,
     Gallery,
@@ -53,3 +54,8 @@ class GalleryItemAdmin(admin.ModelAdmin):
 @admin.register(Artwork)
 class ArtworkAdmin(admin.ModelAdmin):
     list_display = ("name", "image")
+
+
+@admin.register(Changemaker)
+class ChangemakerAdmin(admin.ModelAdmin):
+    list_display = ("name", "logo", "is_archived")
