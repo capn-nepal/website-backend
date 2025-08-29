@@ -5,6 +5,7 @@ import strawberry_django
 
 from apps.common.models import (
     Artwork,
+    Changemaker,
     Event,
     EventAsset,
     Gallery,
@@ -86,3 +87,15 @@ class ArtworkType:
     id: strawberry.ID
     name: strawberry.auto
     image: strawberry.auto
+
+
+@strawberry_django.type(Changemaker)
+class ChangemakerType:
+    id: strawberry.ID
+    name: strawberry.auto
+    logo: strawberry.auto
+    description: strawberry.auto
+    facebook_link: strawberry.auto
+    linkdin_link: strawberry.auto
+    instagram_link: strawberry.auto
+    is_archived: strawberry.auto

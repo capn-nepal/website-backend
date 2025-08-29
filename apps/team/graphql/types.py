@@ -17,6 +17,7 @@ class TeamMemberType:
     linkedin_link: strawberry.auto
     instagram_link: strawberry.auto
     facebook_link: strawberry.auto
+    member_order: strawberry.auto
 
     @strawberry.field
     @sync_to_async

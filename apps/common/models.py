@@ -108,3 +108,20 @@ class YouTubeVideo(UserResource):
 
     def __str__(self):
         return self.title
+
+
+class Changemaker(UserResource):
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
+    logo = SecureImageField(upload_to="changemakers/", blank=True, null=True, verbose_name=_("Logo"))
+    description = models.TextField(verbose_name=_("Description"))
+    facebook_link = models.URLField(blank=True, null=True, verbose_name=_("Facebook Link"))
+    linkdin_link = models.URLField(blank=True, null=True, verbose_name=_("Linkdin Link"))
+    instagram_link = models.URLField(blank=True, null=True, verbose_name=_("Instagram Link"))
+    is_archived = models.BooleanField(default=False)
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        verbose_name = _("Community of changemaker")
+        verbose_name_plural = _("Community of changemakers")
+
+    def __str__(self):
+        return self.name

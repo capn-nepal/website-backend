@@ -35,6 +35,8 @@ type AppEnumCollectionDummyEnum {
   label: String!
 }
 
+union ArchiveChangemakerPayload = ChangemakerTypeMutationResponseType | OperationInfo
+
 union ArchiveEventPayload = EventTypeMutationResponseType | OperationInfo
 
 union ArchiveGalleryItemPayload = GalleryItemTypeMutationResponseType | OperationInfo
@@ -213,6 +215,63 @@ input ChangePasswordInput {
 
 union ChangePasswordPayload = UserMeTypeMutationResponseType | OperationInfo
 
+"""
+Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, is_archived)
+"""
+input ChangemakerFilter {
+  isArchived: Boolean
+  AND: ChangemakerFilter
+  OR: ChangemakerFilter
+  NOT: ChangemakerFilter
+  DISTINCT: Boolean
+}
+
+"""
+Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, is_archived)
+"""
+input ChangemakerInput {
+  name: String!
+  description: String!
+  facebookLink: String
+  linkdinLink: String
+  instagramLink: String
+  logo: Upload
+}
+
+input ChangemakerOrder {
+  id: Ordering
+}
+
+"""
+Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, is_archived)
+"""
+type ChangemakerType {
+  id: ID!
+  name: String!
+  logo: DjangoFileType
+  description: String!
+  facebookLink: String
+  linkdinLink: String
+  instagramLink: String
+  isArchived: Boolean!
+}
+
+type ChangemakerTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ChangemakerType
+}
+
+type ChangemakerTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [ChangemakerType!]!
+}
+
 union CreateArtworkPayload = ArtworkTypeMutationResponseType | OperationInfo
 
 """
@@ -239,6 +298,8 @@ input CreateBlogInput {
 }
 
 union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+union CreateChangemakerPayload = ChangemakerTypeMutationResponseType | OperationInfo
 
 union CreateEventAssetPayload = EventAssetTypeMutationResponseType | OperationInfo
 
@@ -341,7 +402,7 @@ input CreateReportInput {
 union CreateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_order, member_type, linkedin_link, instagram_link, facebook_link)
 """
 input CreateTeamMemberInput {
   firstName: String!
@@ -354,6 +415,7 @@ input CreateTeamMemberInput {
   linkedinLink: String
   instagramLink: String
   facebookLink: String
+  memberOrder: Int
 }
 
 """
@@ -441,7 +503,7 @@ input DeleteArtWorkInput {
 union DeleteArtworkPayload = ArtworkType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_order, member_type, linkedin_link, instagram_link, facebook_link)
 """
 input DeleteTeamMemberInput {
   id: ID
@@ -778,6 +840,9 @@ type Mutation {
   updateGalleryItem(data: GalleryItemUpdateInput!, pk: ID!): UpdateGalleryItemPayload! @isAuthenticated
   archiveGalleryItem(pk: ID!): ArchiveGalleryItemPayload! @isAuthenticated
   createArtwork(data: ArtworkInput!): CreateArtworkPayload! @isAuthenticated
+  createChangemaker(data: ChangemakerInput!): CreateChangemakerPayload! @isAuthenticated
+  updateChangemaker(data: UpdateChangemakerInput!, pk: ID!): UpdateChangemakerPayload! @isAuthenticated
+  archiveChangemaker(pk: ID!): ArchiveChangemakerPayload! @isAuthenticated
   createPodcastSeason(data: CreatePodcastSeasonInput!): CreatePodcastSeasonPayload! @isAuthenticated
   updatePodcastSeason(data: UpdatePodcastSeasonInput!, pk: ID!): UpdatePodcastSeasonPayload! @isAuthenticated
   archivePodcastSeason(pk: ID!): ArchivePodcastSeasonPayload! @isAuthenticated
@@ -1057,6 +1122,8 @@ type Query {
   artWork(id: ID!): ArtworkType!
   youtubeVideos(pagination: OffsetPaginationInput, filters: YouTubeVideoFilter, order: YouTubeVideoOrder): YouTubeVideoTypeOffsetPaginated!
   youtubeVideo(id: ID!): YouTubeVideoType!
+  changemakers(pagination: OffsetPaginationInput, filters: ChangemakerFilter, order: ChangemakerOrder): ChangemakerTypeOffsetPaginated!
+  changemaker(id: ID!): ChangemakerType!
   podcastSeasons(pagination: OffsetPaginationInput, filters: PodcastSeasonFilter, order: PodcastSeasonOrder): PodcastSeasonTypeOffsetPaginated!
   podcastSeason(id: ID!): PodcastSeasonType!
   podcastEpisodes(pagination: OffsetPaginationInput, filters: PodcastEpisodeFilter, order: PodcastEpisodeOrder): PodcastEpisodeTypeOffsetPaginated!
@@ -1175,7 +1242,7 @@ input StrFilterLookup {
 }
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_order, member_type, linkedin_link, instagram_link, facebook_link)
 """
 input TeamMemberFilter {
   id: IDBaseFilterLookup
@@ -1188,10 +1255,11 @@ input TeamMemberFilter {
 
 input TeamMemberOrder {
   id: Ordering
+  memberOrder: Ordering
 }
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_order, member_type, linkedin_link, instagram_link, facebook_link)
 """
 type TeamMemberType {
   id: ID!
@@ -1204,6 +1272,7 @@ type TeamMemberType {
   linkedinLink: String
   instagramLink: String
   facebookLink: String
+  memberOrder: Int!
   memberType: String!
 }
 
@@ -1253,6 +1322,20 @@ input UpdateBlogInput {
 }
 
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+"""
+Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, is_archived)
+"""
+input UpdateChangemakerInput {
+  name: String
+  description: String
+  facebookLink: String
+  linkdinLink: String
+  instagramLink: String
+  logo: Upload
+}
+
+union UpdateChangemakerPayload = ChangemakerTypeMutationResponseType | OperationInfo
 
 """
 Event(id, created_at, modified_at, created_by, modified_by, name, description, location, start_date, end_date, is_deleted, thumbnail)
@@ -1349,7 +1432,7 @@ input UpdateReportInput {
 union UpdateReportPayload = ReportTypeMutationResponseType | OperationInfo
 
 """
-TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_type, linkedin_link, instagram_link, facebook_link)
+TeamMember(id, created_at, modified_at, created_by, modified_by, first_name, middle_name, last_name, bio, designation, member_photo, member_order, member_type, linkedin_link, instagram_link, facebook_link)
 """
 input UpdateTeamMemberInput {
   firstName: String
@@ -1361,6 +1444,7 @@ input UpdateTeamMemberInput {
   linkedinLink: String
   instagramLink: String
   facebookLink: String
+  memberOrder: Int
   memberPhoto: Upload
 }
 

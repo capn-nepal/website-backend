@@ -1,5 +1,6 @@
 from apps.common.factories import (
     ArtworkFactory,
+    ChangemakerFactory,
     EventFactory,
     GalleryFactory,
     GalleryItemFactory,
@@ -420,6 +421,90 @@ class TestGalleryItemQuery(TestCase):
                         "gallery": {"id": self.gID(item.gallery.pk)},
                     }
                     for item in self.gallery_items
+                ],
+            ),
+        }, content
+
+
+class ChangemakerQuery(TestCase):
+    class Query:
+        CHANGEMAKER = """
+            query changemakers($pagination: OffsetPaginationInput, $order: ChangemakerOrder) {
+                changemakers(pagination: $pagination, order: $order) {
+                    totalCount
+                    pageInfo {
+                        offset
+                        limit
+                    }
+                    results {
+                        id
+                        name
+                        description
+                        facebookLink
+                        linkdinLink
+                        instagramLink
+                        logo{
+                            url
+                        }
+                    }
+                }
+            }
+        """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = UserFactory.create(email="user100@gmail.com")
+        cls.user_resource_kwargs = dict(
+            created_by=cls.user,
+            modified_by=cls.user,
+        )
+        cls.changemakers = [
+            ChangemakerFactory.create(
+                name="test1",
+                description="Description 1",
+                facebook_link="https//fbtest1.com",
+                linkdin_link="https//lktest1.com",
+                instagram_link="https//instatest1.com",
+            ),
+            ChangemakerFactory.create(
+                name="test2",
+                description="Description 2",
+                facebook_link="https//fbtest2.com",
+                linkdin_link="https//lntest2.com",
+                instagram_link="https//instatest2.com",
+            ),
+        ]
+
+    def test_changemaker_query(self):
+        def _query():
+            return self.query_check(
+                self.Query.CHANGEMAKER,
+                variables={
+                    "pagination": {"limit": 10, "offset": 0},
+                    "order": {"id": "ASC"},
+                },
+            )
+
+        content = _query()
+        assert content["data"]["changemakers"] == {
+            **self.g_pagination(
+                offset=0,
+                limit=10,
+                total_count=2,
+                results=[
+                    {
+                        "id": self.gID(change.pk),
+                        "name": change.name,
+                        "description": change.description,
+                        "instagramLink": change.instagram_link,
+                        "linkdinLink": change.linkdin_link,
+                        "facebookLink": change.facebook_link,
+                        "logo": {
+                            "url": f"http://testserver{change.logo.url if change.logo else None}",
+                        },
+                    }
+                    for change in self.changemakers
                 ],
             ),
         }, content

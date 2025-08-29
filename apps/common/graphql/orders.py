@@ -3,6 +3,7 @@ import strawberry_django
 
 from apps.common.models import (
     Artwork,
+    Changemaker,
     Event,
     Gallery,
     GalleryItem,
@@ -41,3 +42,8 @@ class YouTubeVideoOrder:
     id: strawberry.auto
     release_date: strawberry.auto
     title: strawberry.auto
+
+
+@strawberry_django.ordering.order(Changemaker)
+class ChangemakerOrder:
+    id: strawberry.auto

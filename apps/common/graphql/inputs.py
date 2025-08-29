@@ -4,6 +4,7 @@ from strawberry.file_uploads import Upload
 
 from apps.common.models import (
     Artwork,
+    Changemaker,
     Event,
     EventAsset,
     Gallery,
@@ -109,3 +110,23 @@ class UpdateYoutubeVideoInput:
     video_url: strawberry.auto
     release_date: strawberry.auto
     thumbnail: Upload | None = strawberry.UNSET
+
+
+@strawberry_django.input(Changemaker)
+class ChangemakerInput:
+    name: strawberry.auto
+    description: strawberry.auto
+    facebook_link: strawberry.auto
+    linkdin_link: strawberry.auto
+    instagram_link: strawberry.auto
+    logo: Upload | None = strawberry.UNSET
+
+
+@strawberry_django.partial(Changemaker)
+class UpdateChangemakerInput:
+    name: strawberry.auto
+    description: strawberry.auto
+    facebook_link: strawberry.auto
+    linkdin_link: strawberry.auto
+    instagram_link: strawberry.auto
+    logo: Upload | None = strawberry.UNSET

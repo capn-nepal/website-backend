@@ -3,6 +3,7 @@ import strawberry_django
 from strawberry_django.pagination import OffsetPaginated
 
 from .filters import (
+    ChangemakerFilter,
     EventFilter,
     GalleryFilter,
     GalleryItemFilter,
@@ -11,6 +12,7 @@ from .filters import (
 )
 from .orders import (
     ArtworkOrder,
+    ChangemakerOrder,
     EventOrder,
     GalleryItemOrder,
     GalleryOrder,
@@ -19,6 +21,7 @@ from .orders import (
 )
 from .types import (
     ArtworkType,
+    ChangemakerType,
     EventAssetType,
     EventType,
     GalleryItemType,
@@ -80,3 +83,9 @@ class Query:
         extensions=[],
     )
     youtube_video: YouTubeVideoType = strawberry_django.field(extensions=[])
+    # Community of Changemakers query -------------------------------------------
+    changemakers: OffsetPaginated[ChangemakerType] = strawberry_django.offset_paginated(
+        filters=ChangemakerFilter,
+        order=ChangemakerOrder,
+    )
+    changemaker: ChangemakerType = strawberry_django.field()

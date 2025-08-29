@@ -2,6 +2,7 @@ import strawberry
 import strawberry_django
 
 from apps.common.models import (
+    Changemaker,
     Event,
     Gallery,
     GalleryItem,
@@ -37,4 +38,9 @@ class GalleryFilter:
 
 @strawberry_django.filters.filter(GalleryItem, lookups=True)
 class GalleryItemFilter:
+    is_archived: bool | None = strawberry.UNSET
+
+
+@strawberry_django.filters.filter(Changemaker, lookups=True)
+class ChangemakerFilter:
     is_archived: bool | None = strawberry.UNSET
