@@ -5,6 +5,7 @@ from django_choices_field import IntegerChoicesField
 
 from apps.common.models import StatusEnum, UserResource
 from utils.common import unique_slugify
+from utils.fields import SecureImageField
 
 
 class NewsTypeEnum(models.IntegerChoices):
@@ -19,6 +20,11 @@ class News(UserResource):
     status: int = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)  # type: ignore[reportAssignmentType]
     news_type: int = IntegerChoicesField(choices_enum=NewsTypeEnum, default=NewsTypeEnum.NEWS)  # type: ignore[reportAssignmentType]
     slug = models.SlugField(unique=True, max_length=250, blank=True)
+    cover_image = SecureImageField(upload_to="news_cover_image/", blank=True, null=True, verbose_name=_("News Cover Image"))
+
+    class Meta:  # type: ignore[reportAssignmentType]
+        verbose_name = _("News")
+        verbose_name_plural = _("News")
 
     def save(self, *args, **kwargs):
         if not self.slug:
