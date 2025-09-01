@@ -13,6 +13,7 @@ class NewsType:
     published_date: strawberry.auto
     status: strawberry.auto
     slug: strawberry.auto
+    cover_image: strawberry.auto
 
     @strawberry.field
     @sync_to_async

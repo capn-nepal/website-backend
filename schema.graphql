@@ -340,13 +340,14 @@ input CreateJobVacancyInput {
 union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug)
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug, cover_image)
 """
 input CreateNewsInput {
   title: String!
   description: String!
   publishedDate: DateTime!
   newsType: NewsTypeEnum!
+  coverImage: Upload
 }
 
 union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
@@ -869,7 +870,7 @@ type Mutation {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug)
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug, cover_image)
 """
 input NewsFilter {
   id: IDBaseFilterLookup
@@ -886,7 +887,7 @@ input NewsOrder {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug)
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug, cover_image)
 """
 type NewsType {
   id: ID!
@@ -895,6 +896,7 @@ type NewsType {
   publishedDate: DateTime!
   status: StatusEnum!
   slug: String!
+  coverImage: DjangoFileType
   newsType: String!
 }
 
@@ -1368,7 +1370,7 @@ input UpdateJobVacancyInput {
 union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug)
+News(id, created_at, modified_at, created_by, modified_by, title, description, published_date, status, news_type, slug, cover_image)
 """
 input UpdateNewsInput {
   title: String
@@ -1376,6 +1378,7 @@ input UpdateNewsInput {
   publishedDate: DateTime
   newsType: NewsTypeEnum
   status: StatusEnum
+  coverImage: Upload
 }
 
 union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo

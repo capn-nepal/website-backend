@@ -11,6 +11,7 @@ class CreateNewsSerializer(serializers.ModelSerializer):
             "description",
             "published_date",
             "news_type",
+            "cover_image",
         )
 
     def create(self, validated_data):
@@ -32,6 +33,7 @@ class UpdateNewsSerializer(serializers.ModelSerializer):
             "published_date",
             "status",
             "news_type",
+            "cover_image",
         )
 
     def update(self, instance, validated_data):
