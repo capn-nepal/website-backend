@@ -117,6 +117,7 @@ class Changemaker(UserResource):
     facebook_link = models.URLField(blank=True, null=True, verbose_name=_("Facebook Link"))
     linkdin_link = models.URLField(blank=True, null=True, verbose_name=_("Linkdin Link"))
     instagram_link = models.URLField(blank=True, null=True, verbose_name=_("Instagram Link"))
+    website_link = models.URLField(blank=True, null=True, verbose_name=_("Website Link"))
     is_archived = models.BooleanField(default=False)
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]

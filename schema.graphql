@@ -216,7 +216,7 @@ input ChangePasswordInput {
 union ChangePasswordPayload = UserMeTypeMutationResponseType | OperationInfo
 
 """
-Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, is_archived)
+Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, website_link, is_archived)
 """
 input ChangemakerFilter {
   isArchived: Boolean
@@ -227,7 +227,7 @@ input ChangemakerFilter {
 }
 
 """
-Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, is_archived)
+Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, website_link, is_archived)
 """
 input ChangemakerInput {
   name: String!
@@ -235,6 +235,7 @@ input ChangemakerInput {
   facebookLink: String
   linkdinLink: String
   instagramLink: String
+  websiteLink: String
   logo: Upload
 }
 
@@ -243,7 +244,7 @@ input ChangemakerOrder {
 }
 
 """
-Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, is_archived)
+Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, website_link, is_archived)
 """
 type ChangemakerType {
   id: ID!
@@ -254,6 +255,7 @@ type ChangemakerType {
   linkdinLink: String
   instagramLink: String
   isArchived: Boolean!
+  websiteLink: String
 }
 
 type ChangemakerTypeMutationResponseType {
@@ -1326,7 +1328,7 @@ input UpdateBlogInput {
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 
 """
-Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, is_archived)
+Changemaker(id, created_at, modified_at, created_by, modified_by, name, logo, description, facebook_link, linkdin_link, instagram_link, website_link, is_archived)
 """
 input UpdateChangemakerInput {
   name: String
@@ -1334,6 +1336,7 @@ input UpdateChangemakerInput {
   facebookLink: String
   linkdinLink: String
   instagramLink: String
+  websiteLink: String
   logo: Upload
 }
 
