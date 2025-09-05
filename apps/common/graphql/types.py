@@ -99,3 +99,4 @@ class ChangemakerType:
     linkdin_link: strawberry.auto
     instagram_link: strawberry.auto
     is_archived: strawberry.auto
+    website_link: strawberry.auto
