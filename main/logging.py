@@ -16,7 +16,7 @@ def skip_health_probe_logs(record: logging.LogRecord):
     if isinstance(args, dict):  # gunicorn.access
         path = args.get("U", "")
         status = str(args.get("s", ""))
-    elif isinstance(args, (tuple, list)) and args:  # django.server request line
+    elif isinstance(args, tuple | list) and args:  # django.server request line
         request_line = str(args[0]).strip('"').split(" ")
         if len(request_line) >= 2:
             path = request_line[1]
