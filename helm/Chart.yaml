@@ -4,10 +4,10 @@ description: "Helm Chart to deploy the CAPN Website Backend"
 type: application
 version: 0.0.1-SET-BY-CICD
 sources:
-  - https://github.com/capn-nepal/website-backend/
+  - https://github.com/capn-nepal/website-backend
 
 dependencies:
-  - name: toggle-django-helm
+  - name: banjo-helm
     alias: app
-    version: 0.2.0
+    version: 0.4.1
     repository: oci://ghcr.io/toggle-corp
