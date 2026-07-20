@@ -1,13 +1,10 @@
 services:
   web:
-    image: $DOCKER_IMAGE
+    image: $DOCKER_IMAGE_BACKEND
     build: !reset null
     env_file: !reset null
     environment:
       CI: "true"
     volumes:
-      - ./coverage/:/code/coverage/
+      - ./:/code
       - ./ci-share/:/ci-share/
-
-  worker-beat: !reset null
-  worker: !reset null
