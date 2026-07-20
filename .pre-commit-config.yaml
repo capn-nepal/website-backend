@@ -7,7 +7,9 @@ exclude: |
       \.git|
       __pycache__|
       \.venv|
-      schema.graphql
+      schema.graphql|
+      # Generated Helm snapshot artifacts (fugit) — formatting/yaml hooks must not touch them.
+      helm/snapshots/
     )
 
 repos:
@@ -34,11 +36,11 @@ repos:
     hooks:
       # Linter
       - id: ruff
-        types_or: [python, pyi, jupyter, toml]
+        types_or: [python, pyi, jupyter, pyproject]
         args: [--fix, --exit-non-zero-on-fix]
       # Formatter
       - id: ruff-format
-        types_or: [python, pyi, jupyter, toml]
+        types_or: [python, pyi, jupyter, pyproject]
 
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.398
