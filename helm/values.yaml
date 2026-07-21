@@ -50,9 +50,11 @@ app:
     TIME_ZONE: "Asia/Kathmandu"
     DEBUG: "false"
     ENABLE_DEBUG_TOOLBAR: "false"
-    # Storage: S3 disabled by default (filesystem); enable + set endpoint/credentials per
-    # environment. Bucket names are deployment-specific and supplied per-environment.
-    AWS_S3_ENABLED: "false"
+    # Storage: S3 enabled by default — pod filesystems are ephemeral, so media MUST go to
+    # object storage. All other S3 values are deployment-specific and supplied per-environment:
+    # the endpoint + credentials (AWS_S3_ENDPOINT_URL, AWS_S3_ACCESS_KEY_ID,
+    # AWS_S3_SECRET_ACCESS_KEY, AWS_S3_REGION_NAME) and the bucket names below.
+    AWS_S3_ENABLED: "true"
     # AWS_S3_MEDIA_BUCKET_NAME: ""   # supplied per-environment
     # AWS_S3_STATIC_BUCKET_NAME: ""  # supplied per-environment
     # Sentry
