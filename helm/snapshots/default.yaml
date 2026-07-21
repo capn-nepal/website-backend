@@ -36,7 +36,6 @@ data:
   APP_DOMAIN: "https://capn-api.example.com"
   APP_ENVIRONMENT: "PROD"
   APP_RELEASE: "test-snapshot"
-  APP_TYPE: "WEB"
   AWS_S3_ENABLED: "true"
   AWS_S3_ENDPOINT_URL: "https://capn-s3.example.com/"
   AWS_S3_MEDIA_BUCKET_NAME: "example-media"
@@ -96,7 +95,7 @@ spec:
     metadata:
       annotations:
         checksum/secret: aeadee78d8af9e0afee2e8371275cbc78175ff1edce7f36cd86ef07388cbac08
-        checksum/configmap: 8a294380caac4d479424bde2b0cfea2fde19835b6cc4cc14ad7afa797c1e454e
+        checksum/configmap: 5b0191878681dec5ff6a6d3ca8852adb069f3c1c75a4cbd91f78d31f2ed16764
       labels:
         app: capn-website-backend
         component: api
@@ -149,7 +148,7 @@ spec:
             - configMapRef:
                 name: capn-website-backend-env-name
           env:
-            - name: DJANGO_APP_TYPE
+            - name: APP_TYPE
               value: "web"
             
           lifecycle:
@@ -179,7 +178,7 @@ spec:
     metadata:
       annotations:
         checksum/secret: aeadee78d8af9e0afee2e8371275cbc78175ff1edce7f36cd86ef07388cbac08
-        checksum/configmap: 8a294380caac4d479424bde2b0cfea2fde19835b6cc4cc14ad7afa797c1e454e
+        checksum/configmap: 5b0191878681dec5ff6a6d3ca8852adb069f3c1c75a4cbd91f78d31f2ed16764
       labels:
         app: capn-website-backend
         component: hook
@@ -206,7 +205,7 @@ spec:
             - configMapRef:
                 name: capn-website-backend-env-name
           env:
-            - name: DJANGO_APP_TYPE
+            - name: APP_TYPE
               value: "hook"
 ---
 # Source: capn-website-backend-helm/charts/app/templates/hooks/job.yaml
@@ -231,7 +230,7 @@ spec:
     metadata:
       annotations:
         checksum/secret: aeadee78d8af9e0afee2e8371275cbc78175ff1edce7f36cd86ef07388cbac08
-        checksum/configmap: 8a294380caac4d479424bde2b0cfea2fde19835b6cc4cc14ad7afa797c1e454e
+        checksum/configmap: 5b0191878681dec5ff6a6d3ca8852adb069f3c1c75a4cbd91f78d31f2ed16764
       labels:
         app: capn-website-backend
         component: hook
@@ -257,7 +256,7 @@ spec:
             - configMapRef:
                 name: capn-website-backend-env-name
           env:
-            - name: DJANGO_APP_TYPE
+            - name: APP_TYPE
               value: "hook"
 ---
 # Source: capn-website-backend-helm/charts/app/templates/hooks/job.yaml
@@ -281,7 +280,7 @@ spec:
     metadata:
       annotations:
         checksum/secret: aeadee78d8af9e0afee2e8371275cbc78175ff1edce7f36cd86ef07388cbac08
-        checksum/configmap: 8a294380caac4d479424bde2b0cfea2fde19835b6cc4cc14ad7afa797c1e454e
+        checksum/configmap: 5b0191878681dec5ff6a6d3ca8852adb069f3c1c75a4cbd91f78d31f2ed16764
       labels:
         app: capn-website-backend
         component: hook
@@ -308,7 +307,7 @@ spec:
             - configMapRef:
                 name: capn-website-backend-env-name
           env:
-            - name: DJANGO_APP_TYPE
+            - name: APP_TYPE
               value: "hook"
             
 

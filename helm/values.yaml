@@ -1,5 +1,9 @@
 app:
   environment: PROD
+  # main/settings.py reads APP_TYPE (WEB/WORKER/...) — used as the Sentry process-role tag.
+  # Let banjo-helm set it natively per component (api -> web, hooks -> hook) instead of a
+  # single hardcoded value; settings upper-cases it.
+  appTypeEnvName: "APP_TYPE"
   # Global Image
   image:
     name: SET-BY-CICD-IMAGE
@@ -43,7 +47,6 @@ app:
   env:
     APP_RELEASE: "{{ $.Values.image.tag }}"
     APP_ENVIRONMENT: "{{ $.Values.environment }}"
-    APP_TYPE: "WEB"
     TIME_ZONE: "Asia/Kathmandu"
     DEBUG: "false"
     ENABLE_DEBUG_TOOLBAR: "false"
