@@ -60,6 +60,11 @@ env = environ.Env(
     SENTRY_PROFILE_SAMPLE_RATE=(float, 0.2),
     # Pytest
     PYTEST_XDIST_WORKER=(str, None),
+    # django-health-check (/health-check/ — external monitoring, distinct from /healthz probes)
+    # Read as strings so an empty value / "none" can disable a check (see below); default active.
+    HEALTH_CHECK_DISK_USAGE_MAX=(str, "80"),  # percent; empty/"none" -> disk check skipped
+    HEALTH_CHECK_MEMORY_MIN=(str, "100"),  # MB (toggles the memory check on); empty/"none" -> skipped
+    HEALTH_CHECK_SKIP_STORAGE=(bool, False),  # true -> drop the storage round-trip check
 )
 
 
@@ -117,12 +122,16 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_premailer",
     "djangoql",
-    # - Health-check
+    # - Health-check: outward-facing /health-check/ endpoint for the external monitor
+    #   (distinct from the pod-internal /healthz probes). Each plugin is a Django app; only the
+    #   ones whose dependency this project actually has are enabled. health_check.storage is
+    #   appended conditionally below (HEALTH_CHECK_SKIP_STORAGE). No redis/rabbitmq plugin
+    #   (this project has no cache or broker).
     "health_check",  # required
     "health_check.db",
     "health_check.cache",
-    "health_check.storage",
     "health_check.contrib.migrations",
+    "health_check.contrib.psutil",  # disk + memory (needs psutil)
     # Internal
     "apps.common",
     "apps.user",
@@ -132,6 +141,12 @@ INSTALLED_APPS = [
     "apps.team",
     "apps.vacancy",
 ]
+
+# health_check.storage does a save/read/delete round-trip against the default storage backend
+# (S3/object storage in prod) on every /health-check/ poll. Enabled by default; set
+# HEALTH_CHECK_SKIP_STORAGE=true to omit it where that round-trip is undesirable.
+if not env("HEALTH_CHECK_SKIP_STORAGE"):
+    INSTALLED_APPS.append("health_check.storage")
 
 MIDDLEWARE = [
     # banjo_utils HealthProbeMiddleware serves pod-local /healthz/live/ and
@@ -267,7 +282,23 @@ PREMAILER_OPTIONS = dict(
     disable_validation=not DEBUG,  # Enable validation in DEBUG only
 )
 
-HEALTHCHECK_CACHE_KEY = "capn_healthcheck_key"
+# django-health-check (/health-check/).
+HEALTHCHECK_CACHE_KEY = "app_healthcheck_key"
+
+
+def _health_check_threshold(env_key):
+    # Empty / "none" disables the corresponding psutil check (the plugin isn't registered);
+    # any other value is the numeric threshold. Lets each environment toggle it via env alone.
+    raw = env(env_key).strip()
+    return None if raw.lower() in ("", "none") else int(raw)
+
+
+HEALTH_CHECK = {
+    # percent; None -> disk check skipped (env HEALTH_CHECK_DISK_USAGE_MAX)
+    "DISK_USAGE_MAX": _health_check_threshold("HEALTH_CHECK_DISK_USAGE_MAX"),
+    # MB toggle; None -> memory check skipped (env HEALTH_CHECK_MEMORY_MIN)
+    "MEMORY_MIN": _health_check_threshold("HEALTH_CHECK_MEMORY_MIN"),
+}
 
 # banjo_utils health-probe endpoints (served by HealthProbeMiddleware, bypass ALLOWED_HOSTS)
 BANJO_HEALTH_PROBE_LIVE_URL = "/healthz/live/"

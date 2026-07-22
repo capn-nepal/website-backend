@@ -24,7 +24,10 @@ dependencies = [
     "sentry-sdk",
     "strawberry-graphql-django~=0.57.0",
     "django-choices-field", # Required by strawberry-graphql-django
-    "django-health-check",
+    # NOTE: pinned to the latest 3.x; 4.x is a breaking async rewrite that drops the
+    # migrations/disk checks and the HEALTH_CHECK settings this project uses.
+    "django-health-check==3.24.0",
+    "psutil==7.2.2", # disk + memory checks for /health-check/
     "pillow", # Required by django ImageField
     "pydantic==2.10.6",
     "redis>=6.0.0",

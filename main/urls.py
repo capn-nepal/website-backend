@@ -16,6 +16,8 @@ base_graphql_kwargs = dict(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Outward-facing health endpoint for the external monitor (django-health-check).
+    # Distinct from the pod-internal /healthz/{live,ready} probes served by banjo middleware.
     path("health-check/", include("health_check.urls")),
     path(
         "graphql/",
