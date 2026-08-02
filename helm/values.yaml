@@ -1,75 +1,25 @@
 app:
+  environment: PROD
+  # main/settings.py reads APP_TYPE (WEB/WORKER/...) — used as the Sentry process-role tag.
+  # Let banjo-helm set it natively per component (api -> web, hooks -> hook) instead of a
+  # single hardcoded value; settings upper-cases it.
+  appTypeEnvName: "APP_TYPE"
+  # Global Image
   image:
     name: SET-BY-CICD-IMAGE
     tag: SET-BY-CICD-TAG
-
-  ingress:
-    enabled: true
-    className:
-    annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-  redis:
-    enabled: false
-    architecture:
-    fullnameOverride:
-    auth:
-      enabled: false
-    master:
-      persistence:
-        enabled: true
-        size: .5Gi
-        storageClass:
-
-  postgresql:
-    enabled: true
-    fullnameOverride: "capn-postgresql"
-    architecture: standalone
-    auth:
-      postgresPassword: ""
-      username: ""
-      password: ""
-      database: ""
-    primary:
-      persistence:
-        enabled: "true"
-        storageClass: ""
-        size: 1Gi
-
-  minio:
-    enabled: false
-    disableWebUI: true
-    mode: standalone
-    fullnameOverride: capn-minio
-    global:
-      defaultStorageClass:
-    apiIngress:
-      enabled: true
-      ingressClassName:
-      hostname:
-      annotations:
-        nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-    auth:
-      forceNewKeys: true
-      rootUser: capn
-      rootPassword:
-    persistence:
-      enabled: true
-      size: 1Gi
-    defaultBuckets: capn-static,capn-media
-    provisioning:
-      enabled: true
-      resourcesPreset: "nano"
-      cleanupAfterFinished:
-        enabled: true
-      extraCommands:
-        - "mc anonymous set download provisioning/capn-static"
-        - "mc anonymous set download provisioning/capn-media"
+    imagePullPolicy: IfNotPresent
 
   api:
     enabled: true
-    replicaCount: 1
     containerPort: 80
     command: ["gunicorn", "main.wsgi:application", "--timeout=40", "--bind", "0.0.0.0:80"]
+    probes:
+      enabled: true
+    ingress:
+      enabled: true
+      className:
+      host:
     resources:
       requests:
         cpu: "1"
@@ -78,63 +28,40 @@ app:
         cpu: "4"
         memory: 1Gi
 
-  argoHook:
-    enabled: true
-    resources:
-      requests:
-        cpu: "0.1"
-        memory: 1Gi
-      limits:
-        cpu: "1"
-        memory: 2Gi
-    hooks:
-      db-migrate:
-        enabled: true
-        hook: PostSync
-        preserveHistory: true
-        command: ["/bin/bash", "-c", "./manage.py wait_for_resources --db && ./manage.py migrate"]
-      collect-static:
-        enabled: true
-        hook: PostSync
-        command: ["/bin/bash", "-c", "./manage.py wait_for_resources --minio && ./manage.py collectstatic --noinput"]
-
+  # No Celery in this project (no broker/worker/beat).
   worker:
     enabled: false
 
+  hooks:
+    enabled: true
+    jobs:
+      # NOTE: Make sure keys are lowercase.
+      # db-migrate and collect-static inherit the chart defaults.
+      # wait-for-resources gates the api on DB connectivity.
+      wait-for-resources:
+        command: ["./manage.py", "wait_for_resources", "--db"]
+
+  # NOTE: Check main/settings.py for all available options.
+  # APP_DOMAIN / FRONTEND_DOMAIN / SESSION_COOKIE_DOMAIN / CSRF_COOKIE_DOMAIN and the
+  # S3 endpoint are provided per-environment.
   env:
     APP_RELEASE: "{{ $.Values.image.tag }}"
     APP_ENVIRONMENT: "{{ $.Values.environment }}"
     TIME_ZONE: "Asia/Kathmandu"
-    DJANGO_DEBUG: "false"
-    # AWS
-    AWS_S3_ENABLED: "false"
-    AWS_S3_ENDPOINT_URL: "https://{{ $.Values.minio.apiIngress.hostname }}/"
-    AWS_S3_MEDIA_BUCKET_NAME: "capn-media"
-    AWS_S3_STATIC_BUCKET_NAME: "capn-static"
-    # App Domain
-    APP_TYPE: "WEB"
-    APP_DOMAIN: "{{ required \".app.env.APP_DOMAIN\" nil }}"
-    FRONTEND_DOMAIN: "{{ required \".app.env.FRONTEND_DOMAIN\" nil }}"
-    SESSION_COOKIE_DOMAIN: "{{ required \".app.env.SESSION_COOKIE_DOMAIN\" nil }}"
-    CSRF_COOKIE_DOMAIN: "{{ required \".app.env.CSRF_COOKIE_DOMAIN\" nil }}"
+    DEBUG: "false"
+    ENABLE_DEBUG_TOOLBAR: "false"
+    # Storage: S3 enabled by default — pod filesystems are ephemeral, so media MUST go to
+    # object storage. All other S3 values are deployment-specific and supplied per-environment:
+    # the endpoint + credentials (AWS_S3_ENDPOINT_URL, AWS_S3_ACCESS_KEY_ID,
+    # AWS_S3_SECRET_ACCESS_KEY, AWS_S3_REGION_NAME) and the bucket names below.
+    AWS_S3_ENABLED: "true"
+    # AWS_S3_MEDIA_BUCKET_NAME: ""   # supplied per-environment
+    # AWS_S3_STATIC_BUCKET_NAME: ""  # supplied per-environment
     # Sentry
     SENTRY_ENABLED: "false"
     SENTRY_TRACES_SAMPLE_RATE: "0.2"
     SENTRY_PROFILE_SAMPLE_RATE: "0.2"
 
-  secrets:
-    DJANGO_SECRET_KEY: "{{ required \".Values.secrets.DJANGO_SECRET_KEY\" nil }}"
-    # Postgres
-    POSTGRES_DB: "{{ $.Values.postgresql.auth.database }}"
-    POSTGRES_USER: "postgres"
-    POSTGRES_PASSWORD: "{{ $.Values.postgresql.auth.postgresPassword }}"
-    POSTGRES_HOST: "{{ include \"postgresql.v1.primary.fullname\" $.Subcharts.postgresql }}"
-    POSTGRES_PORT: "{{ include \"postgresql.v1.service.port\" $.Subcharts.postgresql }}"
-    # Minio (S3)
-    AWS_S3_ACCESS_KEY_ID: "{{ required \".app.minio.auth.rootUser\" $.Values.minio.auth.rootUser }}"
-    AWS_S3_SECRET_ACCESS_KEY: "{{ required \".app.minio.auth.rootPassword\" $.Values.minio.auth.rootPassword }}"
-    AWS_S3_REGION_NAME: "us-east-1"
-    AWS_S3_MEDIA_BUCKET_NAME: "capn-media"
-    AWS_S3_STATIC_BUCKET_NAME: "capn-static"
-    # Misc
-    SENTRY_DSN: "{{ required \".app.secrets.SENTRY_DSN\" nil }}"
+  # NOTE: Secrets are provided per-environment. Check main/settings.py for all available
+  # options (DJANGO_SECRET_KEY, POSTGRES_*, AWS_S3_* credentials, SENTRY_DSN).
+  secrets: {}

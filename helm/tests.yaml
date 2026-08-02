@@ -1,0 +1,3 @@
+tests:
+  default.yaml:
+    - values/traefik.yaml

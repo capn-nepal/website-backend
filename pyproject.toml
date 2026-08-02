@@ -24,11 +24,18 @@ dependencies = [
     "sentry-sdk",
     "strawberry-graphql-django~=0.57.0",
     "django-choices-field", # Required by strawberry-graphql-django
-    "django-health-check",
+    # NOTE: pinned to the latest 3.x; 4.x is a breaking async rewrite that drops the
+    # migrations/disk checks and the HEALTH_CHECK settings this project uses.
+    "django-health-check==3.24.0",
+    "psutil==7.2.2", # disk + memory checks for /health-check/
     "pillow", # Required by django ImageField
     "pydantic==2.10.6",
     "redis>=6.0.0",
+    "banjo-utils",
 ]
+
+[tool.uv.sources]
+banjo-utils = { git = "https://github.com/toggle-corp/banjo-utils", tag = "v0.2.0" }
 
 [dependency-groups]
 dev = [
@@ -69,6 +76,7 @@ ignore = [
     "E203",
     "DJ001",
     "G201", # FIXME: Check if we can enable this and keep sending logs to sentry
+    "COM812", # Conflicts with the ruff formatter (trailing commas handled by the formatter)
 ]
 extend-select = ["I", "E", "F", "B", "A", "W", "DJ", "AIR", "COM", "INT", "ISC", "ICN", "LOG", "G", "T20", "TID", "PT", "Q", "RET", "SIM", "TC", "PTH", "UP"]
 # TODO: Use this instead `select = ["ALL"]` and add rules to ignore

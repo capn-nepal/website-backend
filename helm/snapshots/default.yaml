@@ -1,0 +1,351 @@
+---
+# Source: capn-website-backend-helm/charts/app/templates/config/secret.yaml
+kind: Secret
+apiVersion: v1
+metadata:
+  name: capn-website-backend-secret
+  labels:
+    app: capn-website-backend
+    environment: PROD
+    release: release-name
+type: Opaque
+stringData:
+  # secrets
+  AWS_S3_ACCESS_KEY_ID: "capn"
+  AWS_S3_SECRET_ACCESS_KEY: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  DJANGO_SECRET_KEY: "dummy-secret-key"
+  POSTGRES_DB: "capn"
+  POSTGRES_HOST: "capn-postgres"
+  POSTGRES_PASSWORD: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "capn"
+  SENTRY_DSN: "https://dummy@sentry.example.com/1"
+
+---
+# Source: capn-website-backend-helm/charts/app/templates/config/configmap.yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: capn-website-backend-env-name
+  labels:
+    app: capn-website-backend
+    environment: PROD
+    release: release-name
+data:
+  # Configs
+  APP_DOMAIN: "https://capn-api.example.com"
+  APP_ENVIRONMENT: "PROD"
+  APP_RELEASE: "test-snapshot"
+  AWS_S3_ENABLED: "true"
+  AWS_S3_ENDPOINT_URL: "https://capn-s3.example.com/"
+  AWS_S3_MEDIA_BUCKET_NAME: "example-media"
+  AWS_S3_STATIC_BUCKET_NAME: "example-static"
+  CSRF_COOKIE_DOMAIN: ".example.com"
+  DEBUG: "false"
+  ENABLE_DEBUG_TOOLBAR: "false"
+  FRONTEND_DOMAIN: "https://capn.example.com"
+  SENTRY_ENABLED: "false"
+  SENTRY_PROFILE_SAMPLE_RATE: "0.2"
+  SENTRY_TRACES_SAMPLE_RATE: "0.2"
+  SESSION_COOKIE_DOMAIN: ".example.com"
+  TIME_ZONE: "Asia/Kathmandu"
+
+---
+# Source: capn-website-backend-helm/charts/app/templates/api/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: capn-website-backend-api
+  labels:
+    app: capn-website-backend
+    component: api
+    environment: PROD
+    release: release-name
+spec:
+  type: ClusterIP
+  selector:
+    app: capn-website-backend
+    component: api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+# Source: capn-website-backend-helm/charts/app/templates/api/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capn-website-backend-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+    reloader.stakater.com/auto: "true"
+  labels:
+    app: capn-website-backend
+    component: api
+    environment: PROD
+    release: release-name
+spec:
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: capn-website-backend
+      component: api
+  template:
+    metadata:
+      annotations:
+        checksum/secret: aeadee78d8af9e0afee2e8371275cbc78175ff1edce7f36cd86ef07388cbac08
+        checksum/configmap: 5b0191878681dec5ff6a6d3ca8852adb069f3c1c75a4cbd91f78d31f2ed16764
+      labels:
+        app: capn-website-backend
+        component: api
+    spec:
+      terminationGracePeriodSeconds: 38
+      containers:
+        - name: api
+          image: "ghcr.io/capn-nepal/website-backend:test-snapshot"
+          imagePullPolicy: IfNotPresent
+          command:
+            - gunicorn
+            - main.wsgi:application
+            - --timeout=40
+            - --bind
+            - 0.0.0.0:80
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /healthz/live/
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 2
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /healthz/ready/
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /healthz/ready/
+              port: http
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: "4"
+              memory: 1Gi
+            requests:
+              cpu: "1"
+              memory: 0.5Gi
+          envFrom:
+            - secretRef:
+                name: capn-website-backend-secret
+            - configMapRef:
+                name: capn-website-backend-env-name
+          env:
+            - name: APP_TYPE
+              value: "web"
+            
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 8
+
+---
+# Source: capn-website-backend-helm/charts/app/templates/hooks/job.yaml
+# Hook: collect-static
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: capn-website-backend-collect-static
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "20"
+  labels:
+    app: capn-website-backend
+    component: hook
+    hookName: collect-static
+    environment: PROD
+    release: release-name
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum/secret: aeadee78d8af9e0afee2e8371275cbc78175ff1edce7f36cd86ef07388cbac08
+        checksum/configmap: 5b0191878681dec5ff6a6d3ca8852adb069f3c1c75a4cbd91f78d31f2ed16764
+      labels:
+        app: capn-website-backend
+        component: hook
+        hookName: collect-static
+    spec:
+      restartPolicy: "Never"
+      containers:
+        - name: collect-static
+          image: "ghcr.io/capn-nepal/website-backend:test-snapshot"
+          imagePullPolicy: IfNotPresent
+          command: 
+            - ./manage.py
+            - collectstatic
+            - --noinput
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          envFrom:
+            - secretRef:
+                name: capn-website-backend-secret
+            - configMapRef:
+                name: capn-website-backend-env-name
+          env:
+            - name: APP_TYPE
+              value: "hook"
+---
+# Source: capn-website-backend-helm/charts/app/templates/hooks/job.yaml
+# Hook: db-migrate
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: capn-website-backend-db-migrate-
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "20"
+  labels:
+    app: capn-website-backend
+    component: hook
+    hookName: db-migrate
+    environment: PROD
+    release: release-name
+spec:
+  activeDeadlineSeconds: 3600
+  ttlSecondsAfterFinished: 604800
+  template:
+    metadata:
+      annotations:
+        checksum/secret: aeadee78d8af9e0afee2e8371275cbc78175ff1edce7f36cd86ef07388cbac08
+        checksum/configmap: 5b0191878681dec5ff6a6d3ca8852adb069f3c1c75a4cbd91f78d31f2ed16764
+      labels:
+        app: capn-website-backend
+        component: hook
+        hookName: db-migrate
+    spec:
+      restartPolicy: "Never"
+      containers:
+        - name: db-migrate
+          image: "ghcr.io/capn-nepal/website-backend:test-snapshot"
+          imagePullPolicy: IfNotPresent
+          command: 
+            - ./manage.py
+            - migrate
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          envFrom:
+            - secretRef:
+                name: capn-website-backend-secret
+            - configMapRef:
+                name: capn-website-backend-env-name
+          env:
+            - name: APP_TYPE
+              value: "hook"
+---
+# Source: capn-website-backend-helm/charts/app/templates/hooks/job.yaml
+# Hook: wait-for-resources
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: capn-website-backend-wait-for-resources
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app: capn-website-backend
+    component: hook
+    hookName: wait-for-resources
+    environment: PROD
+    release: release-name
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum/secret: aeadee78d8af9e0afee2e8371275cbc78175ff1edce7f36cd86ef07388cbac08
+        checksum/configmap: 5b0191878681dec5ff6a6d3ca8852adb069f3c1c75a4cbd91f78d31f2ed16764
+      labels:
+        app: capn-website-backend
+        component: hook
+        hookName: wait-for-resources
+    spec:
+      restartPolicy: "Never"
+      containers:
+        - name: wait-for-resources
+          image: "ghcr.io/capn-nepal/website-backend:test-snapshot"
+          imagePullPolicy: IfNotPresent
+          command: 
+            - ./manage.py
+            - wait_for_resources
+            - --db
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          envFrom:
+            - secretRef:
+                name: capn-website-backend-secret
+            - configMapRef:
+                name: capn-website-backend-env-name
+          env:
+            - name: APP_TYPE
+              value: "hook"
+            
+
+---
+# Source: capn-website-backend-helm/charts/app/templates/api/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capn-website-backend-api
+  labels:
+    app: capn-website-backend
+    component: api
+    environment: PROD
+    release: release-name
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+    traefik.ingress.kubernetes.io/router.middlewares: default-capn-body-size@kubernetescrd
+spec:
+  ingressClassName: "traefik"
+  rules:
+    - host: "capn-api.example.com"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: capn-website-backend-api
+                port:
+                  number: 80
+
+---
+# Source: capn-website-backend-helm/charts/app/templates/extraManifests.yaml
+# Manifest: traefik-body-size-middleware
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: capn-body-size
+spec:
+  buffering:
+    maxRequestBodyBytes: 52428800
