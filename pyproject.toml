@@ -29,7 +29,7 @@ dependencies = [
     "django-health-check==3.24.0",
     "psutil==7.2.2", # disk + memory checks for /health-check/
     "pillow", # Required by django ImageField
-    "pydantic==2.10.6",
+    "pydantic==2.12.5",
     "redis>=6.0.0",
     "banjo-utils",
 ]
